@@ -137,10 +137,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.064"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText4" />
+        app:layout_constraintTop_toBottomOf="@+id/etNombre" />
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/tvFecha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -149,10 +149,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.084"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText5" />
+        app:layout_constraintTop_toBottomOf="@+id/etApellidos" />
 
     <EditText
-        android:id="@+id/editTextText4"
+        android:id="@+id/etNombre"
         android:layout_width="369dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
@@ -165,7 +165,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvNombre" />
 
     <EditText
-        android:id="@+id/editTextText5"
+        android:id="@+id/etApellidos"
         android:layout_width="369dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
@@ -179,7 +179,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvApellidos" />
 
     <EditText
-        android:id="@+id/editTextDate"
+        android:id="@+id/etdFecha"
         android:layout_width="369dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
@@ -189,10 +189,10 @@
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+        app:layout_constraintTop_toBottomOf="@+id/tvFecha" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/botonRegistro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -200,6 +200,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextDate" />
+        app:layout_constraintTop_toBottomOf="@+id/etdFecha" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

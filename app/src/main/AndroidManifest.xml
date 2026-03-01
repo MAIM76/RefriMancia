@@ -20,6 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- 345: This activity is for testing purposes and can be removed. -->
+        <activity android:name=".ExampleActivity" />
     </application>
 
 </manifest>

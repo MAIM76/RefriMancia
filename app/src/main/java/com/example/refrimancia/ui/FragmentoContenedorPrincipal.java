@@ -1,0 +1,60 @@
+package com.example.refrimancia.ui;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.refrimancia.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+public class FragmentoContenedorPrincipal extends Fragment {
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup contenedor,
+                             @Nullable Bundle estadoGuardado) {
+        return inflater.inflate(R.layout.fragmento_contenedor_principal, contenedor, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View vista, @Nullable Bundle estadoGuardado) {
+        super.onViewCreated(vista, estadoGuardado);
+
+        BottomNavigationView navInferior = vista.findViewById(R.id.bottom_navigation);
+
+        // Cargar FragmentoInicio por defecto
+        if (estadoGuardado == null) {
+            cargarSubFragmento(new FragmentoInicio());
+            navInferior.setSelectedItemId(R.id.nav_home);
+        }
+
+        navInferior.setOnItemSelectedListener(elemento -> {
+            int id = elemento.getItemId();
+            if (id == R.id.nav_home) {
+                cargarSubFragmento(new FragmentoInicio());
+                return true;
+            } else if (id == R.id.nav_user) {
+                // TODO: Fragment de usuario (pendiente de otro miembro del equipo)
+                return true;
+            } else if (id == R.id.nav_create) {
+                // TODO: Fragment de creación de receta (pendiente de otro miembro del equipo)
+                return false;
+            }
+            return false;
+        });
+    }
+
+    private void cargarSubFragmento(Fragment fragmento) {
+        getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.sub_fragment_container, fragmento)
+                .commit();
+    }
+}
+

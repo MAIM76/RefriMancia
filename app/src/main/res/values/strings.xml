@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">RefriMancia</string>
+    <string name="search_hint">Buscar recetas…</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_user">Usuario</string>
+    <string name="nav_create">Nueva</string>
+    <string name="recipe_save">Guardar receta</string>
+    <string name="recipe_title_hint">Título de la receta</string>
+    <string name="recipe_description_hint">Descripción breve</string>
+    <string name="recipe_instructions_hint">Instrucciones paso a paso</string>
+    <string name="user_greeting">¡Bienvenido, chef!</string>
+    <string name="user_email_placeholder">usuario@ejemplo.com</string>
+    <string name="user_recipes_label">Mis recetas</string>
+    <string name="placeholder_recipe_title">Receta de ejemplo</string>
+    <string name="placeholder_recipe_desc">Una deliciosa receta fácil de preparar en casa.</string>
+    <string name="create_recipe_title">Nueva Receta</string>
+    <string name="btn_back">Volver</string>
+    <string name="image_placeholder">Imagen</string>
+    <string name="add_photo">+ Añadir foto</string>
 </resources>
+

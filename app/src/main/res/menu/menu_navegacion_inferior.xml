@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Menú de la barra de navegación inferior -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="@string/nav_home" />
+
+    <item
+        android:id="@+id/nav_create"
+        android:icon="@android:drawable/ic_input_add"
+        android:title="@string/nav_create" />
+
+    <item
+        android:id="@+id/nav_user"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="@string/nav_user" />
+
+</menu>
+
+

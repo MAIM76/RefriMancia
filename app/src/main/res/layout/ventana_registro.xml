@@ -191,7 +191,7 @@
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:hint="Introduzca su fecha de nacimiento"
+        android:hint="Introduzca su fecha de nacimiento (yyyy/mm/dd)"
         android:inputType="date"
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"

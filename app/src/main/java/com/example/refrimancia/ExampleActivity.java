@@ -16,7 +16,8 @@ public class ExampleActivity extends AppCompatActivity {
 
         Button btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> {
-            Intent intent = new Intent(ExampleActivity.this, MainActivity.class);
+            // Updated to lead back to LoginActivity
+            Intent intent = new Intent(ExampleActivity.this, LoginActivity.class);
             startActivity(intent);
         });
     }

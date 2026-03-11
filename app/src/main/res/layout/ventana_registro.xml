@@ -23,7 +23,7 @@
         android:id="@+id/tvNombreUserRegistro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="32dp"
         android:text="Nombre de usuario:"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,40 +46,16 @@
         app:layout_constraintTop_toBottomOf="@+id/tvCorreoRegistro" />
 
     <TextView
-        android:id="@+id/tvAviso2Registro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Correo ya registrado"
-        android:textColor="#FF0000"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.529"
-        app:layout_constraintStart_toEndOf="@+id/tvCorreoRegistro"
-        app:layout_constraintTop_toBottomOf="@+id/etNombreUserRegistro" />
-
-    <TextView
         android:id="@+id/tvCorreoRegistro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Correo electrónico:"
-        android:textSize="16dp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.068"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etNombreUserRegistro" />
-
-    <TextView
-        android:id="@+id/tvAviso1Registro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:text="Nombre ya existente"
-        android:textColor="#FF0000"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.513"
-        app:layout_constraintStart_toEndOf="@+id/tvNombreUserRegistro"
-        app:layout_constraintTop_toBottomOf="@+id/tvTituloRegistro" />
 
     <EditText
         android:id="@+id/etNombreUserRegistro"
@@ -108,7 +84,7 @@
         app:layout_constraintTop_toBottomOf="@+id/etCorreoRegistro" />
 
     <EditText
-        android:id="@+id/etpConstrasenaRegistro"
+        android:id="@+id/etpContrasenaRegistro"
         android:layout_width="372dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
@@ -131,7 +107,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.054"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etpConstrasenaRegistro" />
+        app:layout_constraintTop_toBottomOf="@+id/etpContrasenaRegistro" />
 
     <TextView
         android:id="@+id/tvApellidosRegistro"
@@ -186,13 +162,13 @@
         app:layout_constraintTop_toBottomOf="@+id/tvApellidosRegistro" />
 
     <EditText
-        android:id="@+id/etdFechaRegistro"
+        android:id="@+id/etFechaRegistro"
         android:layout_width="372dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="Introduzca su fecha de nacimiento (yyyy/mm/dd)"
-        android:inputType="date"
+        android:inputType="text"
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.487"
@@ -201,13 +177,16 @@
 
     <Button
         android:id="@+id/botonRegistro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_width="115dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
         android:text="Registrarse"
+        android:textSize="12sp"
+        android:onClick="registrar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etdFechaRegistro" />
+        app:layout_constraintTop_toBottomOf="@+id/etFechaRegistro"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

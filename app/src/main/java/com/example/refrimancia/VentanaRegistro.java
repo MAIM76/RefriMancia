@@ -1,28 +1,36 @@
 package com.example.refrimancia;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-import org.json.JSONObject;
-
-import android.widget.Toast;
-
-import java.io.IOException;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class VentanaRegistro extends AppCompatActivity {
+    // Configuración de Retrofit
+    private Retrofit retrofit;
+    private ApiService apiService;
+
     TextView tvTituloRegistro;
     TextView tvNombreUserRegistro;
     TextView tvCorreoRegistro;
@@ -37,11 +45,17 @@ public class VentanaRegistro extends AppCompatActivity {
     EditText etApellidosRegistro;
     EditText etFechaRegistro;
     Button botonRegistro;
+    String imagenPorDefecto = "https://mi-servidor.com/foto.png";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.ventana_registro);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.ventana_registro), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         tvTituloRegistro = findViewById(R.id.tvTituloRegistro);
         tvNombreUserRegistro = findViewById(R.id.tvNombreUserRegistro);
@@ -58,83 +72,72 @@ public class VentanaRegistro extends AppCompatActivity {
         etFechaRegistro = findViewById(R.id.etFechaRegistro);
         botonRegistro = findViewById(R.id.botonRegistro);
 
+        //Para que la fecha se envíe bien
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd")
+                .create();
+
+        // Configurar Retrofit con tu URL de Render
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://refrimacia-backend.onrender.com/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        apiService = retrofit.create(ApiService.class);
+
         //Asociar el boton con el metodo
-        botonRegistro.setOnClickListener(v -> registrar());
+        botonRegistro.setOnClickListener(v -> {
+            String nombreUser = etNombreUserRegistro.getText().toString().trim();
+            String correo = etCorreoRegistro.getText().toString().trim();
+            String password = etpContrasenaRegistro.getText().toString().trim();
+            String nombre = etNombreRegistro.getText().toString().trim();
+            String apellidos = etApellidosRegistro.getText().toString().trim();
+            String nombreCompleto = nombre + " " + apellidos;
+            String fecha = etFechaRegistro.getText().toString().trim();
+
+            if (nombreUser.isEmpty() || password.isEmpty() || correo.isEmpty()
+                    || nombre.isEmpty() || apellidos.isEmpty() || fecha.isEmpty()) {
+                Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
+            } else {
+                registrar(nombreUser, password, correo, nombreCompleto, fecha);
+            }
+        });
     }
 
     //Metodo para boton registrar
-    public void registrar() {
-        Toast.makeText(this, "Registrar llamado", Toast.LENGTH_SHORT).show();
-        String usuario = etNombreUserRegistro.getText().toString().trim();
-        String correo = etCorreoRegistro.getText().toString().trim();
-        String contrasena = etpContrasenaRegistro.getText().toString().trim();
-        String nombre = etNombreRegistro.getText().toString().trim();
-        String apellidos = etApellidosRegistro.getText().toString().trim();
-        String fecha = etFechaRegistro.getText().toString().trim();
-
-        String nombreCompleto = nombre + " " + apellidos;
-        if(usuario.isEmpty() || correo.isEmpty() || contrasena.isEmpty()){
-            Toast.makeText(this, "Complete todos los campos obligatorios", Toast.LENGTH_SHORT).show();
+    public void registrar(String nombreUser, String password, String correo, String nombreCompleto, String fecha) {
+        Log.d("REGISTRO", "Entrando en metodo registrar");
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechaNac = null;
+        try {
+            fechaNac = formato.parse(fecha);
+        } catch (ParseException e) {
+            Toast.makeText(this, "Formato de fecha incorrecto. Usa yyyy-MM-dd", Toast.LENGTH_SHORT).show();
             return;
         }
-        try {
-            //Crear el json que mandaremos al servidor
-            JSONObject json = new JSONObject();
-            json.put("nombre_usuario", usuario);
-            json.put("contrasena", contrasena);
-            json.put("correo_electronico", correo);
-            json.put("nombre_completo", nombreCompleto);
-            json.put("fecha_nac", fecha);
-            json.put("imagen_perfil", "https://mi-servidor.com/foto.png");
+        RegistroRequest request = new RegistroRequest(nombreUser, password, correo, nombreCompleto, fechaNac, imagenPorDefecto);
+        Log.d("API_CALL", "Enviando registro al servidor");
 
-            //Crear cliente para el http
-            OkHttpClient client = new OkHttpClient();
+        Call<RegistroRespuesta> call = apiService.registro(request);
+        call.enqueue(new Callback<RegistroRespuesta>() {
+            @Override
+            public void onResponse(Call<RegistroRespuesta> call, Response<RegistroRespuesta> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Mostrar mensaje de exito y cerrar ventana
+                    Toast.makeText(VentanaRegistro.this, "Usuario registrado correctamente", Toast.LENGTH_SHORT).show();
+                    finish();
 
-            RequestBody body = RequestBody.create(
-                    json.toString(),
-                    MediaType.get("application/json")
-            );
-            //Prepara el post para postman
-            Request request = new Request.Builder()
-                    .url("https://refrimacia-backend.onrender.com/api/usuarios/crear")
-                    .post(body)
-                    .build();
-            //Mandar la peticion al backend
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    //En caso de error de conexion, salta un aviso
-                    runOnUiThread(() ->
-                            Toast.makeText(VentanaRegistro.this, "Error de conexión", Toast.LENGTH_SHORT).show()
-                    );
-
+                } else {
+                    // Mostrar Toast solo cuando el login es incorrecto
+                    Toast.makeText(VentanaRegistro.this, "Error: Usuario o correo ya registrados", Toast.LENGTH_SHORT).show();
                 }
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
+            }
 
-                    String respuesta = response.body().string();
-
-                    runOnUiThread(() -> {
-
-                        try {
-                            //Leer la respuesta del servidor
-                            JSONObject jsonRespuesta = new JSONObject(respuesta);
-                            String status = jsonRespuesta.getString("status");
-                            String mensaje = jsonRespuesta.getString("message");
-                            //Mostramos el mensaje de exito o error
-                            Toast.makeText(VentanaRegistro.this, mensaje, Toast.LENGTH_LONG).show();
-                            if ("success".equals(status)) {
-                                //Cerrar esta ventana si se cumple la condicion
-                                finish();
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Call<RegistroRespuesta> call, Throwable t) {
+                Log.e("API_ERROR", t.getMessage());
+                Toast.makeText(VentanaRegistro.this, "Error de conexión con el servidor", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

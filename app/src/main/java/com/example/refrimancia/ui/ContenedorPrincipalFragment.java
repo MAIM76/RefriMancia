@@ -12,14 +12,14 @@ import androidx.fragment.app.Fragment;
 import com.example.refrimancia.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class FragmentoContenedorPrincipal extends Fragment {
+public class ContenedorPrincipalFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup contenedor,
                              @Nullable Bundle estadoGuardado) {
-        return inflater.inflate(R.layout.fragmento_contenedor_principal, contenedor, false);
+        return inflater.inflate(R.layout.contenedor_principal_fragment, contenedor, false);
     }
 
     @Override
@@ -30,14 +30,14 @@ public class FragmentoContenedorPrincipal extends Fragment {
 
         // Cargar FragmentoInicio por defecto
         if (estadoGuardado == null) {
-            cargarSubFragmento(new FragmentoInicio());
+            cargarSubFragmento(new InicioFragment());
             navInferior.setSelectedItemId(R.id.nav_home);
         }
 
         navInferior.setOnItemSelectedListener(elemento -> {
             int id = elemento.getItemId();
             if (id == R.id.nav_home) {
-                cargarSubFragmento(new FragmentoInicio());
+                cargarSubFragmento(new InicioFragment());
                 return true;
             } else if (id == R.id.nav_user) {
                 // TODO: Fragment de usuario (pendiente de otro miembro del equipo)

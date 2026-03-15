@@ -35,6 +35,14 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.VistaR
         this.escuchador = escuchador;
     }
 
+    public void actualizarDatos(List<Receta> nuevasRecetas) {
+        this.listaRecetas.clear();
+        this.listaRecetas.addAll(nuevasRecetas);
+        this.listaRecetasCompleta.clear();
+        this.listaRecetasCompleta.addAll(nuevasRecetas);
+        notifyDataSetChanged();
+    }
+
     public void filtrar(String consulta) {
         listaRecetas.clear();
         if (consulta == null || consulta.trim().isEmpty()) {
@@ -62,14 +70,12 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.VistaR
     @Override
     public void onBindViewHolder(@NonNull VistaReceta holder, int posicion) {
         Receta receta = listaRecetas.get(posicion);
-        holder.textViewTitulo.setText(receta.getTitulo());
+        holder.textViewTitulo.setText(receta.getTituloReceta());
         holder.textViewDescripcion.setText(receta.getDescripcion());
 
-        if (receta.getImagenResId() != 0) {
-            holder.imagenReceta.setImageResource(receta.getImagenResId());
-        } else {
-            holder.imagenReceta.setImageDrawable(null);
-        }
+        // TODO: Cargar imagen desde URL con Glide si está disponible
+        // Por ahora solo muestra placeholder gris
+        holder.imagenReceta.setImageDrawable(null);
 
         holder.itemView.setOnClickListener(v -> {
             if (escuchador != null) escuchador.alHacerClicEnReceta(receta);

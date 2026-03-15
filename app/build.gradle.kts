@@ -43,6 +43,18 @@ dependencies {
     implementation(libs.cardview)
     implementation(libs.fragment)
     implementation(libs.recyclerview)
+    
+    // Red - Retrofit, OkHttp, Gson
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.gson)
+    
+    // Coroutines
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

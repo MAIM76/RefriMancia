@@ -8,18 +8,18 @@ import androidx.core.view.WindowCompat;
 
 import com.example.refrimancia.R;
 
-public class ActividadPrincipal extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle estadoGuardado) {
         super.onCreate(estadoGuardado);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        setContentView(R.layout.actividad_principal);
+        setContentView(R.layout.activity_main);
 
         if (estadoGuardado == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, new FragmentoContenedorPrincipal())
+                    .replace(R.id.fragment_container, new ContenedorPrincipalFragment())
                     .commit();
         }
 

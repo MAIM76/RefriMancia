@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Patterns;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -95,9 +96,21 @@ public class VentanaRegistro extends AppCompatActivity {
             String nombreCompleto = nombre + " " + apellidos;
             String fecha = etFechaRegistro.getText().toString().trim();
 
+            String regexPassword = "^(?=.*[A-Z])(?=.*\\d).{8,}$";
+
             if (nombreUser.isEmpty() || password.isEmpty() || correo.isEmpty()
                     || nombre.isEmpty() || apellidos.isEmpty() || fecha.isEmpty()) {
                 Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+
+                Toast.makeText(this, "Introduce un correo electrónico válido", Toast.LENGTH_SHORT).show();
+
+            }  else if (!password.matches(regexPassword)) {
+
+                Toast.makeText(this,
+                        "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número",
+                        Toast.LENGTH_LONG).show();
+
             } else {
                 registrar(nombreUser, password, correo, nombreCompleto, fecha);
             }

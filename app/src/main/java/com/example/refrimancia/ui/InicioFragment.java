@@ -120,6 +120,16 @@ public class InicioFragment extends Fragment {
         recetas.add(new Receta("Salmorejo cordobés", "Crema espesa de tomate con pan y ajo"));
         recetas.add(new Receta("Cocido madrileño", "Guiso tradicional de garbanzos con carne"));
         recetas.add(new Receta("Churros con chocolate", "Churros crujientes con chocolate a la taza"));
+        recetas.add(new Receta("Empanadas argentinas", "Masa rellena de carne, cebolla y especias"));
+        recetas.add(new Receta("Tarta de Santiago", "Tarta de almendra típica de Galicia"));
+        recetas.add(new Receta("Fabada asturiana", "Guiso de judías con chorizo y morcilla"));
+        recetas.add(new Receta("Pimientos de Padrón", "Pimientos pequeños fritos con sal gruesa"));
+        recetas.add(new Receta("Torrijas", "Rebanadas de pan empapadas en leche y fritas"));
+        recetas.add(new Receta("Pulpo a la gallega", "Pulpo cocido con pimentón y aceite de oliva"));
+        recetas.add(new Receta("Ensalada campera", "Ensalada fresca con patata, huevo, atún y verduras"));
+        recetas.add(new Receta("Bacalao al pil-pil", "Bacalao cocinado con aceite, ajo y guindilla"));
+        recetas.add(new Receta("Albondigas en salsa", "Albóndigas de carne en salsa de tomate casera"));
+        recetas.add(new Receta("Tarta de queso", "Tarta cremosa de queso con base de galleta"));
         
         adaptador.actualizarDatos(recetas);
     }

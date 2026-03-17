@@ -50,7 +50,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.VistaR
         } else {
             String consultaMinusculas = consulta.toLowerCase().trim();
             for (Receta receta : listaRecetasCompleta) {
-                if (receta.getTitulo().toLowerCase().contains(consultaMinusculas)
+                if (receta.getTituloReceta().toLowerCase().contains(consultaMinusculas)
                         || receta.getDescripcion().toLowerCase().contains(consultaMinusculas)) {
                     listaRecetas.add(receta);
                 }

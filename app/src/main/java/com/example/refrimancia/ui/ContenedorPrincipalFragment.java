@@ -40,7 +40,7 @@ public class ContenedorPrincipalFragment extends Fragment {
                 cargarSubFragmento(new InicioFragment());
                 return true;
             } else if (id == R.id.nav_user) {
-                // TODO: Fragment de usuario (pendiente de otro miembro del equipo)
+                cargarSubFragmento(new UsuarioFragment());
                 return true;
             } else if (id == R.id.nav_create) {
                 // TODO: Fragment de creación de receta (pendiente de otro miembro del equipo)

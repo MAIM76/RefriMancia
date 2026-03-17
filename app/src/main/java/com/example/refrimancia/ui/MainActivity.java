@@ -2,9 +2,11 @@ package com.example.refrimancia.ui;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.refrimancia.R;
 
@@ -13,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle estadoGuardado) {
         super.onCreate(estadoGuardado);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
         setContentView(R.layout.activity_main);
 
         if (estadoGuardado == null) {
@@ -24,10 +26,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
-        dispatcher.addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+        dispatcher.addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                androidx.fragment.app.FragmentManager gestorFragmentos = getSupportFragmentManager();
+                FragmentManager gestorFragmentos = getSupportFragmentManager();
                 if (gestorFragmentos.getBackStackEntryCount() > 0) {
                     gestorFragmentos.popBackStack();
                 } else {

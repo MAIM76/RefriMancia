@@ -46,6 +46,7 @@ public class VentanaRegistro extends AppCompatActivity {
     EditText etApellidosRegistro;
     EditText etFechaRegistro;
     Button botonRegistro;
+    Button botonCancelarRegistrar;
     String imagenPorDefecto = "https://mi-servidor.com/foto.png";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,7 @@ public class VentanaRegistro extends AppCompatActivity {
         etApellidosRegistro = findViewById(R.id.etApellidosRegistro);
         etFechaRegistro = findViewById(R.id.etFechaRegistro);
         botonRegistro = findViewById(R.id.botonRegistro);
+        botonCancelarRegistrar = findViewById(R.id.botonCancelarRegistrar);
 
         //Para que la fecha se envíe bien
         Gson gson = new GsonBuilder()
@@ -102,7 +104,7 @@ public class VentanaRegistro extends AppCompatActivity {
                     || nombre.isEmpty() || apellidos.isEmpty() || fecha.isEmpty()) {
                 Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
             } else if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-
+                etCorreoRegistro.setError("Correo no válido");
                 Toast.makeText(this, "Introduce un correo electrónico válido", Toast.LENGTH_SHORT).show();
 
             }  else if (!password.matches(regexPassword)) {
@@ -115,6 +117,7 @@ public class VentanaRegistro extends AppCompatActivity {
                 registrar(nombreUser, password, correo, nombreCompleto, fecha);
             }
         });
+        botonCancelarRegistrar.setOnClickListener(v -> finish());
     }
 
     //Metodo para boton registrar

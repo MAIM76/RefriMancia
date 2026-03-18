@@ -11,8 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class VentanaRecuperarPassword extends AppCompatActivity {
     TextView tvTituloRecuperar;
+    TextView tvCodigoRecuperar;
     TextView tvNuevaPasswordRecuperar;
     TextView tvRepetirPasswordRecuperar;
+    EditText etCodigoRecuperar;
     EditText etpNuevaPasswordRecuperar;
     EditText etpRepetirPasswordRecuperar;
     Button botonActualizarPassword;
@@ -24,8 +26,10 @@ public class VentanaRecuperarPassword extends AppCompatActivity {
         setContentView(R.layout.ventana_recuperar_password);
 
         tvTituloRecuperar = findViewById(R.id.tvTituloRecuperar);
+        tvCodigoRecuperar = findViewById(R.id.tvCodigoRecuperar);
         tvNuevaPasswordRecuperar = findViewById(R.id.tvNuevaPasswordRecuperar);
         tvRepetirPasswordRecuperar = findViewById(R.id.tvRepetirPasswordRecuperar);
+        etCodigoRecuperar = findViewById(R.id.etCodigoRecuperar);
         etpNuevaPasswordRecuperar = findViewById(R.id.etpNuevaPasswordRecuperar);
         etpRepetirPasswordRecuperar = findViewById(R.id.etpRepetirPasswordRecuperar);
         botonActualizarPassword = findViewById(R.id.botonActualizarPassword);

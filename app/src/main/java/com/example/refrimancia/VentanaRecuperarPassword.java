@@ -9,7 +9,16 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import retrofit2.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class VentanaRecuperarPassword extends AppCompatActivity {
+    private Retrofit retrofit;
+    private ApiService apiService;
+    String correo; //Para recuperar el correo enviado desde la otra ventana
     TextView tvTituloRecuperar;
     TextView tvCodigoRecuperar;
     TextView tvNuevaPasswordRecuperar;
@@ -33,17 +42,69 @@ public class VentanaRecuperarPassword extends AppCompatActivity {
         etpNuevaPasswordRecuperar = findViewById(R.id.etpNuevaPasswordRecuperar);
         etpRepetirPasswordRecuperar = findViewById(R.id.etpRepetirPasswordRecuperar);
         botonActualizarPassword = findViewById(R.id.botonActualizarPassword);
+
+        // Recuperar correo
+        correo = getIntent().getStringExtra("correo");
+
+        // Retrofit
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://refrimacia-backend.onrender.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        apiService = retrofit.create(ApiService.class);
+
+        botonActualizarPassword.setOnClickListener(v -> cambiarPassword());
     }
 
     //Metodo actualizar contraseña
-    public void onActualizar() {
+    public void cambiarPassword() {
+        String codigo = etCodigoRecuperar.getText().toString().trim();
         String nuevaPwd = etpNuevaPasswordRecuperar.getText().toString().trim();
         String repetirPwd = etpRepetirPasswordRecuperar.getText().toString().trim();
+        String regexPassword = "^(?=.*[A-Z])(?=.*\\d).{8,}$";
 
-        if(nuevaPwd == repetirPwd) {
-            //PARTE DE BASE DE DATOS
-        } else {
-            Toast.makeText(this,"Las contraseñas no coinciden",Toast.LENGTH_SHORT).show();
+        // VALIDACIONES
+        if (codigo.isEmpty() || nuevaPwd.isEmpty() || repetirPwd.isEmpty()) {
+            Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
+            return;
         }
+        if (!nuevaPwd.equals(repetirPwd)) {
+            Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!nuevaPwd.matches(regexPassword)) {
+            Toast.makeText(this,
+                    "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+        // CREAR REQUEST
+        CambiarPassRequest request =
+                new CambiarPassRequest(correo, codigo, nuevaPwd);
+        // LLAMADA API
+        Call<CambiarPassRespuesta> call = apiService.cambiarPassword(request);
+        call.enqueue(new Callback<CambiarPassRespuesta>() {
+            @Override
+            public void onResponse(Call<CambiarPassRespuesta> call, Response<CambiarPassRespuesta> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(VentanaRecuperarPassword.this,
+                            "Contraseña actualizada correctamente",
+                            Toast.LENGTH_SHORT).show();
+
+                    finish(); // volver al login
+                } else {
+                    Toast.makeText(VentanaRecuperarPassword.this,
+                            "Código incorrecto o caducado",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<CambiarPassRespuesta> call, Throwable t) {
+                Toast.makeText(VentanaRecuperarPassword.this,
+                        "Error de conexión",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

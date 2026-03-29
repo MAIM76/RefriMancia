@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
         // Inicializar SessionManager
         sessionManager = new SessionManager(this);
 
-        // AUTO-LOGIN: Si ya hay un token guardado, saltamos directamente a la pantalla principal
+        // AUTO-LOGIN:
         if (sessionManager.fetchAuthToken() != null) {
             Intent intent = new Intent(this, ExampleActivity.class);
             startActivity(intent);

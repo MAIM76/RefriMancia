@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -20,25 +22,13 @@ public class LoginActivity extends AppCompatActivity {
     Button btnLogin;
     TextView tvForgotPassword, tvCreateAccount;
     
-    // Variables para la sesión y la API
-    private SessionManager sessionManager;
+    // Configuración de Retrofit
+    private Retrofit retrofit;
     private ApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        // Inicializar SessionManager
-        sessionManager = new SessionManager(this);
-
-        // AUTO-LOGIN:
-        if (sessionManager.fetchAuthToken() != null) {
-            Intent intent = new Intent(this, ExampleActivity.class);
-            startActivity(intent);
-            finish();
-            return; // Detiene la ejecución para no cargar el layout de login
-        }
-
         setContentView(R.layout.activity_login);
 
         // Inicializar vistas
@@ -52,8 +42,13 @@ public class LoginActivity extends AppCompatActivity {
         tvForgotPassword.setPaintFlags(tvForgotPassword.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         tvCreateAccount.setPaintFlags(tvCreateAccount.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
-        // Inicializar ApiService mediante RetrofitClient
-        apiService = RetrofitClient.getApiService(this);
+        // Configurar Retrofit con tu URL de Render
+        retrofit = new Retrofit.Builder()
+                .baseUrl("https://refrimacia-backend.onrender.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        
+        apiService = retrofit.create(ApiService.class);
 
         // Lógica del botón Login
         btnLogin.setOnClickListener(v -> {
@@ -85,23 +80,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    LoginResponse loginResponse = response.body();
-
-                    // Guardamos el token y los datos del usuario en la sesión
-                    sessionManager.saveAuthToken(loginResponse.getToken());
-                    
-                    if (loginResponse.getData() != null) {
-                        sessionManager.saveUserDetail(
-                            loginResponse.getData().getId_usuario(),
-                            loginResponse.getData().getNombre_usuario()
-                        );
-                    }
-
-                    // Navegar a ExampleActivity tras el login exitoso
+                    // 345: Navegar a ExampleActivity tras el login exitoso sin mostrar Toast
                     Intent intent = new Intent(LoginActivity.this, ExampleActivity.class);
                     startActivity(intent);
-                    finish(); 
+                    finish(); // Opcional: cierra la pantalla de login
                 } else {
+                    // Mostrar Toast solo cuando el login es incorrecto
                     Toast.makeText(LoginActivity.this, "Error: Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
                 }
             }

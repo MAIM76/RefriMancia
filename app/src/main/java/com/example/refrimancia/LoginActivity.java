@@ -13,8 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -22,13 +20,25 @@ public class LoginActivity extends AppCompatActivity {
     Button btnLogin;
     TextView tvForgotPassword, tvCreateAccount;
     
-    // Configuración de Retrofit
-    private Retrofit retrofit;
+    // Variables para la sesión y la API
+    private SessionManager sessionManager;
     private ApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Inicializar SessionManager
+        sessionManager = new SessionManager(this);
+
+        // AUTO-LOGIN: Si ya hay un token guardado, saltamos directamente a la pantalla principal
+        if (sessionManager.fetchAuthToken() != null) {
+            Intent intent = new Intent(this, ExampleActivity.class);
+            startActivity(intent);
+            finish();
+            return; // Detiene la ejecución para no cargar el layout de login
+        }
+
         setContentView(R.layout.activity_login);
 
         // Inicializar vistas
@@ -42,13 +52,8 @@ public class LoginActivity extends AppCompatActivity {
         tvForgotPassword.setPaintFlags(tvForgotPassword.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         tvCreateAccount.setPaintFlags(tvCreateAccount.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
-        // Configurar Retrofit con tu URL de Render
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://refrimacia-backend.onrender.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        
-        apiService = retrofit.create(ApiService.class);
+        // Inicializar ApiService mediante RetrofitClient
+        apiService = RetrofitClient.getApiService(this);
 
         // Lógica del botón Login
         btnLogin.setOnClickListener(v -> {
@@ -80,12 +85,23 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // 345: Navegar a ExampleActivity tras el login exitoso sin mostrar Toast
+                    LoginResponse loginResponse = response.body();
+
+                    // Guardamos el token y los datos del usuario en la sesión
+                    sessionManager.saveAuthToken(loginResponse.getToken());
+                    
+                    if (loginResponse.getData() != null) {
+                        sessionManager.saveUserDetail(
+                            loginResponse.getData().getId_usuario(),
+                            loginResponse.getData().getNombre_usuario()
+                        );
+                    }
+
+                    // Navegar a ExampleActivity tras el login exitoso
                     Intent intent = new Intent(LoginActivity.this, ExampleActivity.class);
                     startActivity(intent);
-                    finish(); // Opcional: cierra la pantalla de login
+                    finish(); 
                 } else {
-                    // Mostrar Toast solo cuando el login es incorrecto
                     Toast.makeText(LoginActivity.this, "Error: Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
                 }
             }

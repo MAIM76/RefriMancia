@@ -42,15 +42,10 @@ public class VentanaVerificar extends AppCompatActivity {
         botonEnviarCode = findViewById(R.id.botonEnviarCode);
         botonCancelarVerificar = findViewById(R.id.botonCancelarVerificar);
 
-        //Para que la fecha se envíe bien
-        Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd")
-                .create();
-
         // Configurar Retrofit con tu URL de Render
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://refrimacia-backend.onrender.com/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         apiService = retrofit.create(ApiService.class);

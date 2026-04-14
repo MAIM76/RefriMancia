@@ -85,4 +85,3 @@ public class UsuarioFragment extends Fragment {
         Log.d(TAG, "No hay datos de usuario disponibles");
     }
 }
-

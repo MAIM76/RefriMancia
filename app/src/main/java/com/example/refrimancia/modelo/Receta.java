@@ -27,6 +27,12 @@ public class Receta {
     @SerializedName("id_usuario")
     private int idUsuario;
 
+    @SerializedName("instrucciones")
+    private String instrucciones;
+
+    @SerializedName("tiempo_preparacion")
+    private int tiempoPreparacion;
+
     // Constructor sin argumentos (necesario para Gson)
     public Receta() {
     }
@@ -46,6 +52,8 @@ public class Receta {
     public String getTipoReceta() { return tipoReceta; }
     public String getFechaPublicacion() { return fechaPublicacion; }
     public int getIdUsuario() { return idUsuario; }
+    public String getInstrucciones() { return instrucciones; }
+    public int getTiempoPreparacion() { return tiempoPreparacion; }
 
     // Setters
     public void setIdReceta(int idReceta) { this.idReceta = idReceta; }
@@ -56,5 +64,6 @@ public class Receta {
     public void setTipoReceta(String tipoReceta) { this.tipoReceta = tipoReceta; }
     public void setFechaPublicacion(String fechaPublicacion) { this.fechaPublicacion = fechaPublicacion; }
     public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
+    public void setInstrucciones(String instrucciones) { this.instrucciones = instrucciones; }
+    public void setTiempoPreparacion(int tiempoPreparacion) { this.tiempoPreparacion = tiempoPreparacion; }
 }
-

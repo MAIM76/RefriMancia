@@ -112,26 +112,43 @@ public class InicioFragment extends Fragment {
 
     private void cargarRecetasEjemplo() {
         List<Receta> recetas = new ArrayList<>();
-        recetas.add(new Receta("Tortilla española", "Clásica tortilla de patata con huevo y cebolla"));
-        recetas.add(new Receta("Gazpacho andaluz", "Sopa fría de tomate perfecta para el verano"));
-        recetas.add(new Receta("Paella valenciana", "Arroz con pollo, conejo y verduras al azafrán"));
-        recetas.add(new Receta("Croquetas caseras", "Croquetas cremosas de jamón serrano"));
-        recetas.add(new Receta("Pisto manchego", "Guiso de verduras de temporada con tomate"));
-        recetas.add(new Receta("Salmorejo cordobés", "Crema espesa de tomate con pan y ajo"));
-        recetas.add(new Receta("Cocido madrileño", "Guiso tradicional de garbanzos con carne"));
-        recetas.add(new Receta("Churros con chocolate", "Churros crujientes con chocolate a la taza"));
-        recetas.add(new Receta("Empanadas argentinas", "Masa rellena de carne, cebolla y especias"));
-        recetas.add(new Receta("Tarta de Santiago", "Tarta de almendra típica de Galicia"));
-        recetas.add(new Receta("Fabada asturiana", "Guiso de judías con chorizo y morcilla"));
-        recetas.add(new Receta("Pimientos de Padrón", "Pimientos pequeños fritos con sal gruesa"));
-        recetas.add(new Receta("Torrijas", "Rebanadas de pan empapadas en leche y fritas"));
-        recetas.add(new Receta("Pulpo a la gallega", "Pulpo cocido con pimentón y aceite de oliva"));
-        recetas.add(new Receta("Ensalada campera", "Ensalada fresca con patata, huevo, atún y verduras"));
-        recetas.add(new Receta("Bacalao al pil-pil", "Bacalao cocinado con aceite, ajo y guindilla"));
-        recetas.add(new Receta("Albondigas en salsa", "Albóndigas de carne en salsa de tomate casera"));
-        recetas.add(new Receta("Tarta de queso", "Tarta cremosa de queso con base de galleta"));
+        recetas.add(new Receta("Tortilla española",
+                "Clásica tortilla de patata con huevo y cebolla"));
+        recetas.add(new Receta("Gazpacho andaluz",
+                "Sopa fría de tomate perfecta para el verano"));
+        recetas.add(new Receta("Paella valenciana",
+                "Arroz con pollo, conejo y verduras al azafrán"));
+        recetas.add(new Receta("Croquetas caseras",
+                "Croquetas cremosas de jamón serrano"));
+        recetas.add(new Receta("Pisto manchego",
+                "Guiso de verduras de temporada con tomate"));
+        recetas.add(new Receta("Salmorejo cordobés",
+                "Crema espesa de tomate con pan y ajo"));
+        recetas.add(new Receta("Cocido madrileño",
+                "Guiso tradicional de garbanzos con carne"));
+        recetas.add(new Receta("Churros con chocolate",
+                "Churros crujientes con chocolate a la taza"));
+        recetas.add(new Receta("Empanadas argentinas",
+                "Masa rellena de carne, cebolla y especias"));
+        recetas.add(new Receta("Tarta de Santiago",
+                "Tarta de almendra típica de Galicia"));
+        recetas.add(new Receta("Fabada asturiana",
+                "Guiso de judías con chorizo y morcilla"));
+        recetas.add(new Receta("Pimientos de Padrón",
+                "Pimientos pequeños fritos con sal gruesa"));
+        recetas.add(new Receta("Torrijas",
+                "Rebanadas de pan empapadas en leche y fritas"));
+        recetas.add(new Receta("Pulpo a la gallega",
+                "Pulpo cocido con pimentón y aceite de oliva"));
+        recetas.add(new Receta("Ensalada campera",
+                "Ensalada fresca con patata, huevo, atún y verduras"));
+        recetas.add(new Receta("Bacalao al pil-pil",
+                "Bacalao cocinado con aceite, ajo y guindilla"));
+        recetas.add(new Receta("Albondigas en salsa",
+                "Albóndigas de carne en salsa de tomate casera"));
+        recetas.add(new Receta("Tarta de queso",
+                "Tarta cremosa de queso con base de galleta"));
         
         adaptador.actualizarDatos(recetas);
     }
 }
-

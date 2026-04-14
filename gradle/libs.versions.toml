@@ -36,4 +36,3 @@ coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-

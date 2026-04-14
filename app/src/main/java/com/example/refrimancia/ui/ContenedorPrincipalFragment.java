@@ -57,4 +57,3 @@ public class ContenedorPrincipalFragment extends Fragment {
                 .commit();
     }
 }
-

@@ -48,4 +48,3 @@ public class Usuario {
     public void setImagenPerfil(String imagenPerfil) { this.imagenPerfil = imagenPerfil; }
     public void setFechaNacimiento(String fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
 }
-

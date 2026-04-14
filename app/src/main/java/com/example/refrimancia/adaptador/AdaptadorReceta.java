@@ -70,12 +70,19 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.VistaR
     @Override
     public void onBindViewHolder(@NonNull VistaReceta holder, int posicion) {
         Receta receta = listaRecetas.get(posicion);
-        holder.textViewTitulo.setText(receta.getTituloReceta());
-        holder.textViewDescripcion.setText(receta.getDescripcion());
+        holder.textViewTitulo.setText(receta.getTituloReceta() != null ? receta.getTituloReceta() : "Sin tnodoitulo");
+        holder.textViewDescripcion.setText(receta.getDescripcion() != null ? receta.getDescripcion() : "Sin descripcion");
 
-        // TODO: Cargar imagen desde URL con Glide si está disponible
-        // Por ahora solo muestra placeholder gris
-        holder.imagenReceta.setImageDrawable(null);
+        String tiempoText = receta.getTiempoPreparacion() > 0 ? "Tiempo de prep: " + receta.getTiempoPreparacion() + " min" : "Tiempo de prep: N/A";
+        holder.textViewTiempo.setText(tiempoText);
+
+        // Ocultar imagen si no hay URL válida o usar un placeholder (pendiente Glide/Picasso)
+        if (receta.getImagenReceta() == null || receta.getImagenReceta().isEmpty() || receta.getImagenReceta().equals("url_imagen_aqui")) {
+            holder.imagenReceta.setImageDrawable(null);
+        } else {
+            // TODO: Cargar imagen desde URL con Glide/Picasso
+            holder.imagenReceta.setImageDrawable(null); // Placeholder
+        }
 
         holder.itemView.setOnClickListener(v -> {
             if (escuchador != null) escuchador.alHacerClicEnReceta(receta);
@@ -91,13 +98,14 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.VistaR
         ImageView imagenReceta;
         TextView textViewTitulo;
         TextView textViewDescripcion;
+        TextView textViewTiempo;
 
         public VistaReceta(@NonNull View itemVista) {
             super(itemVista);
             imagenReceta = itemVista.findViewById(R.id.recipe_image);
             textViewTitulo = itemVista.findViewById(R.id.recipe_title);
             textViewDescripcion = itemVista.findViewById(R.id.recipe_description);
+            textViewTiempo = itemVista.findViewById(R.id.recipe_time);
         }
     }
 }
-

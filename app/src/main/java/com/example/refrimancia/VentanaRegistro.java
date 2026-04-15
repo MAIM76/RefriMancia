@@ -6,6 +6,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -13,6 +22,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.util.Patterns;
+import android.content.Intent;
+import android.net.Uri;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,12 +32,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class VentanaRegistro extends AppCompatActivity {
     // Configuración de Retrofit
@@ -47,7 +53,10 @@ public class VentanaRegistro extends AppCompatActivity {
     EditText etFechaRegistro;
     Button botonRegistro;
     Button botonCancelarRegistrar;
-    String imagenPorDefecto = "https://mi-servidor.com/foto.png";
+    ImageView ivRegistro;
+    Button botonSelecImagenRegistro;
+    Uri imagenUri;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,16 +83,14 @@ public class VentanaRegistro extends AppCompatActivity {
         etFechaRegistro = findViewById(R.id.etFechaRegistro);
         botonRegistro = findViewById(R.id.botonRegistro);
         botonCancelarRegistrar = findViewById(R.id.botonCancelarRegistrar);
+        botonSelecImagenRegistro = findViewById(R.id.botonSelecImagenRegistro);
+        ivRegistro = findViewById(R.id.ivRegistro);
 
-        //Para que la fecha se envíe bien
-        Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd")
-                .create();
 
         // Configurar Retrofit con tu URL de Render
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://refrimacia-backend.onrender.com/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         apiService = retrofit.create(ApiService.class);
@@ -118,42 +125,108 @@ public class VentanaRegistro extends AppCompatActivity {
             }
         });
         botonCancelarRegistrar.setOnClickListener(v -> finish());
+        // Abre la galería para que el usuario seleccione una imagen de perfil
+        botonSelecImagenRegistro.setOnClickListener(v -> abrirSelectorImagen());
+    }
+
+    //Metodo para el boton que abre el selector de imagenes
+    public void abrirSelectorImagen() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        // Solo permitimos seleccionar archivos de tipo imagen
+        intent.setType("image/*");
+        startActivityForResult(intent, 1);
+    }
+    // Recibe la imagen seleccionada por el usuario y la muestra en el ImageView
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+            // Guardamos la referencia interna de la imagen elegida
+            imagenUri = data.getData();
+            // Mostramos una vista previa en pantalla en el ImageView
+            ivRegistro.setImageURI(imagenUri);
+        }
     }
 
     //Metodo para boton registrar
     public void registrar(String nombreUser, String password, String correo, String nombreCompleto, String fecha) {
         Log.d("REGISTRO", "Entrando en metodo registrar");
-        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
-        Date fechaNac = null;
-        try {
-            fechaNac = formato.parse(fecha);
-        } catch (ParseException e) {
-            Toast.makeText(this, "Formato de fecha incorrecto. Usa yyyy-MM-dd", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        RegistroRequest request = new RegistroRequest(nombreUser, password, correo, nombreCompleto, fechaNac, imagenPorDefecto);
-        Log.d("API_CALL", "Enviando registro al servidor");
+        // Convertimos todos los datos de TEXTO a RequestBody para enviarlos en multipart/form-data
+        RequestBody nombreUsuarioBody =
+                RequestBody.create(nombreUser, MediaType.parse("text/plain"));
+        RequestBody passwordBody =
+                RequestBody.create(password, MediaType.parse("text/plain"));
+        RequestBody correoBody =
+                RequestBody.create(correo, MediaType.parse("text/plain"));
+        RequestBody nombreCompletoBody =
+                RequestBody.create(nombreCompleto, MediaType.parse("text/plain"));
+        RequestBody fechaBody =
+                RequestBody.create(fecha, MediaType.parse("text/plain"));
+        MultipartBody.Part imagenPart = null;
 
-        Call<RegistroRespuesta> call = apiService.registro(request);
+        // Si el usuario ha seleccionado una imagen, la convertimos a archivo y la añadimos al form-data
+        if (imagenUri != null) {
+            File archivoImagen = crearArchivoDesdeUri(imagenUri);
+            RequestBody requestFile =
+                    RequestBody.create(archivoImagen, MediaType.parse("image/*"));
+            imagenPart = MultipartBody.Part.createFormData(
+                    "imagen_perfil",
+                    archivoImagen.getName(),
+                    requestFile
+            );
+        }
+        // Realizamos la llamada asíncrona al servidor para registrar al usuario
+        Call<RegistroRespuesta> call = apiService.registro(
+                nombreUsuarioBody,
+                passwordBody,
+                correoBody,
+                nombreCompletoBody,
+                fechaBody,
+                imagenPart
+        );
         call.enqueue(new Callback<RegistroRespuesta>() {
             @Override
             public void onResponse(Call<RegistroRespuesta> call, Response<RegistroRespuesta> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // Mostrar mensaje de exito y cerrar ventana
-                    Toast.makeText(VentanaRegistro.this, "Usuario registrado correctamente", Toast.LENGTH_SHORT).show();
+                if (response.isSuccessful()) {
+                    Toast.makeText(VentanaRegistro.this,
+                            "Usuario registrado correctamente",
+                            Toast.LENGTH_SHORT).show();
                     finish();
-
                 } else {
-                    // Mostrar Toast solo cuando el login es incorrecto
-                    Toast.makeText(VentanaRegistro.this, "Error: Usuario o correo ya registrados", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(VentanaRegistro.this,
+                            "Error: Usuario o correo ya registrados",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<RegistroRespuesta> call, Throwable t) {
-                Log.e("API_ERROR", t.getMessage());
-                Toast.makeText(VentanaRegistro.this, "Error de conexión con el servidor", Toast.LENGTH_SHORT).show();
+                Toast.makeText(VentanaRegistro.this,
+                        "Error: " + t.getMessage(),
+                        Toast.LENGTH_LONG).show();
             }
         });
+    }
+    //Metodo auxiliar para convertir URI a FILE
+    private File crearArchivoDesdeUri(Uri uri) {
+        // Creamos un archivo temporal en la caché de la aplicación
+        // Copiamos el contenido de la imagen seleccionada dentro del archivo temporal
+        File file = new File(getCacheDir(), "imagen_subida.jpg");
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            FileOutputStream outputStream = new FileOutputStream(file);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+            outputStream.close();
+            inputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
     }
 }

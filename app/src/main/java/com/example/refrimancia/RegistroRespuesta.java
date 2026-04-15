@@ -4,11 +4,13 @@ public class RegistroRespuesta {
     private String mensaje;
     private boolean exito;
     private int id;
+    private String foto;
 
-    public RegistroRespuesta(String mensaje, boolean exito, int id) {
+    public RegistroRespuesta(String mensaje, boolean exito, int id, String foto) {
         this.mensaje = mensaje;
         this.exito = exito;
         this.id = id;
+        this.foto = foto;
     }
 
     public int getId() {
@@ -33,5 +35,13 @@ public class RegistroRespuesta {
 
     public void setExito(boolean exito) {
         this.exito = exito;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 }

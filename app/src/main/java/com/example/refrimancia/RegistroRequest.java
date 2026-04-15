@@ -2,7 +2,7 @@ package com.example.refrimancia;
 
 import java.util.Date;
 
-public class RegistroRequest {
+public class RegistroRequest { //OBSOLETA, POSIBLEMENTE SE TIENE QUE QUITAR
     private String nombre_usuario;
     private String contrasena;
     private String correo_electronico;

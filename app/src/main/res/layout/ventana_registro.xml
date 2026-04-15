@@ -10,7 +10,7 @@
         android:id="@+id/tvTituloRegistro"
         android:layout_width="411dp"
         android:layout_height="72dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="4dp"
         android:text="CREAR CUENTA"
         android:textAlignment="center"
         android:textSize="48sp"
@@ -23,13 +23,13 @@
         android:id="@+id/tvNombreUserRegistro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="Nombre de usuario:"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.069"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTituloRegistro" />
+        app:layout_constraintTop_toBottomOf="@+id/botonSelecImagenRegistro" />
 
     <EditText
         android:id="@+id/etCorreoRegistro"
@@ -49,7 +49,7 @@
         android:id="@+id/tvCorreoRegistro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:text="Correo electrónico:"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -75,7 +75,7 @@
         android:id="@+id/tvContrasenaRegistro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:text="Contraseña:"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -101,7 +101,7 @@
         android:id="@+id/tvNombreRegistro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:text="Nombre:"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -113,7 +113,7 @@
         android:id="@+id/tvApellidosRegistro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:text="Apellidos:"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -125,7 +125,7 @@
         android:id="@+id/tvFechaRegistro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:text="Fecha de nacimiento:"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -200,5 +200,27 @@
         app:layout_constraintStart_toEndOf="@+id/botonRegistro"
         app:layout_constraintTop_toBottomOf="@+id/etFechaRegistro"
         app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/ivRegistro"
+        android:layout_width="112dp"
+        android:layout_height="94dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.412"
+        app:layout_constraintStart_toEndOf="@+id/botonSelecImagenRegistro"
+        app:layout_constraintTop_toBottomOf="@+id/tvTituloRegistro"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/botonSelecImagenRegistro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:text="Seleccionar imagen"
+        android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTituloRegistro" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

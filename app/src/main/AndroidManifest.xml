@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RefriMancia">
         <activity
-            android:name=".VentanaVerificar"
+            android:name=".VentanaRegistro"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

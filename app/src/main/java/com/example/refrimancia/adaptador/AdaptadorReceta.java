@@ -17,8 +17,10 @@ import java.util.List;
 
 public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.VistaReceta> {
 
+    // Lista de recetas a mostrar en el RecyclerView
     private List<Receta> listaRecetas;
-    private final List<Receta> listaRecetasCompleta; // Para filtrado
+    // Copia de la lista completa para realizar búsquedas sin perder datos
+    private final List<Receta> listaRecetasCompleta;
 
     public interface EscuchadorClicReceta {
         void alHacerClicEnReceta(Receta receta);
@@ -70,18 +72,19 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.VistaR
     @Override
     public void onBindViewHolder(@NonNull VistaReceta holder, int posicion) {
         Receta receta = listaRecetas.get(posicion);
-        holder.textViewTitulo.setText(receta.getTituloReceta() != null ? receta.getTituloReceta() : "Sin tnodoitulo");
-        holder.textViewDescripcion.setText(receta.getDescripcion() != null ? receta.getDescripcion() : "Sin descripcion");
+        holder.textViewTitulo.setText(receta.getTituloReceta() != null ? receta.getTituloReceta() : "Sin título");
+        holder.textViewDescripcion.setText(receta.getDescripcion() != null ? receta.getDescripcion() : "Sin descripción");
 
         String tiempoText = receta.getTiempoPreparacion() > 0 ? "Tiempo de prep: " + receta.getTiempoPreparacion() + " min" : "Tiempo de prep: N/A";
         holder.textViewTiempo.setText(tiempoText);
 
-        // Ocultar imagen si no hay URL válida o usar un placeholder (pendiente Glide/Picasso)
+        // Ocultar imagen si no hay URL válida o usar un placeholder (pendiente implementar Glide/Picasso)
         if (receta.getImagenReceta() == null || receta.getImagenReceta().isEmpty() || receta.getImagenReceta().equals("url_imagen_aqui")) {
             holder.imagenReceta.setImageDrawable(null);
         } else {
-            // TODO: Cargar imagen desde URL con Glide/Picasso
-            holder.imagenReceta.setImageDrawable(null); // Placeholder
+            com.bumptech.glide.Glide.with(holder.itemView.getContext())
+                .load(receta.getImagenReceta())
+                .into(holder.imagenReceta);
         }
 
         holder.itemView.setOnClickListener(v -> {

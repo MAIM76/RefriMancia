@@ -16,6 +16,7 @@ gson = "2.10.1"
 coroutines = "1.7.3"
 
 [libraries]
+glide = { group = "com.github.bumptech.glide", name = "glide", version = "4.16.0" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

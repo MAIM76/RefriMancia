@@ -49,6 +49,7 @@ public class InicioFragment extends Fragment {
         SearchView barraBusqueda = vista.findViewById(R.id.search_view);
 
         // Inicializar adaptador con lista vacía
+        // El adaptador será poblado una vez carguen los datos desde la API
         adaptador = new AdaptadorReceta(new ArrayList<>());
         adaptador.setEscuchadorClicReceta(receta ->
                 Toast.makeText(getContext(), receta.getTituloReceta(), Toast.LENGTH_SHORT).show()
@@ -57,7 +58,7 @@ public class InicioFragment extends Fragment {
         listaRecetas.setLayoutManager(new LinearLayoutManager(getContext()));
         listaRecetas.setAdapter(adaptador);
 
-        // Filtrado con la barra de búsqueda
+        // Filtrado con la barra de búsqueda - busca en tiempo real mientras el usuario escribe
         barraBusqueda.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String consulta) {

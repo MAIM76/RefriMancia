@@ -15,9 +15,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle estadoGuardado) {
         super.onCreate(estadoGuardado);
+        // Configurar la ventana para que los fragmentos se ajusten al diseño del sistema
         WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
         setContentView(R.layout.activity_main);
 
+        // Cargar el fragmento contenedor principal solo si no se restaura un estado guardado
         if (estadoGuardado == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -25,10 +27,12 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
 
+        // Configurar manejador de la tecla de retroceso
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                // Obtener el gestor de fragmentos y navegar hacia atrás en la pila
                 FragmentManager gestorFragmentos = getSupportFragmentManager();
                 if (gestorFragmentos.getBackStackEntryCount() > 0) {
                     gestorFragmentos.popBackStack();

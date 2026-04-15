@@ -54,6 +54,7 @@ public class UsuarioFragment extends Fragment {
 
     private void cargarDatosUsuario() {
         // Datos de ejemplo - en el futuro se cargarán desde la API o SharedPreferences
+        // TODO: Reemplazar con llamada real a la API para obtener datos del usuario autenticado
         Usuario usuarioEjemplo = new Usuario(
             "chef_pablo",
             "Pablo García",
@@ -71,8 +72,12 @@ public class UsuarioFragment extends Fragment {
             correoElectronico.setText(usuario.getCorreoElectronico() != null ? usuario.getCorreoElectronico() : "correo@ejemplo.com");
             fechaNacimiento.setText(usuario.getFechaNacimiento() != null ? usuario.getFechaNacimiento() : "No disponible");
 
-            // TODO: Cargar imagen de perfil con Glide si está disponible
-            // imagenPerfil.setImageURI(usuario.getImagenPerfil());
+            if (usuario.getImagenPerfil() != null && !usuario.getImagenPerfil().isEmpty()) {
+                com.bumptech.glide.Glide.with(this)
+                    .load(usuario.getImagenPerfil())
+                    .circleCrop()
+                    .into(imagenPerfil);
+            }
 
             contenidoVacio.setVisibility(View.GONE);
         } else {

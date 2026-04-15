@@ -3,21 +3,27 @@ package com.example.refrimancia.modelo;
 import com.google.gson.annotations.SerializedName;
 
 public class Valoracion {
+    // Identificador único de la valoración
     @SerializedName("id_valoracion")
     private int idValoracion;
 
+    // Puntuación numérica (generalmente de 1 a 5)
     @SerializedName("puntuacion")
     private int puntuacion;
 
+    // Fecha en que se realizó la valoración
     @SerializedName("fecha_valoracion")
     private String fechaValoracion;
 
+    // ID del usuario que realizó la valoración
     @SerializedName("id_usuario")
     private int idUsuario;
 
+    // ID de la receta que fue valorada
     @SerializedName("id_receta")
     private int idReceta;
 
+    // Constructor vacío (necesario para Gson)
     public Valoracion() {}
 
     public int getIdValoracion() { return idValoracion; }

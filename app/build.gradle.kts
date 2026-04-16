@@ -40,6 +40,9 @@ dependencies {
     // Retrofit para las peticiones a la API
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    
+    // UCrop para recortar imágenes
+    implementation(libs.ucrop)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

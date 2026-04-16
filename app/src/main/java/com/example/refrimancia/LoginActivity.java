@@ -31,12 +31,12 @@ public class LoginActivity extends AppCompatActivity {
         // 1. Inicializar SessionManager
         sessionManager = new SessionManager(this);
 
-        // 2. AUTO-LOGIN: Si ya hay un token guardado, saltamos directamente a la pantalla principal
+        // 2. AUTO-LOGIN: Si ya hay un token guardado, saltamos directamente a la pantalla principal (CreateRecipeActivity)
         if (sessionManager.fetchAuthToken() != null) {
-            Intent intent = new Intent(this, ExampleActivity.class);
+            Intent intent = new Intent(this, CreateRecipeActivity.class);
             startActivity(intent);
             finish();
-            return; // Detiene la ejecución para no cargar el layout de login
+            return; 
         }
 
         setContentView(R.layout.activity_login);
@@ -67,13 +67,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // 345: Temporary code for testing navigation.
+        // 345: Temporary code for testing navigation to the new screen.
         tvForgotPassword.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, ExampleActivity.class));
+            startActivity(new Intent(LoginActivity.this, CreateRecipeActivity.class));
         });
 
         tvCreateAccount.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, ExampleActivity.class));
+            startActivity(new Intent(LoginActivity.this, CreateRecipeActivity.class));
         });
     }
 
@@ -97,8 +97,8 @@ public class LoginActivity extends AppCompatActivity {
                         );
                     }
 
-                    // Navegar a ExampleActivity tras el login exitoso
-                    Intent intent = new Intent(LoginActivity.this, ExampleActivity.class);
+                    // Navegar a CreateRecipeActivity tras el login exitoso
+                    Intent intent = new Intent(LoginActivity.this, CreateRecipeActivity.class);
                     startActivity(intent);
                     finish(); 
                 } else {

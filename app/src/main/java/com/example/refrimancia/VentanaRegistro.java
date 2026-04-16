@@ -6,6 +6,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import com.yalantis.ucrop.UCrop;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -38,6 +40,11 @@ public class VentanaRegistro extends AppCompatActivity {
     private Retrofit retrofit;
     private ApiService apiService;
 
+    // Para la imagen
+    private static final int PICK_IMAGE_REQUEST = 1; //identificador que usa Android para saber:“esta respuesta viene de la galería”
+    private Uri imagenUri;
+    private Uri croppedImageUri;
+
     TextView tvTituloRegistro;
     TextView tvNombreUserRegistro;
     TextView tvCorreoRegistro;
@@ -55,7 +62,7 @@ public class VentanaRegistro extends AppCompatActivity {
     Button botonCancelarRegistrar;
     ImageView ivRegistro;
     Button botonSelecImagenRegistro;
-    Uri imagenUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,21 +141,50 @@ public class VentanaRegistro extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         // Solo permitimos seleccionar archivos de tipo imagen
         intent.setType("image/*");
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
     // Recibe la imagen seleccionada por el usuario y la muestra en el ImageView
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            // Guardamos la referencia interna de la imagen elegida
+        // Imagen seleccionada desde galería
+        if (requestCode == PICK_IMAGE_REQUEST
+                && resultCode == RESULT_OK
+                && data != null
+                && data.getData() != null) {
             imagenUri = data.getData();
-            // Mostramos una vista previa en pantalla en el ImageView
-            ivRegistro.setImageURI(imagenUri);
+            // Abrimos uCrop para recortar
+            iniciarRecorte(imagenUri);
+        }
+        // Imagen ya recortada
+        if (requestCode == UCrop.REQUEST_CROP
+                && resultCode == RESULT_OK) {
+
+            croppedImageUri = UCrop.getOutput(data);
+
+            if (croppedImageUri != null) {
+                ivRegistro.setImageURI(croppedImageUri);
+            }
+        }
+        // Error en recorte
+        if (resultCode == UCrop.RESULT_ERROR) {
+            Toast.makeText(this,
+                    "Error al recortar imagen",
+                    Toast.LENGTH_SHORT).show();
         }
     }
+    //Metodo para iniciar el recorte de imagen
+    public void iniciarRecorte(Uri sourceUri) {
 
+        Uri destinationUri = Uri.fromFile(
+                new File(getCacheDir(), "imagen_recortada.jpg")
+        );
+
+        UCrop.of(sourceUri, destinationUri)
+                .withAspectRatio(1, 1) //Foto cuadrada
+                .withMaxResultSize(500, 500) //Reducir peso del archivo
+                .start(this);
+    }
     //Metodo para boton registrar
     public void registrar(String nombreUser, String password, String correo, String nombreCompleto, String fecha) {
         Log.d("REGISTRO", "Entrando en metodo registrar");
@@ -166,8 +202,9 @@ public class VentanaRegistro extends AppCompatActivity {
         MultipartBody.Part imagenPart = null;
 
         // Si el usuario ha seleccionado una imagen, la convertimos a archivo y la añadimos al form-data
-        if (imagenUri != null) {
-            File archivoImagen = crearArchivoDesdeUri(imagenUri);
+        // Ademas, usa la imagen recortada
+        if (croppedImageUri  != null) {
+            File archivoImagen = crearArchivoDesdeUri(croppedImageUri );
             RequestBody requestFile =
                     RequestBody.create(archivoImagen, MediaType.parse("image/*"));
             imagenPart = MultipartBody.Part.createFormData(

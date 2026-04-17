@@ -17,6 +17,16 @@ import com.example.refrimancia.modelo.Receta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
+import com.example.refrimancia.api.ClienteRetrofit;
+import com.example.refrimancia.api.ValoracionService;
+import com.example.refrimancia.modelo.RespuestaValoracionReceta;
+import com.example.refrimancia.modelo.Valoracion;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.RecetaViewHolder> {
 
@@ -24,6 +34,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
     private List<Receta> listaRecetas;
     // Copia de la lista completa para realizar búsquedas sin perder datos
     private final List<Receta> listaRecetasCompleta;
+    private final Map<Integer, Float> valoracionesCache = new HashMap<>();
     private Context contexto;
     private OnRecetaClickListener listener;
     private OnComentarioClickListener comentarioListener;
@@ -45,6 +56,10 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
 
     public void setOnComentarioClickListener(OnComentarioClickListener comentarioListener) {
         this.comentarioListener = comentarioListener;
+    }
+
+    public List<Receta> getListaRecetasCompleta() {
+        return this.listaRecetasCompleta;
     }
 
     public void actualizarDatos(List<Receta> nuevasRecetas) {
@@ -101,8 +116,34 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
 
         // Configurar valoración por defecto
         if (holder.valoracionReceta != null) {
-            float ratingPlaceholder = 4.0f + (posicion % 2 == 0 ? 0.5f : -0.5f); // Valoración aleatoria visual de ejemplo
-            holder.valoracionReceta.setRating(ratingPlaceholder);
+            holder.valoracionReceta.setRating(0); // placeholder mientras carga
+            Integer idReceta = receta.getIdReceta();
+            holder.valoracionReceta.setTag(idReceta);
+            
+            if (valoracionesCache.containsKey(idReceta)) {
+                holder.valoracionReceta.setRating(valoracionesCache.get(idReceta));
+            } else {
+                ValoracionService valoracionService = ClienteRetrofit.obtenerInstancia().create(ValoracionService.class);
+                valoracionService.obtenerValoracionesPorReceta(idReceta).enqueue(new Callback<RespuestaValoracionReceta>() {
+                    @Override
+                    public void onResponse(Call<RespuestaValoracionReceta> call, Response<RespuestaValoracionReceta> response) {
+                        float vFinal = 0f;
+                        if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                            vFinal = response.body().getData().getNotaMedia();
+                        }
+                        valoracionesCache.put(idReceta, vFinal);
+                        
+                        if (idReceta.equals(holder.valoracionReceta.getTag())) {
+                            holder.valoracionReceta.setRating(vFinal);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<RespuestaValoracionReceta> call, Throwable t) {
+                        // Opcional: manejar error. No se cachea para intentar de nuevo.
+                    }
+                });
+            }
         }
 
         // Cargar imagen usando Glide

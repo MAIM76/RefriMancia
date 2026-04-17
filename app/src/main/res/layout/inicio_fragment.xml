@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:fitsSystemWindows="true">
 
     <!-- Barra superior con búsqueda -->
@@ -33,25 +32,47 @@
             android:background="@drawable/fondo_vista_busqueda"
             app:iconifiedByDefault="false"
             app:queryHint="@string/search_hint"
+            app:queryBackground="@null"
             app:searchIcon="@null"
             app:closeIcon="@null" />
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/gradiente_sombra"
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:background="@drawable/gradiente_sombra" />
-
     <!-- Lista de tarjetas de recetas -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recipes_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top_bar"
         android:clipToPadding="false"
-        android:paddingTop="8dp"
+        android:paddingTop="0dp"
         android:paddingBottom="8dp" />
 
-</LinearLayout>
+    <View
+        android:id="@+id/gradiente_sombra"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:layout_below="@id/top_bar"
+        android:background="@drawable/gradiente_sombra"
+        android:elevation="4dp" />
+
+    <!-- Overlay y Sugerencias de búsqueda -->
+    <FrameLayout
+        android:id="@+id/search_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top_bar"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:elevation="6dp">
+
+        <ListView
+            android:id="@+id/search_suggestions_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:divider="#E0E0E0"
+            android:dividerHeight="1dp" />
+    </FrameLayout>
+
+</RelativeLayout>

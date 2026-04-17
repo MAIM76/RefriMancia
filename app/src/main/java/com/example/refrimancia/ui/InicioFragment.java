@@ -12,6 +12,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
+import android.widget.ListView;
+import android.widget.FrameLayout;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +22,9 @@ import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.cursoradapter.widget.SimpleCursorAdapter;
+import android.database.MatrixCursor;
+import android.database.Cursor;
 
 import com.example.refrimancia.R;
 import com.example.refrimancia.adaptador.AdaptadorReceta;
@@ -43,7 +49,11 @@ public class InicioFragment extends Fragment {
     private static final String TAG = "InicioFragment";
     private AdaptadorReceta adaptador;
     private RecyclerView rvRecetas;
-    
+    private FrameLayout searchOverlay;
+    private ListView searchSuggestionsList;
+    private ArrayAdapter<String> suggestionsAdapter;
+    private List<String> currentSuggestions;
+
     private int paginaActual = 1;
     private boolean cargando = false;
     private boolean esUltimaPagina = false;
@@ -62,23 +72,64 @@ public class InicioFragment extends Fragment {
 
         rvRecetas = vista.findViewById(R.id.recipes_recycler_view);
         SearchView barraBusqueda = vista.findViewById(R.id.search_view);
+        searchOverlay = vista.findViewById(R.id.search_overlay);
+        searchSuggestionsList = vista.findViewById(R.id.search_suggestions_list);
+
+        currentSuggestions = new ArrayList<>();
+        suggestionsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, currentSuggestions);
+        searchSuggestionsList.setAdapter(suggestionsAdapter);
+
+        searchOverlay.setOnClickListener(v -> {
+            barraBusqueda.clearFocus();
+            searchOverlay.setVisibility(View.GONE);
+        });
+
+        searchSuggestionsList.setOnItemClickListener((parent, view, position, id) -> {
+            String nombreSeleccionado = currentSuggestions.get(position);
+            barraBusqueda.setQuery(nombreSeleccionado, false);
+            barraBusqueda.clearFocus();
+            searchOverlay.setVisibility(View.GONE);
+            manejarSeleccionSugerencia(nombreSeleccionado);
+        });
 
         configurarRecyclerView();
 
-        // Filtrado con la barra de búsqueda - busca en tiempo real mientras el usuario escribe
+        barraBusqueda.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && barraBusqueda.getQuery().length() > 0) {
+                searchOverlay.setVisibility(View.VISIBLE);
+                actualizarSugerencias(barraBusqueda.getQuery().toString());
+            } else if (!hasFocus) {
+                searchOverlay.setVisibility(View.GONE);
+            }
+        });
+
+        // Filtrado con la barra de búsqueda - sugerencias y selección
         barraBusqueda.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String consulta) {
                 adaptador.filtrar(consulta);
+                barraBusqueda.clearFocus();
+                searchOverlay.setVisibility(View.GONE);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String nuevoTexto) {
-                adaptador.filtrar(nuevoTexto);
+                if (barraBusqueda.hasFocus()) {
+                    if (nuevoTexto.isEmpty()) {
+                        searchOverlay.setVisibility(View.GONE);
+                        adaptador.filtrar("");
+                    } else {
+                        searchOverlay.setVisibility(View.VISIBLE);
+                        actualizarSugerencias(nuevoTexto);
+                    }
+                }
                 return true;
             }
         });
+
+        // Remove the default SuggestionsAdapter since we are using our own ListView
+        barraBusqueda.setSuggestionsAdapter(null);
 
         // Cargar recetas desde la API
         DatosEjemplo.loginAutomaticoTemporal(exito -> {
@@ -133,6 +184,56 @@ public class InicioFragment extends Fragment {
     private void mostrarMensajeError(String mensaje) {
         if (getContext() != null) {
             Toast.makeText(getContext(), mensaje, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void actualizarSugerencias(String texto) {
+        currentSuggestions.clear();
+        if (texto.isEmpty()) {
+            suggestionsAdapter.notifyDataSetChanged();
+            return;
+        }
+
+        String textoBusqueda = texto.toLowerCase();
+        List<String> sugerenciasLower = new ArrayList<>();
+
+        for (Receta r : adaptador.getListaRecetasCompleta()) {
+            if (r.getTitulo() != null) {
+                String tituloLower = r.getTitulo().toLowerCase();
+                if (tituloLower.contains(textoBusqueda)) {
+                    if (!sugerenciasLower.contains(tituloLower)) {
+                        currentSuggestions.add(r.getTitulo());
+                        sugerenciasLower.add(tituloLower);
+                    }
+                }
+            }
+        }
+
+        suggestionsAdapter.notifyDataSetChanged();
+    }
+
+    private void manejarSeleccionSugerencia(String nombreReceta) {
+        List<Receta> coincidencias = new ArrayList<>();
+        String nombreLower = nombreReceta.toLowerCase();
+
+        for (Receta r : adaptador.getListaRecetasCompleta()) {
+            if (r.getTitulo() != null && r.getTitulo().toLowerCase().equals(nombreLower)) {
+                coincidencias.add(r);
+            }
+        }
+
+        if (coincidencias.size() == 1) {
+            // Ir directo a la receta
+            if (getActivity() != null) {
+                RecetaFragment fragment = RecetaFragment.newInstance(coincidencias.get(0));
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        } else if (coincidencias.size() > 1) {
+            // Mostrar las tarjetas filtrando el adaptador para que solo muestre estas
+            adaptador.filtrar(nombreReceta); // esto coincidirá con todas
         }
     }
 

@@ -97,7 +97,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
         holder.descripcionReceta.setText(receta.getDescripcion() != null ? receta.getDescripcion() : "Sin descripción");
 
         // Configurar tiempo de preparación
-        holder.tiempoPrep.setText(String.valueOf(receta.getTiempoPreparacion()) + " min");
+        holder.tiempoPrep.setText(formatTiempo(receta.getTiempoPreparacion()));
 
         // Configurar valoración por defecto
         if (holder.valoracionReceta != null) {
@@ -135,6 +135,21 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
                     comentarioListener.onComentarioClick(receta);
                 }
             });
+        }
+    }
+
+    private String formatTiempo(int minutos) {
+        if (minutos <= 0) return "0 min";
+        int horas = minutos / 60;
+        int minRestantes = minutos % 60;
+        if (horas > 0) {
+            if (minRestantes > 0) {
+                return horas + " h " + minRestantes + " min";
+            } else {
+                return horas + " h";
+            }
+        } else {
+            return minutos + " min";
         }
     }
 

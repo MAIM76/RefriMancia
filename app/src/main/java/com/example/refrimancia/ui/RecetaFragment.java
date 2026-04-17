@@ -67,6 +67,7 @@ public class RecetaFragment extends Fragment {
         // Using steps for preparation
         TextView tvPasos = view.findViewById(R.id.tv_detalle_pasos);
         TextView tvAutor = view.findViewById(R.id.tv_detalle_autor);
+        TextView tvTiempo = view.findViewById(R.id.tv_detalle_tiempo);
 
         RecyclerView rvComentarios = view.findViewById(R.id.rv_comentarios_receta);
         rvComentarios.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -91,9 +92,30 @@ public class RecetaFragment extends Fragment {
             }
             idReceta = receta.getIdReceta();
             tvAutor.setText(receta.getNombreUsuario() != null ? "@" + receta.getNombreUsuario() : "@usuario_desconocido");
+
+            if (receta.getTiempoPreparacion() > 0) {
+                tvTiempo.setText(formatTiempo(receta.getTiempoPreparacion()));
+            } else {
+                tvTiempo.setText("N/A");
+            }
         }
 
         cargarComentarios(idReceta);
+    }
+
+    private String formatTiempo(int minutos) {
+        if (minutos <= 0) return "0 min";
+        int horas = minutos / 60;
+        int minRestantes = minutos % 60;
+        if (horas > 0) {
+            if (minRestantes > 0) {
+                return horas + " h " + minRestantes + " min";
+            } else {
+                return horas + " h";
+            }
+        } else {
+            return minutos + " min";
+        }
     }
 
     private void cargarComentarios(int recetaId) {

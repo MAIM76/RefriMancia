@@ -104,7 +104,7 @@
                 android:padding="4dp"
                 android:src="@android:drawable/btn_star_big_off"
                 android:contentDescription="Me gusta"
-                android:tint="?attr/colorPrimary" />
+                app:tint="?attr/colorPrimary" />
 
             <ImageView
                 android:id="@+id/btn_comentarios"
@@ -113,7 +113,7 @@
                 android:padding="4dp"
                 android:src="@android:drawable/sym_action_chat"
                 android:contentDescription="Comentar"
-                android:tint="?attr/colorPrimary" />
+                app:tint="?attr/colorPrimary" />
         </LinearLayout>
 
     </LinearLayout>

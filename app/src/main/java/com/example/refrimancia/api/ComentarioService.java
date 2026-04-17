@@ -1,6 +1,7 @@
 package com.example.refrimancia.api;
 
 import com.example.refrimancia.modelo.Comentario;
+import com.example.refrimancia.modelo.RespuestaPaginada;
 
 import java.util.List;
 
@@ -25,11 +26,11 @@ public interface ComentarioService {
 
     // Obtener todos los comentarios de una receta específica
     @GET("api/comentarios/receta/{id}")
-    Call<List<Comentario>> obtenerComentariosPorReceta(@Path("id") int idReceta);
+    Call<RespuestaPaginada<Comentario>> obtenerComentariosPorReceta(@Path("id") int idReceta);
 
     // Obtener comentarios de una receta con paginación
     @GET("api/comentarios/receta/{id}")
-    Call<List<Comentario>> obtenerComentariosPorRecetaPaginado(@Path("id") int idReceta, @Query("page") Integer page);
+    Call<RespuestaPaginada<Comentario>> obtenerComentariosPorRecetaPaginado(@Path("id") int idReceta, @Query("page") Integer page);
 
     // Eliminar un comentario por su ID
     @DELETE("api/comentarios/eliminar/{id}")

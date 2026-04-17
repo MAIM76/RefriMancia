@@ -8,7 +8,7 @@ public class AuthToken {
     private String token;
 
     // Información del usuario autenticado
-    @SerializedName("usuario")
+    @SerializedName("data")
     private Usuario usuario;
 
     // Constructor vacío (necesario para Gson)

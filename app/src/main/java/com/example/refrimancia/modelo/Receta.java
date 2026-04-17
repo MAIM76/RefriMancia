@@ -1,79 +1,113 @@
 package com.example.refrimancia.modelo;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
-public class Receta {
+public class Receta implements Serializable {
     // Identificador único de la receta
     @SerializedName("id_receta")
     private int idReceta;
 
-    // Título o nombre de la receta
-    @SerializedName("titulo_receta")
-    private String tituloReceta;
-
-    // Descripción breve de la receta
-    @SerializedName("descripcion")
-    private String descripcion;
-
-    // URL de la imagen de la receta
-    @SerializedName("imagen_receta")
-    private String imagenReceta;
-
-    // Lista de ingredientes (formato JSON o texto)
-    @SerializedName("ingredientes")
-    private String ingredientes;
-
-    // Tipo o categoría de la receta
-    @SerializedName("tipo_receta")
-    private String tipoReceta;
-
-    // Fecha en que se publicó la receta
-    @SerializedName("fecha_publicacion")
-    private String fechaPublicacion;
-
-    // ID del usuario que creó la receta
     @SerializedName("id_usuario")
     private int idUsuario;
 
-    // Instrucciones detalladas para preparar la receta
-    @SerializedName("instrucciones")
-    private String instrucciones;
+    @SerializedName("nombre_usuario")
+    private String nombreUsuario;
 
-    // Tiempo en minutos necesario para preparar la receta
+    @SerializedName("imagen_receta")
+    private String imagenUrl;
+
+    @SerializedName("fecha_publicacion")
+    private String fechaCreacion;
+    
+    @SerializedName("dificultad")
+    private String dificultad;
+
+    @SerializedName("tipo_receta")
+    private String categoria;
+
+    @SerializedName("titulo_receta")
+    private String titulo;
+
+    @SerializedName("ingredientes")
+    private String descripcion;
+
+    @SerializedName("descripcion")
+    private String pasos;
+
     @SerializedName("tiempo_preparacion")
     private int tiempoPreparacion;
+
+    @SerializedName("porciones")
+    private int porciones;
+
+    @SerializedName("aprobada")
+    private Boolean aprobada;
 
     // Constructor sin argumentos (requerido por Gson para deserialización)
     public Receta() {
     }
 
     // Constructor simplificado para crear datos de ejemplo o pruebas rápidas
-    public Receta(String tituloReceta, String descripcion) {
-        this.tituloReceta = tituloReceta;
+    public Receta(String titulo, String descripcion) {
+        this.titulo = titulo;
         this.descripcion = descripcion;
+    }
+
+    public Receta(int idReceta, String titulo, String descripcion, String pasos, int tiempoPreparacion, int idUsuario, String imagenUrl, String fechaCreacion) {
+        this.idReceta = idReceta;
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.pasos = pasos;
+        this.tiempoPreparacion = tiempoPreparacion;
+        this.idUsuario = idUsuario;
+        this.imagenUrl = imagenUrl;
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public Receta(int idReceta, String titulo, String descripcion, String pasos, int tiempoPreparacion, String dificultad, String categoria, int idUsuario, String imagenUrl, String fechaCreacion) {
+        this.idReceta = idReceta;
+        this.titulo = titulo;
+        this.descripcion = descripcion;
+        this.pasos = pasos;
+        this.tiempoPreparacion = tiempoPreparacion;
+        this.dificultad = dificultad;
+        this.categoria = categoria;
+        this.idUsuario = idUsuario;
+        this.imagenUrl = imagenUrl;
+        this.fechaCreacion = fechaCreacion;
     }
 
     // ============ GETTERS ============
     public int getIdReceta() { return idReceta; }
-    public String getTituloReceta() { return tituloReceta; }
-    public String getDescripcion() { return descripcion; }
-    public String getImagenReceta() { return imagenReceta; }
-    public String getIngredientes() { return ingredientes; }
-    public String getTipoReceta() { return tipoReceta; }
-    public String getFechaPublicacion() { return fechaPublicacion; }
     public int getIdUsuario() { return idUsuario; }
-    public String getInstrucciones() { return instrucciones; }
+    public String getNombreUsuario() { return nombreUsuario; }
+    public String getTitulo() { return titulo; }
+    public String getDescripcion() { return descripcion; }
+    public String getPasos() { return pasos; }
     public int getTiempoPreparacion() { return tiempoPreparacion; }
+    public int getPorciones() { return porciones; }
+    public String getDificultad() { return dificultad; }
+    public String getCategoria() { return categoria; }
+    public String getFechaCreacion() { return fechaCreacion; }
+    public String getImagenUrl() { return imagenUrl; }
+    public Boolean getAprobada() { return aprobada; }
 
     // ============ SETTERS ============
     public void setIdReceta(int idReceta) { this.idReceta = idReceta; }
-    public void setTituloReceta(String tituloReceta) { this.tituloReceta = tituloReceta; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public void setImagenReceta(String imagenReceta) { this.imagenReceta = imagenReceta; }
-    public void setIngredientes(String ingredientes) { this.ingredientes = ingredientes; }
-    public void setTipoReceta(String tipoReceta) { this.tipoReceta = tipoReceta; }
-    public void setFechaPublicacion(String fechaPublicacion) { this.fechaPublicacion = fechaPublicacion; }
     public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
-    public void setInstrucciones(String instrucciones) { this.instrucciones = instrucciones; }
+    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setPasos(String pasos) { this.pasos = pasos; }
     public void setTiempoPreparacion(int tiempoPreparacion) { this.tiempoPreparacion = tiempoPreparacion; }
+    public void setPorciones(int porciones) { this.porciones = porciones; }
+    public void setAprobada(Boolean aprobada) { this.aprobada = aprobada; }
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
+    }
+
+    public void setFechaCreacion(String fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
 }

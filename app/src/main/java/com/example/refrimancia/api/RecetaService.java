@@ -1,6 +1,7 @@
 package com.example.refrimancia.api;
 
 import com.example.refrimancia.modelo.Receta;
+import com.example.refrimancia.modelo.RespuestaPaginada;
 
 import java.util.List;
 
@@ -21,11 +22,11 @@ import retrofit2.http.Query;
 public interface RecetaService {
     // Obtener todas las recetas con paginación
     @GET("api/recetas/listar")
-    Call<List<Receta>> obtenerRecetas(@Query("page") Integer page);
+    Call<RespuestaPaginada<Receta>> obtenerRecetas(@Query("page") Integer page);
 
     // Obtener todas las recetas sin paginación
     @GET("api/recetas/listar")
-    Call<List<Receta>> obtenerRecetas();
+    Call<RespuestaPaginada<Receta>> obtenerRecetas();
 
     // Obtener una receta específica por su ID
     @GET("api/recetas/{id}")
@@ -37,7 +38,7 @@ public interface RecetaService {
 
     // Buscar recetas por ingredientes
     @GET("api/recetas/buscar/ingredientes")
-    Call<List<Receta>> buscarPorIngredientes(@Query("ingredientes") String ingredientes);
+    Call<RespuestaPaginada<Receta>> buscarPorIngredientes(@Query("ingredientes") String ingredientes);
 
     // Obtener URL para compartir una receta
     @GET("api/recetas/compartir/{id}")

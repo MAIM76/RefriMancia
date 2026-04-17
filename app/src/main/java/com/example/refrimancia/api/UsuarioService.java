@@ -3,6 +3,8 @@ package com.example.refrimancia.api;
 import com.example.refrimancia.modelo.AuthToken;
 import com.example.refrimancia.modelo.LoginRequest;
 import com.example.refrimancia.modelo.Usuario;
+import com.example.refrimancia.modelo.RespuestaPaginada;
+import com.example.refrimancia.modelo.RespuestaUnica;
 
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,7 @@ public interface UsuarioService {
 
     // Obtener datos del perfil del usuario autenticado
     @GET("api/usuarios/perfil")
-    Call<Usuario> obtenerPerfil();
+    Call<RespuestaUnica<Usuario>> obtenerPerfil();
 
     // Modificar datos de un usuario existente
     @Multipart
@@ -59,7 +61,7 @@ public interface UsuarioService {
 
     // Listar todos los usuarios con paginación
     @GET("api/usuarios/listar")
-    Call<List<Usuario>> listarUsuarios(@Query("page") Integer page);
+    Call<RespuestaPaginada<Usuario>> listarUsuarios(@Query("page") Integer page);
 
     // Solicitar código de recuperación de contraseña
     @POST("api/usuarios/solicitar-codigo")

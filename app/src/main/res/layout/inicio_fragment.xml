@@ -14,11 +14,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:background="?attr/colorPrimary"
+        android:paddingHorizontal="16dp"
         android:paddingTop="16dp"
         android:paddingBottom="8dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         android:elevation="4dp">
 
         <ImageView
@@ -31,14 +29,20 @@
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@drawable/fondo_barra_busqueda"
+            android:layout_height="wrap_content"
+            android:background="@drawable/fondo_vista_busqueda"
             app:iconifiedByDefault="false"
             app:queryHint="@string/search_hint"
             app:searchIcon="@null"
             app:closeIcon="@null" />
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/gradiente_sombra"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="@drawable/gradiente_sombra" />
 
     <!-- Lista de tarjetas de recetas -->
     <androidx.recyclerview.widget.RecyclerView
@@ -51,4 +55,3 @@
         android:paddingBottom="8dp" />
 
 </LinearLayout>
-

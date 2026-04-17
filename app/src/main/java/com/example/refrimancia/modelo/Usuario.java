@@ -11,46 +11,60 @@ public class Usuario {
     @SerializedName("nombre_usuario")
     private String nombreUsuario;
 
-    // Nombre completo del usuario
-    @SerializedName("nombre_completo")
-    private String nombreCompleto;
-
     // Email del usuario
     @SerializedName("correo_electronico")
     private String correoElectronico;
 
-    // URL de la imagen de perfil
-    @SerializedName("imagen_perfil")
-    private String imagenPerfil;
+    @SerializedName("contrasena")
+    private String contrasena;
 
-    // Fecha de nacimiento del usuario
-    @SerializedName("fecha_nac")
-    private String fechaNacimiento;
+    @SerializedName("rol")
+    private String rol;
 
-    // Constructor vacío (necesario para Gson)
+    @SerializedName("fecha_registro")
+    private String fechaRegistro;
+
+    @SerializedName("is_active")
+    private Integer isActive;
+
+    @SerializedName(value="url_foto_perfil", alternate={"imagen_perfil"})
+    private String urlFotoPerfil;
+
     public Usuario() {
     }
 
     // Constructor con parámetros principales
-    public Usuario(String nombreUsuario, String nombreCompleto, String correoElectronico) {
+    public Usuario(String nombreUsuario, String correoElectronico) {
         this.nombreUsuario = nombreUsuario;
-        this.nombreCompleto = nombreCompleto;
         this.correoElectronico = correoElectronico;
+    }
+
+    public Usuario(int idUsuario, String nombreUsuario, String correoElectronico, String rol, String fechaRegistro, Integer isActive) {
+        this.idUsuario = idUsuario;
+        this.nombreUsuario = nombreUsuario;
+        this.correoElectronico = correoElectronico;
+        this.rol = rol;
+        this.fechaRegistro = fechaRegistro;
+        this.isActive = isActive;
     }
 
     // ============ GETTERS ============
     public int getIdUsuario() { return idUsuario; }
     public String getNombreUsuario() { return nombreUsuario; }
-    public String getNombreCompleto() { return nombreCompleto; }
     public String getCorreoElectronico() { return correoElectronico; }
-    public String getImagenPerfil() { return imagenPerfil; }
-    public String getFechaNacimiento() { return fechaNacimiento; }
+    public String getContrasena() { return contrasena; }
+    public String getRol() { return rol; }
+    public String getFechaRegistro() { return fechaRegistro; }
+    public Integer getIsActive() { return isActive; }
+    public String getUrlFotoPerfil() { return urlFotoPerfil; }
 
     // ============ SETTERS ============
     public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
     public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
-    public void setNombreCompleto(String nombreCompleto) { this.nombreCompleto = nombreCompleto; }
     public void setCorreoElectronico(String correoElectronico) { this.correoElectronico = correoElectronico; }
-    public void setImagenPerfil(String imagenPerfil) { this.imagenPerfil = imagenPerfil; }
-    public void setFechaNacimiento(String fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
+    public void setContrasena(String contrasena) { this.contrasena = contrasena; }
+    public void setRol(String rol) { this.rol = rol; }
+    public void setFechaRegistro(String fechaRegistro) { this.fechaRegistro = fechaRegistro; }
+    public void setIsActive(Integer isActive) { this.isActive = isActive; }
+    public void setUrlFotoPerfil(String urlFotoPerfil) { this.urlFotoPerfil = urlFotoPerfil; }
 }

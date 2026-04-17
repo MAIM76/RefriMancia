@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,8 +20,6 @@ import com.example.refrimancia.R;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.RecetaService;
 import com.example.refrimancia.api.UsuarioService;
-import com.example.refrimancia.modelo.AuthToken;
-import com.example.refrimancia.modelo.LoginRequest;
 import com.example.refrimancia.modelo.Receta;
 import com.example.refrimancia.modelo.RespuestaPaginada;
 import com.example.refrimancia.modelo.RespuestaUnica;

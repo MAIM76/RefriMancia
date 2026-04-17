@@ -22,9 +22,6 @@ import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.cursoradapter.widget.SimpleCursorAdapter;
-import android.database.MatrixCursor;
-import android.database.Cursor;
 
 import com.example.refrimancia.R;
 import com.example.refrimancia.adaptador.AdaptadorReceta;

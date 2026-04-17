@@ -23,7 +23,6 @@ import java.util.HashMap;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.ValoracionService;
 import com.example.refrimancia.modelo.RespuestaValoracionReceta;
-import com.example.refrimancia.modelo.Valoracion;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

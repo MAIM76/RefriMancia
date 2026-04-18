@@ -112,11 +112,13 @@ public class VentanaRegistro extends AppCompatActivity {
             String nombreCompleto = nombre + " " + apellidos;
             String fecha = etFechaRegistro.getText().toString().trim();
 
-            String regexPassword = "^(?=.*[A-Z])(?=.*\\d).{8,}$";
+            String regexPassword = "^(?=.*[A-Z])(?=.*\\d).{8,}$"; //Formato de la password (al menos 1 mayúscula, 1 número y mínimo 8 caracteres)
+            String regexFecha = "^\\d{4}-\\d{2}-\\d{2}$"; //Formato yyyy-mm-dd
 
             if (nombreUser.isEmpty() || password.isEmpty() || correo.isEmpty()
                     || nombre.isEmpty() || apellidos.isEmpty() || fecha.isEmpty()) {
                 Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
+
             } else if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
                 etCorreoRegistro.setError("Correo no válido");
                 Toast.makeText(this, "Introduce un correo electrónico válido", Toast.LENGTH_SHORT).show();
@@ -126,6 +128,13 @@ public class VentanaRegistro extends AppCompatActivity {
                 Toast.makeText(this,
                         "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número",
                         Toast.LENGTH_LONG).show();
+
+            } else if (!fecha.matches(regexFecha)) {
+
+                etFechaRegistro.setError("Formato incorrecto (yyyy-MM-dd)");
+                Toast.makeText(this,
+                        "Introduce la fecha en formato yyyy-MM-dd",
+                        Toast.LENGTH_SHORT).show();
 
             } else {
                 registrar(nombreUser, password, correo, nombreCompleto, fecha);

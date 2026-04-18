@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -113,30 +115,35 @@ public class VentanaRegistro extends AppCompatActivity {
             String fecha = etFechaRegistro.getText().toString().trim();
 
             String regexPassword = "^(?=.*[A-Z])(?=.*\\d).{8,}$"; //Formato de la password (al menos 1 mayúscula, 1 número y mínimo 8 caracteres)
-            String regexFecha = "^\\d{4}-\\d{2}-\\d{2}$"; //Formato yyyy-mm-dd
 
-            if (nombreUser.isEmpty() || password.isEmpty() || correo.isEmpty()
-                    || nombre.isEmpty() || apellidos.isEmpty() || fecha.isEmpty()) {
+            if (nombreUser.isEmpty() || password.isEmpty() || correo.isEmpty() || nombre.isEmpty() || apellidos.isEmpty() || fecha.isEmpty()) {
                 Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
 
             } else if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
                 etCorreoRegistro.setError("Correo no válido");
                 Toast.makeText(this, "Introduce un correo electrónico válido", Toast.LENGTH_SHORT).show();
 
-            }  else if (!password.matches(regexPassword)) {
-
+            } else if (!password.matches(regexPassword)) {
                 Toast.makeText(this,
                         "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número",
                         Toast.LENGTH_LONG).show();
 
-            } else if (!fecha.matches(regexFecha)) {
-
-                etFechaRegistro.setError("Formato incorrecto (yyyy-MM-dd)");
-                Toast.makeText(this,
-                        "Introduce la fecha en formato yyyy-MM-dd",
-                        Toast.LENGTH_SHORT).show();
-
             } else {
+                // Validar y formatear la fecha
+                try {
+                    // Acepta fechas tipo 1999-5-4
+                    SimpleDateFormat parser = new SimpleDateFormat("yyyy-M-d");
+                    parser.setLenient(false);
+                    Date date = parser.parse(fecha);
+                    // Convierte a formato correcto 1999-05-04
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    fecha = formatter.format(date);
+                } catch (Exception e) {
+                    etFechaRegistro.setError("Formato incorrecto (yyyy-MM-dd)");
+                    Toast.makeText(this, "Introduce una fecha válida", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Si todo es correcto se llama al metodo
                 registrar(nombreUser, password, correo, nombreCompleto, fecha);
             }
         });

@@ -22,7 +22,6 @@ public interface ApiService {
             @Part("tiempo_preparacion") RequestBody tiempo,
             @Part MultipartBody.Part imagen_receta
     );
-}
     @Multipart  //esta petición no es JSON, sino multipart/form-data
     @POST("api/usuarios/crear") //Cada campo del form-data se manda como una parte separada
     Call<RegistroRespuesta> registro(
@@ -39,3 +38,5 @@ public interface ApiService {
     @POST("api/usuarios/cambiar-contrasena")
     Call<CambiarPassRespuesta> cambiarPassword(@Body CambiarPassRequest request);
 }
+
+

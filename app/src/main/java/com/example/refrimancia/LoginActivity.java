@@ -69,11 +69,11 @@ public class LoginActivity extends AppCompatActivity {
 
         // 345: Temporary code for testing navigation to the new screen.
         tvForgotPassword.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, CreateRecipeActivity.class));
+            startActivity(new Intent(LoginActivity.this, VentanaVerificar.class));
         });
 
         tvCreateAccount.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, CreateRecipeActivity.class));
+            startActivity(new Intent(LoginActivity.this, VentanaRegistro.class));
         });
     }
 

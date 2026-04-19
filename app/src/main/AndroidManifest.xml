@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -14,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RefriMancia">
         <activity
-            android:name=".LoginActivity"
+            android:name=".VentanaRegistro"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,19 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".CreateRecipeActivity" />
-
-        <activity android:name=".VentanaRegistro" />
         <activity android:name=".VentanaVerificar" />
         <activity android:name=".VentanaRecuperarPassword" />
-      <!-- Actividad de recorte de uCrop con el nuevo tema corregido -->
-      <activity
+        <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.UCrop"/>
-
-        <!-- 345: This activity is for testing purposes and can be removed. -->
-        <activity android:name=".ExampleActivity" />
     </application>
 </manifest>

@@ -9,20 +9,6 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 
 public interface ApiService {
-    @POST("api/usuarios/login")
-    Call<LoginResponse> login(@Body LoginRequest request);
-
-    @Multipart
-    @POST("api/recetas/crear")
-    Call<CreateRecipeResponse> crearReceta(
-            @Part("titulo_receta") RequestBody titulo,
-            @Part("ingredientes") RequestBody ingredientes,
-            @Part("descripcion") RequestBody descripcion,
-            @Part("tipo_receta") RequestBody tipo,
-            @Part("tiempo_preparacion") RequestBody tiempo,
-            @Part MultipartBody.Part imagen_receta
-    );
-}
     @Multipart  //esta petición no es JSON, sino multipart/form-data
     @POST("api/usuarios/crear") //Cada campo del form-data se manda como una parte separada
     Call<RegistroRespuesta> registro(

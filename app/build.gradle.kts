@@ -4,12 +4,16 @@ plugins {
 
 android {
     namespace = "com.example.refrimancia"
-    compileSdk = 35
+    compileSdk {
+        version = release(36) {
+            minorApiLevel = 1
+        }
+    }
 
     defaultConfig {
         applicationId = "com.example.refrimancia"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -36,17 +40,12 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    
-    // Retrofit para las peticiones a la API
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.gson)
-    
-    // UCrop para recortar imágenes
-    implementation(libs.ucrop)
-    
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    // UCrop para recortar imágenes
+    implementation(libs.ucrop)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

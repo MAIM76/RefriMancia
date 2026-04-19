@@ -25,8 +25,11 @@
 
         <activity android:name=".CreateRecipeActivity" />
 
-        <!-- Actividad de recorte de uCrop con el nuevo tema corregido -->
-        <activity
+        <activity android:name=".VentanaRegistro" />
+        <activity android:name=".VentanaVerificar" />
+        <activity android:name=".VentanaRecuperarPassword" />
+      <!-- Actividad de recorte de uCrop con el nuevo tema corregido -->
+      <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.UCrop"/>
@@ -34,5 +37,4 @@
         <!-- 345: This activity is for testing purposes and can be removed. -->
         <activity android:name=".ExampleActivity" />
     </application>
-
 </manifest>

@@ -23,3 +23,19 @@ public interface ApiService {
             @Part MultipartBody.Part imagen_receta
     );
 }
+    @Multipart  //esta petición no es JSON, sino multipart/form-data
+    @POST("api/usuarios/crear") //Cada campo del form-data se manda como una parte separada
+    Call<RegistroRespuesta> registro(
+            @Part("nombre_usuario") RequestBody nombre_usuario,
+            @Part("contrasena") RequestBody contrasena,
+            @Part("correo_electronico") RequestBody correo_electronico,
+            @Part("nombre_completo") RequestBody nombre_completo,
+            @Part("fecha_nac") RequestBody fecha_nac,
+            @Part MultipartBody.Part imagen_perfil //La imagen no es texto, así que no puede ir como RequestBody normal
+
+    );
+    @POST("api/usuarios/solicitar-codigo")
+    Call<CorreoRespuesta> solicitarCodigo(@Body CorreoRequest request);
+    @POST("api/usuarios/cambiar-contrasena")
+    Call<CambiarPassRespuesta> cambiarPassword(@Body CambiarPassRequest request);
+}

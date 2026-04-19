@@ -43,7 +43,9 @@ dependencies {
     
     // UCrop para recortar imágenes
     implementation(libs.ucrop)
-
+    
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

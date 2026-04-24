@@ -10,6 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.refrimancia.ui.MainActivity;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,9 +33,9 @@ public class LoginActivity extends AppCompatActivity {
         // 1. Inicializar SessionManager
         sessionManager = new SessionManager(this);
 
-        // 2. AUTO-LOGIN: Si ya hay un token guardado, saltamos directamente a la pantalla principal (CreateRecipeActivity)
+        // 2. AUTO-LOGIN: Si ya hay un token guardado, saltamos directamente a la pantalla principal (MainActivity)
         if (sessionManager.fetchAuthToken() != null) {
-            Intent intent = new Intent(this, CreateRecipeActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
             return; 
@@ -97,8 +99,8 @@ public class LoginActivity extends AppCompatActivity {
                         );
                     }
 
-                    // Navegar a CreateRecipeActivity tras el login exitoso
-                    Intent intent = new Intent(LoginActivity.this, CreateRecipeActivity.class);
+                    // Navegar a MainActivity tras el login exitoso
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish(); 
                 } else {

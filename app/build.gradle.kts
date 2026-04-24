@@ -32,6 +32,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.glide)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -45,6 +46,20 @@ dependencies {
     implementation(libs.ucrop)
     
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    implementation(libs.cardview)
+    implementation(libs.fragment)
+    implementation(libs.recyclerview)
+    
+    // Red - Retrofit, OkHttp, Gson
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.gson)
+    
+    // Coroutines
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
+
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

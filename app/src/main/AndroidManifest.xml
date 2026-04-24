@@ -14,7 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RefriMancia">
         <activity
+
             android:name=".LoginActivity"
+
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,12 +24,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".CreateRecipeActivity" />
 
         <activity android:name=".VentanaRegistro" />
         <activity android:name=".VentanaVerificar" />
         <activity android:name=".VentanaRecuperarPassword" />
+        <activity android:name=".ui.MainActivity" />
+
       <!-- Actividad de recorte de uCrop con el nuevo tema corregido -->
       <activity
             android:name="com.yalantis.ucrop.UCropActivity"
@@ -38,3 +41,4 @@
         <activity android:name=".ExampleActivity" />
     </application>
 </manifest>
+

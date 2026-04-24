@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Tema para Android 12+ con mejor soporte para barra de estado -->
+    <style name="Base.Theme.RefriMancia" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Barra de notificaciones con color primario -->
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <!-- Android 12+ cambios -->
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+    </style>
+
+    <style name="Theme.RefriMancia" parent="Base.Theme.RefriMancia" />
+</resources>
+

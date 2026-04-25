@@ -2,14 +2,12 @@ package com.example.refrimancia.api;
 
 import com.example.refrimancia.modelo.Receta;
 import com.example.refrimancia.modelo.RespuestaPaginada;
-
-import java.util.List;
+import com.example.refrimancia.modelo.RespuestaUnica;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
@@ -30,11 +28,11 @@ public interface RecetaService {
 
     // Obtener una receta específica por su ID
     @GET("api/recetas/{id}")
-    Call<Receta> obtenerReceta(@Path("id") int id);
+    Call<RespuestaUnica<Receta>> obtenerReceta(@Path("id") int id);
 
     // Obtener la recomendación diaria de receta
     @GET("api/recetas/recomendacion/diaria")
-    Call<Receta> recomendacionDiaria();
+    Call<RespuestaUnica<Receta>> recomendacionDiaria();
 
     // Buscar recetas por ingredientes
     @GET("api/recetas/buscar/ingredientes")
@@ -51,9 +49,8 @@ public interface RecetaService {
             @Part("descripcion") RequestBody descripcion,
             @Part("ingredientes") RequestBody ingredientes,
             @Part("tipo_receta") RequestBody tipoReceta,
-            @Part("instrucciones") RequestBody instrucciones,
             @Part("tiempo_preparacion") RequestBody tiempoPreparacion,
-            @Part MultipartBody.Part imagen
+            @Part MultipartBody.Part imagenReceta
     );
 
     // Modificar una receta existente con multipart (incluyendo imagen)
@@ -65,9 +62,8 @@ public interface RecetaService {
             @Part("descripcion") RequestBody descripcion,
             @Part("ingredientes") RequestBody ingredientes,
             @Part("tipo_receta") RequestBody tipoReceta,
-            @Part("instrucciones") RequestBody instrucciones,
             @Part("tiempo_preparacion") RequestBody tiempoPreparacion,
-            @Part MultipartBody.Part imagen
+            @Part MultipartBody.Part imagenReceta
     );
 
     // Eliminar una receta por su ID

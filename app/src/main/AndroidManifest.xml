@@ -29,8 +29,12 @@
         <activity android:name=".VentanaRegistro" />
         <activity android:name=".VentanaVerificar" />
         <activity android:name=".VentanaRecuperarPassword" />
-        <activity android:name=".ui.MainActivity" />
+
         <activity android:name="VentanaEditarPerfil" />
+
+        <activity android:name=".ui.ContenedorPrincipalActivity" />
+        <activity android:name=".ui.RecetaActivity" />
+
 
       <!-- Actividad de recorte de uCrop con el nuevo tema corregido -->
       <activity

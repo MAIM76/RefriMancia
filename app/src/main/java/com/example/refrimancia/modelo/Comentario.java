@@ -93,4 +93,25 @@ public class Comentario {
     public void setUrlFotoPerfil(String urlFotoPerfil) {
         this.urlFotoPerfil = urlFotoPerfil;
     }
+
+    // Devuelve el texto disponible independientemente del nombre del campo en backend.
+    public String getTexto() {
+        if (contenido != null && !contenido.trim().isEmpty()) {
+            return contenido;
+        }
+        return mensaje != null ? mensaje : "";
+    }
+
+    public void setTexto(String texto) {
+        this.mensaje = texto;
+        this.contenido = texto;
+    }
+
+    // Normaliza la fecha para consumidores UI.
+    public String getFechaNormalizada() {
+        if (fechaCreacion != null && !fechaCreacion.trim().isEmpty()) {
+            return fechaCreacion;
+        }
+        return fechaComentario != null ? fechaComentario : "";
+    }
 }

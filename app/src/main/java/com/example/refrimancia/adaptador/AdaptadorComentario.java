@@ -47,14 +47,13 @@ public class AdaptadorComentario extends RecyclerView.Adapter<AdaptadorComentari
         if (comentario.getNombreUsuario() != null) {
             holder.tvUsuario.setText(String.format("@%s", comentario.getNombreUsuario()));
         } else {
-            holder.tvUsuario.setText(String.format("@usuario_%d", comentario.getIdUsuario()));
+            holder.tvUsuario.setText(String.format(Locale.getDefault(), "@usuario_%d", comentario.getIdUsuario()));
         }
 
-        // Set content and date based on whichever property is populated
-        String contenido = comentario.getContenido() != null ? comentario.getContenido() : (comentario.getMensaje() != null ? comentario.getMensaje() : "");
+        String contenido = comentario.getTexto();
         holder.tvContenido.setText(contenido);
 
-        String fecha = formatFecha(comentario.getFechaCreacion() != null ? comentario.getFechaCreacion() : (comentario.getFechaComentario() != null ? comentario.getFechaComentario() : ""));
+        String fecha = formatFecha(comentario.getFechaNormalizada());
         holder.tvFecha.setText(fecha);
 
         if (comentario.getUrlFotoPerfil() != null && !comentario.getUrlFotoPerfil().isEmpty()) {

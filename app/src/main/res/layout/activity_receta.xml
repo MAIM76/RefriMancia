@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -66,37 +66,45 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:layout_marginBottom="16dp">
+
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tiempo: "
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorPrimary"/>
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tiempo: "
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="16sp" />
+
                     <TextView
-                        android:id="@+id/tv_detalle_tiempo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="30 min"
-                        android:textStyle="bold"
-                        android:textColor="#333333"/>
+                            android:id="@+id/tv_detalle_tiempo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="30 min"
+                            android:textStyle="bold"
+                            android:textColor="#333333"
+                            android:textSize="16sp" />
                     <Space
                         android:layout_width="16dp"
                         android:layout_height="wrap_content" />
+
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dificultad: "
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorPrimary"/>
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Dificultad: "
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="16sp" />
+
                     <TextView
-                        android:id="@+id/tv_detalle_dificultad"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:text="Media"
-                        android:textStyle="bold"
-                        android:textColor="#333333"/>
+                            android:id="@+id/tv_detalle_dificultad"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="Media"
+                            android:textStyle="bold"
+                            android:textColor="#333333"
+                            android:textSize="16sp" />
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
@@ -135,25 +143,15 @@
                     android:layout_marginTop="8dp"
                     android:lineSpacingExtra="6dp"/>
 
-                <!-- Comentarios Section -->
-                <TextView
-                    android:id="@+id/tv_comentarios_titulo_receta"
+                <Button
+                    android:id="@+id/btn_ver_comentarios"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:text="Comentarios"
-                    android:textColor="@android:color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_comentarios_receta"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:nestedScrollingEnabled="false" />
+                    android:text="@string/recipe_view_comments" />
 
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </FrameLayout>
+

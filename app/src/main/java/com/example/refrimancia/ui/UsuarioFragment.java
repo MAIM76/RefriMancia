@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
+import com.example.refrimancia.SessionManager;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.RecetaService;
 import com.example.refrimancia.api.UsuarioService;
@@ -24,7 +25,6 @@ import com.example.refrimancia.modelo.Receta;
 import com.example.refrimancia.modelo.RespuestaPaginada;
 import com.example.refrimancia.modelo.RespuestaUnica;
 import com.example.refrimancia.modelo.Usuario;
-import com.example.refrimancia.utils.DatosEjemplo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,7 @@ public class UsuarioFragment extends Fragment {
     private Button btnEditarPerfil;
     private RecyclerView rvMisRecetas;
     private View contenidoVacio;
+    private SessionManager sessionManager;
 
     @Nullable
     @Override
@@ -60,6 +61,7 @@ public class UsuarioFragment extends Fragment {
     }
 
     private void inicializarVistas(View vista) {
+        sessionManager = new SessionManager(requireContext());
         imagenPerfil = vista.findViewById(R.id.profile_image);
         nombreUsuario = vista.findViewById(R.id.nombre_usuario);
         btnEditarPerfil = vista.findViewById(R.id.btn_editar_perfil);
@@ -70,52 +72,51 @@ public class UsuarioFragment extends Fragment {
     }
 
     private void cargarDatosUsuario() {
-        DatosEjemplo.loginAutomaticoTemporal(exito -> {
-            if (exito) {
-                obtenerPerfilUsuario();
-            } else {
-                mostrarEstadoVacio();
-            }
-        });
+        if (sessionManager.fetchAuthToken() == null) {
+            mostrarEstadoVacio();
+            return;
+        }
+        obtenerPerfilUsuario();
     }
 
     private void obtenerPerfilUsuario() {
-        UsuarioService usuarioService = ClienteRetrofit.obtenerInstancia().create(UsuarioService.class);
+        UsuarioService usuarioService = ClienteRetrofit.obtenerInstancia(requireContext()).create(UsuarioService.class);
         usuarioService.obtenerPerfil().enqueue(new Callback<RespuestaUnica<Usuario>>() {
             @Override
             public void onResponse(Call<RespuestaUnica<Usuario>> call, Response<RespuestaUnica<Usuario>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                     Usuario usuario = response.body().getData();
-                    DatosEjemplo.usuarioActual = usuario;
                     actualizarUI(usuario);
                     cargarRecetasUsuarioLogueado(usuario.getIdUsuario());
                 } else {
-                    // Fallback to DatosEjemplo if the endpoint fails
-                    if (DatosEjemplo.usuarioActual != null) {
-                        actualizarUI(DatosEjemplo.usuarioActual);
-                        cargarRecetasUsuarioLogueado(DatosEjemplo.usuarioActual.getIdUsuario());
-                    } else {
-                        mostrarEstadoVacio();
-                    }
+                    mostrarDesdeSesion();
                 }
             }
 
             @Override
             public void onFailure(Call<RespuestaUnica<Usuario>> call, Throwable t) {
                 Log.e(TAG, "Error al cargar perfil API: " + t.getMessage());
-                // Fallback
-                if (DatosEjemplo.usuarioActual != null) {
-                    actualizarUI(DatosEjemplo.usuarioActual);
-                    cargarRecetasUsuarioLogueado(DatosEjemplo.usuarioActual.getIdUsuario());
-                } else {
-                    mostrarEstadoVacio();
-                }
+                mostrarDesdeSesion();
             }
         });
     }
 
+    private void mostrarDesdeSesion() {
+        int idUsuario = sessionManager.fetchUserId();
+        String nombre = sessionManager.fetchUserName();
+
+        if (idUsuario > 0) {
+            nombreUsuario.setText("@" + nombre);
+            imagenPerfil.setImageResource(R.drawable.bg_placeholder_circular);
+            contenidoVacio.setVisibility(View.GONE);
+            cargarRecetasUsuarioLogueado(idUsuario);
+        } else {
+            mostrarEstadoVacio();
+        }
+    }
+
     private void cargarRecetasUsuarioLogueado(int idUsuario) {
-        RecetaService recetaService = ClienteRetrofit.obtenerInstancia().create(RecetaService.class);
+        RecetaService recetaService = ClienteRetrofit.obtenerInstancia(requireContext()).create(RecetaService.class);
         recetaService.obtenerRecetas().enqueue(new Callback<RespuestaPaginada<Receta>>() {
             @Override
             public void onResponse(Call<RespuestaPaginada<Receta>> call, Response<RespuestaPaginada<Receta>> response) {
@@ -134,8 +135,7 @@ public class UsuarioFragment extends Fragment {
                         mostrarEstadoVacio();
                     } else {
                         contenidoVacio.setVisibility(View.GONE);
-                        AdaptadorMisRecetas adapter = new AdaptadorMisRecetas(misRecetas);
-                        rvMisRecetas.setAdapter(adapter);
+                        rvMisRecetas.setAdapter(new AdaptadorMisRecetas(misRecetas));
                     }
                 } else {
                     mostrarEstadoVacio();
@@ -175,9 +175,8 @@ public class UsuarioFragment extends Fragment {
         Log.d(TAG, "No hay datos de usuario disponibles");
     }
 
-    // Adaptador interno para Mis Recetas
     private class AdaptadorMisRecetas extends RecyclerView.Adapter<AdaptadorMisRecetas.MiRecetaViewHolder> {
-        private List<Receta> recetas;
+        private final List<Receta> recetas;
 
         public AdaptadorMisRecetas(List<Receta> recetas) {
             this.recetas = recetas;
@@ -209,7 +208,7 @@ public class UsuarioFragment extends Fragment {
             TextView tvTitulo;
             TextView tvFecha;
 
-            public MiRecetaViewHolder(@NonNull View itemView) {
+            MiRecetaViewHolder(@NonNull View itemView) {
                 super(itemView);
                 ivImagen = itemView.findViewById(R.id.iv_receta_usuario);
                 tvTitulo = itemView.findViewById(R.id.tv_titulo_receta_usuario);
@@ -218,3 +217,4 @@ public class UsuarioFragment extends Fragment {
         }
     }
 }
+

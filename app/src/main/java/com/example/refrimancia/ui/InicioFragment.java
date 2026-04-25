@@ -11,32 +11,41 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
-import android.widget.ListView;
-import android.widget.FrameLayout;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.RatingBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.refrimancia.R;
-import com.example.refrimancia.adaptador.AdaptadorReceta;
+import com.example.refrimancia.SessionManager;
 import com.example.refrimancia.adaptador.AdaptadorComentario;
+import com.example.refrimancia.adaptador.AdaptadorReceta;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.ComentarioService;
 import com.example.refrimancia.api.RecetaService;
+import com.example.refrimancia.api.ValoracionService;
 import com.example.refrimancia.modelo.Comentario;
 import com.example.refrimancia.modelo.Receta;
 import com.example.refrimancia.modelo.RespuestaPaginada;
-import com.example.refrimancia.utils.DatosEjemplo;
+import com.example.refrimancia.modelo.Valoracion;
+import com.example.refrimancia.modelo.ValoracionRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,10 +53,10 @@ import retrofit2.Response;
 public class InicioFragment extends Fragment {
 
     private static final String TAG = "InicioFragment";
+
     private AdaptadorReceta adaptador;
     private RecyclerView rvRecetas;
     private FrameLayout searchOverlay;
-    private ListView searchSuggestionsList;
     private ArrayAdapter<String> suggestionsAdapter;
     private List<String> currentSuggestions;
 
@@ -70,7 +79,7 @@ public class InicioFragment extends Fragment {
         rvRecetas = vista.findViewById(R.id.recipes_recycler_view);
         SearchView barraBusqueda = vista.findViewById(R.id.search_view);
         searchOverlay = vista.findViewById(R.id.search_overlay);
-        searchSuggestionsList = vista.findViewById(R.id.search_suggestions_list);
+        ListView searchSuggestionsList = vista.findViewById(R.id.search_suggestions_list);
 
         currentSuggestions = new ArrayList<>();
         suggestionsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, currentSuggestions);
@@ -100,7 +109,6 @@ public class InicioFragment extends Fragment {
             }
         });
 
-        // Filtrado con la barra de búsqueda - sugerencias y selección
         barraBusqueda.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String consulta) {
@@ -125,25 +133,21 @@ public class InicioFragment extends Fragment {
             }
         });
 
-        // Remove the default SuggestionsAdapter since we are using our own ListView
         barraBusqueda.setSuggestionsAdapter(null);
 
-        // Cargar recetas desde la API
-        DatosEjemplo.loginAutomaticoTemporal(exito -> {
-            if (exito) {
-                cargarRecetasDesdeAPI();
-            } else {
-                mostrarMensajeError("Error de autenticación inicial");
-            }
-        });
+        SessionManager sessionManager = new SessionManager(requireContext());
+        if (sessionManager.fetchAuthToken() == null) {
+            mostrarMensajeError("Sesion no iniciada");
+            return;
+        }
+        cargarRecetasDesdeAPI();
     }
 
     private void cargarRecetasDesdeAPI() {
         if (cargando || esUltimaPagina) return;
         cargando = true;
-        
-        RecetaService servicio = ClienteRetrofit.obtenerInstancia().create(RecetaService.class);
 
+        RecetaService servicio = ClienteRetrofit.obtenerInstancia(requireContext()).create(RecetaService.class);
         Call<RespuestaPaginada<Receta>> llamada = servicio.obtenerRecetas(paginaActual);
 
         llamada.enqueue(new Callback<>() {
@@ -173,7 +177,7 @@ public class InicioFragment extends Fragment {
             public void onFailure(@NonNull Call<RespuestaPaginada<Receta>> call, @NonNull Throwable error) {
                 cargando = false;
                 Log.e(TAG, "Error en la llamada API: " + error.getMessage());
-                mostrarMensajeError("Error de conexión");
+                mostrarMensajeError("Error de conexion");
             }
         });
     }
@@ -197,11 +201,9 @@ public class InicioFragment extends Fragment {
         for (Receta r : adaptador.getListaRecetasCompleta()) {
             if (r.getTitulo() != null) {
                 String tituloLower = r.getTitulo().toLowerCase();
-                if (tituloLower.contains(textoBusqueda)) {
-                    if (!sugerenciasLower.contains(tituloLower)) {
-                        currentSuggestions.add(r.getTitulo());
-                        sugerenciasLower.add(tituloLower);
-                    }
+                if (tituloLower.contains(textoBusqueda) && !sugerenciasLower.contains(tituloLower)) {
+                    currentSuggestions.add(r.getTitulo());
+                    sugerenciasLower.add(tituloLower);
                 }
             }
         }
@@ -220,52 +222,36 @@ public class InicioFragment extends Fragment {
         }
 
         if (coincidencias.size() == 1) {
-            // Ir directo a la receta
-            if (getActivity() != null) {
-                RecetaFragment fragment = RecetaFragment.newInstance(coincidencias.get(0));
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
+            startActivity(RecetaActivity.crearIntent(requireContext(), coincidencias.get(0)));
         } else if (coincidencias.size() > 1) {
-            // Mostrar las tarjetas filtrando el adaptador para que solo muestre estas
-            adaptador.filtrar(nombreReceta); // esto coincidirá con todas
+            adaptador.filtrar(nombreReceta);
         }
     }
 
     private void configurarRecyclerView() {
         List<Receta> listaRecetas = new ArrayList<>();
         adaptador = new AdaptadorReceta(listaRecetas, requireContext(), receta -> {
-            if (getActivity() != null) {
-                RecetaFragment fragment = RecetaFragment.newInstance(receta);
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
+            startActivity(RecetaActivity.crearIntent(requireContext(), receta));
         });
 
-        // Configurar listener para el botón de comentarios
         adaptador.setOnComentarioClickListener(this::mostrarPopupComentarios);
+        adaptador.setOnValoracionClickListener(this::mostrarPopupValoracion);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvRecetas.setLayoutManager(layoutManager);
         rvRecetas.setAdapter(adaptador);
-        
+
         rvRecetas.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0) { // Scrolling down
+                if (dy > 0) {
                     int visibleItemCount = layoutManager.getChildCount();
                     int totalItemCount = layoutManager.getItemCount();
                     int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
 
-                    if (!cargando && !esUltimaPagina) {
-                        if ((visibleItemCount + pastVisibleItems) >= totalItemCount - 2) {
-                            cargarRecetasDesdeAPI();
-                        }
+                    if (!cargando && !esUltimaPagina && (visibleItemCount + pastVisibleItems) >= totalItemCount - 2) {
+                        cargarRecetasDesdeAPI();
                     }
                 }
             }
@@ -279,7 +265,7 @@ public class InicioFragment extends Fragment {
 
         Window window = dialog.getWindow();
         if (window != null) {
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, (int)(getResources().getDisplayMetrics().heightPixels * 0.8));
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, (int) (getResources().getDisplayMetrics().heightPixels * 0.8));
             window.setGravity(Gravity.BOTTOM);
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -293,8 +279,54 @@ public class InicioFragment extends Fragment {
         AdaptadorComentario adaptadorComentario = new AdaptadorComentario(new ArrayList<>());
         rvComentarios.setAdapter(adaptadorComentario);
 
-        ComentarioService comentarioService = ClienteRetrofit.obtenerInstancia().create(ComentarioService.class);
-        Call<RespuestaPaginada<Comentario>> call = comentarioService.obtenerComentariosPorReceta(receta.getIdReceta());
+        EditText etNuevoComentario = dialog.findViewById(R.id.et_nuevo_comentario);
+        ImageButton btnEnviarComentario = dialog.findViewById(R.id.btn_enviar_comentario);
+
+        ComentarioService comentarioService = ClienteRetrofit.obtenerInstancia(requireContext()).create(ComentarioService.class);
+        cargarComentariosReceta(comentarioService, receta.getIdReceta(), adaptadorComentario);
+
+        if (btnEnviarComentario != null && etNuevoComentario != null) {
+            btnEnviarComentario.setOnClickListener(v -> {
+                String mensaje = etNuevoComentario.getText().toString().trim();
+                if (mensaje.isEmpty()) {
+                    Toast.makeText(requireContext(), "Escribe un comentario antes de enviar", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                btnEnviarComentario.setEnabled(false);
+
+                Comentario nuevoComentario = new Comentario();
+                nuevoComentario.setIdReceta(receta.getIdReceta());
+                nuevoComentario.setMensaje(mensaje);
+
+                comentarioService.crearComentario(nuevoComentario).enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                        btnEnviarComentario.setEnabled(true);
+                        if (response.isSuccessful()) {
+                            etNuevoComentario.setText("");
+                            cargarComentariosReceta(comentarioService, receta.getIdReceta(), adaptadorComentario);
+                            rvComentarios.scrollToPosition(Math.max(adaptadorComentario.getItemCount() - 1, 0));
+                            Toast.makeText(requireContext(), "Comentario publicado", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(), "No se pudo publicar el comentario", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                        btnEnviarComentario.setEnabled(true);
+                        Toast.makeText(requireContext(), "Error de red al publicar comentario", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
+        }
+
+        dialog.show();
+    }
+
+    private void cargarComentariosReceta(ComentarioService comentarioService, int idReceta, AdaptadorComentario adaptadorComentario) {
+        Call<RespuestaPaginada<Comentario>> call = comentarioService.obtenerComentariosPorReceta(idReceta);
 
         call.enqueue(new Callback<>() {
             @Override
@@ -314,7 +346,91 @@ public class InicioFragment extends Fragment {
                 Toast.makeText(requireContext(), "Error de red al cargar comentarios", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void mostrarPopupValoracion(Receta receta) {
+        SessionManager sessionManager = new SessionManager(requireContext());
+        if (sessionManager.fetchUserId() == -1) {
+            Toast.makeText(requireContext(), "Debes iniciar sesión para valorar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.popup_valoracion);
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, (int) (getResources().getDisplayMetrics().heightPixels * 0.5));
+            window.setGravity(Gravity.BOTTOM);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            window.setDimAmount(0.5f);
+        }
+
+        dialog.setCanceledOnTouchOutside(true);
+
+        TextView tvReceta = dialog.findViewById(R.id.tv_valoracion_receta);
+        RatingBar ratingBar = dialog.findViewById(R.id.rb_valoracion);
+        TextView tvSeleccionada = dialog.findViewById(R.id.tv_valoracion_seleccionada);
+        Button btnCancelar = dialog.findViewById(R.id.btn_cancelar_valoracion);
+        Button btnEnviar = dialog.findViewById(R.id.btn_enviar_valoracion);
+
+        if (tvReceta != null) {
+            tvReceta.setText(receta.getTitulo() != null
+                    ? "Valorar: " + receta.getTitulo()
+                    : "Valorar receta");
+        }
+
+        if (ratingBar != null && tvSeleccionada != null) {
+            ratingBar.setOnRatingBarChangeListener((bar, rating, fromUser) -> {
+                int seleccion = Math.round(rating);
+                tvSeleccionada.setText(seleccion > 0
+                        ? "Puntuación: " + seleccion + "/5"
+                        : "Puntuación: sin elegir");
+            });
+        }
+
+        if (btnCancelar != null) {
+            btnCancelar.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        if (btnEnviar != null && ratingBar != null) {
+            btnEnviar.setOnClickListener(v -> {
+                int puntuacion = Math.round(ratingBar.getRating());
+                if (puntuacion < 1) {
+                    Toast.makeText(requireContext(), "Selecciona una puntuación entre 1 y 5", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                btnEnviar.setEnabled(false);
+
+                ValoracionService valoracionService = ClienteRetrofit.obtenerInstancia(requireContext()).create(ValoracionService.class);
+                ValoracionRequest request = new ValoracionRequest(receta.getIdReceta(), puntuacion);
+                valoracionService.crearValoracion(request).enqueue(new Callback<Valoracion>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Valoracion> call, @NonNull Response<Valoracion> response) {
+                        btnEnviar.setEnabled(true);
+                        if (response.isSuccessful()) {
+                            adaptador.refrescarValoracionReceta(receta.getIdReceta());
+                            dialog.dismiss();
+                            Toast.makeText(requireContext(), "Reseña guardada", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(), "No se pudo guardar la reseña", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Valoracion> call, @NonNull Throwable t) {
+                        btnEnviar.setEnabled(true);
+                        Toast.makeText(requireContext(), "Error de red al guardar la reseña", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            });
+        }
 
         dialog.show();
     }
 }
+
+

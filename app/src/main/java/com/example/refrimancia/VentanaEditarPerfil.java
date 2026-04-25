@@ -23,8 +23,12 @@ import com.bumptech.glide.Glide;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class VentanaEditarPerfil extends AppCompatActivity {
@@ -94,9 +98,6 @@ public class VentanaEditarPerfil extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
 
                     Perfil data = response.body().getData();
-
-                    // Guardamos el ID (más seguro que intent)
-                    idUsuario = data.getIdUsuario();
 
                     etNombreUserEditar.setText(data.getNombreUsuario());
 
@@ -182,11 +183,32 @@ public class VentanaEditarPerfil extends AppCompatActivity {
         String fecha = etFechaEditar.getText().toString().trim();
 
         String nombreCompleto = nombre + " " + apellidos;
-        if (nombreUser.isEmpty() || nombre.isEmpty() || apellidos.isEmpty() || fecha.isEmpty()) {
-            Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
-            return;
+
+        // =========================
+        // VALIDACIÓN DE FECHA
+        // =========================
+        try {
+            // acepta 1999-5-4
+            SimpleDateFormat parser = new SimpleDateFormat("yyyy-M-d");
+            parser.setLenient(false);
+
+            Date date = parser.parse(fecha);
+
+            // convierte a formato correcto 1999-05-04
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            fecha = formatter.format(date);
+
+        } catch (Exception e) {
+            etFechaEditar.setError("Formato incorrecto (yyyy-MM-dd)");
+            Toast.makeText(this,
+                    "Introduce una fecha válida (yyyy-MM-dd)",
+                    Toast.LENGTH_SHORT).show();
+            return; // 🚨 IMPORTANTE: corta el flujo
         }
-        // Convertir a RequestBody
+
+        // =========================
+        // REQUEST BODY
+        // =========================
         RequestBody nombreUserBody =
                 RequestBody.create(nombreUser, MediaType.parse("text/plain"));
 
@@ -196,8 +218,23 @@ public class VentanaEditarPerfil extends AppCompatActivity {
         RequestBody fechaBody =
                 RequestBody.create(fecha, MediaType.parse("text/plain"));
 
-        MultipartBody.Part imagenPart = null; // luego lo añadimos si quieres
+        MultipartBody.Part imagenPart = null;
 
+        if (croppedImageUri != null) {
+            File file = crearArchivoDesdeUri(croppedImageUri);
+            RequestBody requestFile =
+                    RequestBody.create(file, MediaType.parse("image/*"));
+
+            imagenPart = MultipartBody.Part.createFormData(
+                    "imagen_perfil",
+                    file.getName(),
+                    requestFile
+            );
+        }
+
+        // =========================
+        // LLAMADA API
+        // =========================
         Call<RegistroRespuesta> call = apiService.actualizarUsuario(
                 "Bearer " + token,
                 idUsuario,
@@ -231,6 +268,26 @@ public class VentanaEditarPerfil extends AppCompatActivity {
             }
         });
     }
+    private File crearArchivoDesdeUri(Uri uri) {
+        // Creamos un archivo temporal en la caché de la aplicación
+        // Copiamos el contenido de la imagen seleccionada dentro del archivo temporal
+        File file = new File(getCacheDir(), "imagen_subida.jpg");
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            FileOutputStream outputStream = new FileOutputStream(file);
 
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+            outputStream.close();
+            inputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
 }
 

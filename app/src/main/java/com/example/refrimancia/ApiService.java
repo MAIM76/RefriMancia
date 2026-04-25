@@ -4,9 +4,13 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 
 public interface ApiService {
     @POST("api/usuarios/login")
@@ -37,6 +41,18 @@ public interface ApiService {
     Call<CorreoRespuesta> solicitarCodigo(@Body CorreoRequest request);
     @POST("api/usuarios/cambiar-contrasena")
     Call<CambiarPassRespuesta> cambiarPassword(@Body CambiarPassRequest request);
+    @GET("api/usuarios/perfil")
+    Call<PerfilRespuesta> obtenerPerfil(@Header("Authorization") String token);
+    @Multipart
+    @PUT("api/usuarios/modificar/{id}")
+    Call<RegistroRespuesta> actualizarUsuario(
+            @Header("Authorization") String token,
+            @Path("id") int id,
+            @Part("nombre_usuario") RequestBody nombre_usuario,
+            @Part("nombre_completo") RequestBody nombre_completo,
+            @Part("fecha_nac") RequestBody fecha_nac,
+            @Part MultipartBody.Part imagen_perfil
+    );
 }
 
 

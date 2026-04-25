@@ -36,6 +36,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
     private final Map<Integer, Float> valoracionesCache = new HashMap<>();
     private Context contexto;
     private OnRecetaClickListener listener;
+    private OnValoracionClickListener valoracionListener;
     private OnComentarioClickListener comentarioListener;
 
     public interface OnRecetaClickListener {
@@ -44,6 +45,10 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
 
     public interface OnComentarioClickListener {
         void onComentarioClick(Receta receta);
+    }
+
+    public interface OnValoracionClickListener {
+        void onValoracionClick(Receta receta);
     }
 
     public AdaptadorReceta(List<Receta> listaRecetas, Context contexto, OnRecetaClickListener listener) {
@@ -55,6 +60,10 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
 
     public void setOnComentarioClickListener(OnComentarioClickListener comentarioListener) {
         this.comentarioListener = comentarioListener;
+    }
+
+    public void setOnValoracionClickListener(OnValoracionClickListener valoracionListener) {
+        this.valoracionListener = valoracionListener;
     }
 
     public List<Receta> getListaRecetasCompleta() {
@@ -83,8 +92,12 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
         } else {
             String consultaMinusculas = consulta.toLowerCase().trim();
             for (Receta receta : listaRecetasCompleta) {
-                if (receta.getTitulo().toLowerCase().contains(consultaMinusculas)
-                        || receta.getDescripcion().toLowerCase().contains(consultaMinusculas)) {
+                String titulo = receta.getTitulo() != null ? receta.getTitulo().toLowerCase() : "";
+                String descripcion = receta.getDescripcion() != null ? receta.getDescripcion().toLowerCase() : "";
+                String ingredientes = receta.getIngredientes() != null ? receta.getIngredientes().toLowerCase() : "";
+                if (titulo.contains(consultaMinusculas)
+                        || descripcion.contains(consultaMinusculas)
+                        || ingredientes.contains(consultaMinusculas)) {
                     listaRecetas.add(receta);
                 }
             }
@@ -120,26 +133,14 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
             holder.valoracionReceta.setTag(idReceta);
             
             if (valoracionesCache.containsKey(idReceta)) {
-                holder.valoracionReceta.setRating(valoracionesCache.get(idReceta));
+                Float valorCacheado = valoracionesCache.get(idReceta);
+                if (valorCacheado != null) {
+                    holder.valoracionReceta.setRating(valorCacheado);
+                }
             } else {
-                ValoracionService valoracionService = ClienteRetrofit.obtenerInstancia().create(ValoracionService.class);
-                valoracionService.obtenerValoracionesPorReceta(idReceta).enqueue(new Callback<RespuestaValoracionReceta>() {
-                    @Override
-                    public void onResponse(Call<RespuestaValoracionReceta> call, Response<RespuestaValoracionReceta> response) {
-                        float vFinal = 0f;
-                        if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
-                            vFinal = response.body().getData().getNotaMedia();
-                        }
-                        valoracionesCache.put(idReceta, vFinal);
-                        
-                        if (idReceta.equals(holder.valoracionReceta.getTag())) {
-                            holder.valoracionReceta.setRating(vFinal);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<RespuestaValoracionReceta> call, Throwable t) {
-                        // Opcional: manejar error. No se cachea para intentar de nuevo.
+                solicitarValoracionReceta(idReceta, valoracion -> {
+                    if (idReceta.equals(holder.valoracionReceta.getTag())) {
+                        holder.valoracionReceta.setRating(valoracion);
                     }
                 });
             }
@@ -158,9 +159,9 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
         }
 
         if (receta.getNombreUsuario() != null && !receta.getNombreUsuario().isEmpty()) {
-            holder.nombreUsuario.setText("@" + receta.getNombreUsuario());
+            holder.nombreUsuario.setText(contexto.getString(R.string.recipe_username_format, receta.getNombreUsuario()));
         } else {
-            holder.nombreUsuario.setText("@usuario" + receta.getIdUsuario());
+            holder.nombreUsuario.setText(contexto.getString(R.string.recipe_user_id_format, receta.getIdUsuario()));
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -176,6 +177,56 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
                 }
             });
         }
+
+        if (holder.btnResena != null) {
+            holder.btnResena.setOnClickListener(v -> {
+                if (valoracionListener != null) {
+                    valoracionListener.onValoracionClick(receta);
+                }
+            });
+        }
+    }
+
+    public void refrescarValoracionReceta(int idReceta) {
+        solicitarValoracionReceta(idReceta, valoracion -> {
+            int posicion = obtenerPosicionReceta(idReceta);
+            if (posicion != -1) {
+                notifyItemChanged(posicion);
+            }
+        });
+    }
+
+    private interface OnValoracionCargadaListener {
+        void onValoracionCargada(float valoracion);
+    }
+
+    private void solicitarValoracionReceta(int idReceta, OnValoracionCargadaListener listenerValoracion) {
+        ValoracionService valoracionService = ClienteRetrofit.obtenerInstancia(contexto).create(ValoracionService.class);
+        valoracionService.obtenerValoracionesPorReceta(idReceta).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<RespuestaValoracionReceta> call, Response<RespuestaValoracionReceta> response) {
+                float valoracionFinal = 0f;
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    valoracionFinal = response.body().getData().getNotaMedia();
+                }
+                valoracionesCache.put(idReceta, valoracionFinal);
+                listenerValoracion.onValoracionCargada(valoracionFinal);
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaValoracionReceta> call, Throwable t) {
+                // Se mantiene el valor actual si falla la consulta.
+            }
+        });
+    }
+
+    private int obtenerPosicionReceta(int idReceta) {
+        for (int i = 0; i < listaRecetas.size(); i++) {
+            if (listaRecetas.get(i).getIdReceta() == idReceta) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private String formatTiempo(int minutos) {
@@ -205,6 +256,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
         RatingBar valoracionReceta;
         ImageView imagenReceta;
         TextView nombreUsuario;
+        ImageView btnResena;
         ImageView btnComentarios;
 
         public RecetaViewHolder(@NonNull View itemView) {
@@ -215,6 +267,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
             valoracionReceta = itemView.findViewById(R.id.recipe_rating);
             imagenReceta = itemView.findViewById(R.id.iv_imagen_receta);
             nombreUsuario = itemView.findViewById(R.id.tv_nombre_usuario);
+            btnResena = itemView.findViewById(R.id.btn_megusta);
             btnComentarios = itemView.findViewById(R.id.btn_comentarios);
         }
     }

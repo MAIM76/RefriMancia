@@ -1,9 +1,8 @@
 package com.example.refrimancia.api;
 
 import com.example.refrimancia.modelo.Comentario;
+import com.example.refrimancia.modelo.ComentarioRequest;
 import com.example.refrimancia.modelo.RespuestaPaginada;
-
-import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -18,7 +17,12 @@ import retrofit2.http.Query;
 public interface ComentarioService {
     // Crear un nuevo comentario en una receta
     @POST("api/comentarios/crear")
-    Call<Comentario> crearComentario(@Body Comentario comentario);
+    Call<ResponseBody> crearComentario(@Body ComentarioRequest comentario);
+
+    // Compatibilidad temporal: el nuevo flujo debería usar ComentarioRequest.
+    @Deprecated
+    @POST("api/comentarios/crear")
+    Call<ResponseBody> crearComentario(@Body Comentario comentario);
 
     // Modificar un comentario existente por su ID
     @PUT("api/comentarios/modificar/{id}")

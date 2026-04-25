@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.refrimancia.ui.MainActivity;
+import com.example.refrimancia.ui.ContenedorPrincipalActivity;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,9 +33,9 @@ public class LoginActivity extends AppCompatActivity {
         // 1. Inicializar SessionManager
         sessionManager = new SessionManager(this);
 
-        // 2. AUTO-LOGIN: Si ya hay un token guardado, saltamos directamente a la pantalla principal (MainActivity)
+        // 2. AUTO-LOGIN: Si ya hay un token guardado, saltamos directamente a la pantalla principal
         if (sessionManager.fetchAuthToken() != null) {
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, ContenedorPrincipalActivity.class);
             startActivity(intent);
             finish();
             return; 
@@ -99,8 +99,8 @@ public class LoginActivity extends AppCompatActivity {
                         );
                     }
 
-                    // Navegar a MainActivity tras el login exitoso
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    // Navegar a la actividad principal tras el login exitoso
+                    Intent intent = new Intent(LoginActivity.this, ContenedorPrincipalActivity.class);
                     startActivity(intent);
                     finish(); 
                 } else {

@@ -6,7 +6,6 @@ import com.example.refrimancia.modelo.Usuario;
 import com.example.refrimancia.modelo.RespuestaPaginada;
 import com.example.refrimancia.modelo.RespuestaUnica;
 
-import java.util.List;
 import java.util.Map;
 
 import okhttp3.MultipartBody;
@@ -35,11 +34,12 @@ public interface UsuarioService {
     // Crear nuevo usuario con imagen de perfil
     @Multipart
     @POST("api/usuarios/crear")
-    Call<AuthToken> crearUsuario(
+    Call<ResponseBody> crearUsuario(
             @Part("nombre_usuario") RequestBody nombreUsuario,
             @Part("contrasena") RequestBody contrasena,
             @Part("nombre_completo") RequestBody nombreCompleto,
             @Part("correo_electronico") RequestBody correoElectronico,
+            @Part("fecha_nac") RequestBody fechaNacimiento,
             @Part MultipartBody.Part imagenPerfil
     );
 
@@ -50,12 +50,13 @@ public interface UsuarioService {
     // Modificar datos de un usuario existente
     @Multipart
     @PUT("api/usuarios/modificar/{id}")
-    Call<Usuario> modificarUsuario(
+    Call<ResponseBody> modificarUsuario(
             @Path("id") int id,
             @Part("nombre_usuario") RequestBody nombreUsuario,
             @Part("contrasena") RequestBody contrasena,
             @Part("nombre_completo") RequestBody nombreCompleto,
             @Part("correo_electronico") RequestBody correoElectronico,
+            @Part("fecha_nac") RequestBody fechaNacimiento,
             @Part MultipartBody.Part imagenPerfil
     );
 

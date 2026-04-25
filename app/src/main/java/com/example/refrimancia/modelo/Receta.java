@@ -14,7 +14,7 @@ public class Receta implements Serializable {
     @SerializedName("nombre_usuario")
     private String nombreUsuario;
 
-    @SerializedName("imagen_receta")
+    @SerializedName(value = "imagen_receta", alternate = {"imagen"})
     private String imagenUrl;
 
     @SerializedName("fecha_publicacion")
@@ -29,10 +29,13 @@ public class Receta implements Serializable {
     @SerializedName("titulo_receta")
     private String titulo;
 
-    @SerializedName("ingredientes")
+    @SerializedName("descripcion")
     private String descripcion;
 
-    @SerializedName("descripcion")
+    @SerializedName("ingredientes")
+    private String ingredientes;
+
+    @SerializedName(value = "instrucciones", alternate = {"pasos"})
     private String pasos;
 
     @SerializedName("tiempo_preparacion")
@@ -84,6 +87,7 @@ public class Receta implements Serializable {
     public String getNombreUsuario() { return nombreUsuario; }
     public String getTitulo() { return titulo; }
     public String getDescripcion() { return descripcion; }
+    public String getIngredientes() { return ingredientes; }
     public String getPasos() { return pasos; }
     public int getTiempoPreparacion() { return tiempoPreparacion; }
     public int getPorciones() { return porciones; }
@@ -99,6 +103,7 @@ public class Receta implements Serializable {
     public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setIngredientes(String ingredientes) { this.ingredientes = ingredientes; }
     public void setPasos(String pasos) { this.pasos = pasos; }
     public void setTiempoPreparacion(int tiempoPreparacion) { this.tiempoPreparacion = tiempoPreparacion; }
     public void setPorciones(int porciones) { this.porciones = porciones; }

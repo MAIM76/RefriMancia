@@ -22,6 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
+                android:contentDescription="@string/recipe_image"
                 android:src="@drawable/ic_launcher_background" />
 
             <TextView
@@ -32,7 +33,7 @@
                 android:layout_margin="8dp"
                 android:background="#80000000"
                 android:padding="6dp"
-                android:text="\@usuario"
+                android:text="@string/recipe_user_placeholder"
                 android:textColor="@android:color/white"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -45,24 +46,24 @@
             android:padding="12dp">
 
             <TextView
-                android:id="@+id/recipe_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/placeholder_recipe_title"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:ellipsize="end" />
+                    android:id="@+id/recipe_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/placeholder_recipe_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
 
             <TextView
-                android:id="@+id/recipe_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/placeholder_recipe_desc"
-                android:textSize="13sp"
-                android:maxLines="2"
-                android:ellipsize="end"
-                android:layout_marginTop="4dp" />
+                    android:id="@+id/recipe_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/placeholder_recipe_desc"
+                    android:textSize="14sp"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:layout_marginTop="4dp" />
 
             <TextView
                 android:id="@+id/recipe_time"
@@ -71,7 +72,7 @@
                 android:layout_marginTop="4dp"
                 android:textSize="12sp"
                 android:textStyle="italic"
-                android:text="Tiempo de prep: 0 min" />
+                android:text="@string/recipe_time_default" />
 
             <RatingBar
                 android:id="@+id/recipe_rating"
@@ -97,23 +98,23 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/btn_megusta"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
-                android:padding="4dp"
-                android:src="@android:drawable/btn_star_big_off"
-                android:contentDescription="Me gusta"
-                app:tint="?attr/colorPrimary" />
+                    android:id="@+id/btn_megusta"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="16dp"
+                    android:padding="4dp"
+                    android:src="@android:drawable/btn_star_big_off"
+                    android:contentDescription="@string/recipe_review"
+                    app:tint="?attr/colorPrimary" />
 
             <ImageView
-                android:id="@+id/btn_comentarios"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:padding="4dp"
-                android:src="@android:drawable/sym_action_chat"
-                android:contentDescription="Comentar"
-                app:tint="?attr/colorPrimary" />
+                    android:id="@+id/btn_comentarios"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:padding="4dp"
+                    android:src="@android:drawable/sym_action_chat"
+                    android:contentDescription="@string/recipe_comment"
+                    app:tint="?attr/colorPrimary" />
         </LinearLayout>
 
     </LinearLayout>

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.refrimancia.CreateRecipeActivity;
 import com.example.refrimancia.R;
+import com.example.refrimancia.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class ContenedorPrincipalActivity extends AppCompatActivity {
@@ -35,7 +36,7 @@ public class ContenedorPrincipalActivity extends AppCompatActivity {
 				return true;
 			}
 			if (id == R.id.nav_create) {
-				startActivity(new Intent(this, CreateRecipeActivity.class));
+				abrirCrearRecetaConSesion();
 				return true;
 			}
 			if (id == R.id.nav_user) {
@@ -47,5 +48,19 @@ public class ContenedorPrincipalActivity extends AppCompatActivity {
 			}
 			return false;
 		});
+	}
+
+	private void abrirCrearRecetaConSesion() {
+		SessionManager sessionManager = new SessionManager(this);
+		Intent intent = new Intent(this, CreateRecipeActivity.class);
+		int idUsuario = sessionManager.fetchUserId();
+		String token = sessionManager.fetchAuthToken();
+		if (idUsuario > 0) {
+			intent.putExtra("ID_USUARIO", idUsuario);
+		}
+		if (token != null && !token.isEmpty()) {
+			intent.putExtra("TOKEN", token);
+		}
+		startActivity(intent);
 	}
 }

@@ -1,5 +1,6 @@
 package com.example.refrimancia.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,6 +71,8 @@ public class UsuarioFragment extends Fragment {
         contenidoVacio = vista.findViewById(R.id.empty_state);
 
         rvMisRecetas.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        btnEditarPerfil.setOnClickListener(v -> abrirEditarPerfil());
     }
 
     private void cargarDatosUsuario() {
@@ -173,6 +177,21 @@ public class UsuarioFragment extends Fragment {
     private void mostrarEstadoVacio() {
         contenidoVacio.setVisibility(View.VISIBLE);
         Log.d(TAG, "No hay datos de usuario disponibles");
+    }
+
+    private void abrirEditarPerfil() {
+        int idUsuario = sessionManager.fetchUserId();
+        String token = sessionManager.fetchAuthToken();
+
+        if (idUsuario <= 0 || token == null || token.isEmpty()) {
+            Toast.makeText(requireContext(), "No se pudo obtener la sesión del usuario", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Intent intent = new Intent(requireContext(), com.example.refrimancia.VentanaEditarPerfil.class);
+        intent.putExtra("ID_USUARIO", idUsuario);
+        intent.putExtra("TOKEN", token);
+        startActivity(intent);
     }
 
     private class AdaptadorMisRecetas extends RecyclerView.Adapter<AdaptadorMisRecetas.MiRecetaViewHolder> {

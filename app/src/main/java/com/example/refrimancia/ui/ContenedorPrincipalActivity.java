@@ -2,6 +2,7 @@ package com.example.refrimancia.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -52,15 +53,17 @@ public class ContenedorPrincipalActivity extends AppCompatActivity {
 
 	private void abrirCrearRecetaConSesion() {
 		SessionManager sessionManager = new SessionManager(this);
-		Intent intent = new Intent(this, CreateRecipeActivity.class);
 		int idUsuario = sessionManager.fetchUserId();
 		String token = sessionManager.fetchAuthToken();
-		if (idUsuario > 0) {
-			intent.putExtra("ID_USUARIO", idUsuario);
+
+		if (idUsuario <= 0 || token == null || token.isEmpty()) {
+			Toast.makeText(this, "No se pudo obtener la sesión del usuario", Toast.LENGTH_SHORT).show();
+			return;
 		}
-		if (token != null && !token.isEmpty()) {
-			intent.putExtra("TOKEN", token);
-		}
+
+		Intent intent = new Intent(this, CreateRecipeActivity.class);
+		intent.putExtra("ID_USUARIO", idUsuario);
+		intent.putExtra("TOKEN", token);
 		startActivity(intent);
 	}
 }

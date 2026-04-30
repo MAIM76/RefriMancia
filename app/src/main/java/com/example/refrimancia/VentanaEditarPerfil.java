@@ -3,33 +3,29 @@ package com.example.refrimancia;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import com.bumptech.glide.Glide;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.*;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class VentanaEditarPerfil extends AppCompatActivity {
 
@@ -39,6 +35,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imagenUri;
     private Uri croppedImageUri;
+    private String imagenActualUrl;
 
     EditText etNombreUserEditar;
     EditText etNombreEditar;
@@ -49,7 +46,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
     Button botonCancelarEditar;
     Button botonEditarImagen;
 
-    private String token = "TOKEN_PRUEBA"; // luego se tiene que cambiar
+    private String token;
     private int idUsuario;
 
     @Override
@@ -57,11 +54,14 @@ public class VentanaEditarPerfil extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ventana_editar_perfil);
 
-        //Recibir datos
+        //Recibir los datos necesarios desde el intent
         token = getIntent().getStringExtra("TOKEN");
         idUsuario = getIntent().getIntExtra("ID_USUARIO", -1);
+
+        //Mensaje al log para mayor ayuda
         Log.d("EDITAR", "Token: " + token);
         Log.d("EDITAR", "ID Usuario: " + idUsuario);
+
 
         etNombreUserEditar = findViewById(R.id.etNombreUserEditar);
         etNombreEditar = findViewById(R.id.etNombreEditar);
@@ -73,7 +73,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
         botonCancelarEditar = findViewById(R.id.botonCancelarEditar);
         botonEditarImagen = findViewById(R.id.botonEditarImagen);
 
-        // Retrofit
+        //Configurar retrofit
         retrofit = new Retrofit.Builder()
                 .baseUrl("https://refrimacia-backend.onrender.com/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -81,12 +81,17 @@ public class VentanaEditarPerfil extends AppCompatActivity {
 
         apiService = retrofit.create(ApiService.class);
 
+        //Cargar los datos del usuario
         cargarPerfil();
+
 
         botonCancelarEditar.setOnClickListener(v -> finish());
         botonEditarImagen.setOnClickListener(v -> abrirSelectorImagen());
         botonActualizarEditar.setOnClickListener(v -> actualizarUsuario());
     }
+
+
+    //Metodo para cargar los datos del perfil
     private void cargarPerfil() {
 
         Call<PerfilRespuesta> call = apiService.obtenerPerfil("Bearer " + token);
@@ -97,26 +102,40 @@ public class VentanaEditarPerfil extends AppCompatActivity {
 
                 if (response.isSuccessful() && response.body() != null) {
 
-                    Perfil data = response.body().getData();
+                    if (response.body().getStatus().equals("success")) {
 
-                    etNombreUserEditar.setText(data.getNombreUsuario());
+                        Perfil data = response.body().getData();
 
-                    // Separar nombre y apellidos
-                    String nombreCompleto = data.getNombreCompleto();
-                    if (nombreCompleto.contains(" ")) {
-                        String[] partes = nombreCompleto.split(" ", 2);
-                        etNombreEditar.setText(partes[0]);
-                        etApellidosEditar.setText(partes[1]);
+                        // Guardar ID REAL del usuario
+                        idUsuario = data.getIdUsuario();
+
+                        etNombreUserEditar.setText(data.getNombreUsuario());
+
+                        // Separar nombre completo
+                        String nombreCompleto = data.getNombreCompleto();
+                        if (nombreCompleto.contains(" ")) {
+                            String[] partes = nombreCompleto.split(" ", 2);
+                            etNombreEditar.setText(partes[0]);
+                            etApellidosEditar.setText(partes[1]);
+                        } else {
+                            etNombreEditar.setText(nombreCompleto);
+                        }
+
+                        // Formatear fecha
+                        String fecha = data.getFechaNac().split("T")[0];
+                        etFechaEditar.setText(fecha);
+
+                        // Guardar la ruta de la imagen y cargar imagen
+                        imagenActualUrl = data.getImagenPerfil();
+                        Glide.with(VentanaEditarPerfil.this)
+                                .load(data.getImagenPerfil())
+                                .into(ivImagenEditar);
+
                     } else {
-                        etNombreEditar.setText(nombreCompleto);
+                        Toast.makeText(VentanaEditarPerfil.this,
+                                response.body().getMessage(),
+                                Toast.LENGTH_SHORT).show();
                     }
-
-                    // Fecha (quitar la T)
-                    String fecha = data.getFechaNac().split("T")[0];
-                    etFechaEditar.setText(fecha);
-
-                    // Imagen (si usas Glide mejor)
-                    Glide.with(VentanaEditarPerfil.this).load(data.getImagenPerfil()).into(ivImagenEditar);
 
                 } else {
                     Toast.makeText(VentanaEditarPerfil.this,
@@ -133,24 +152,29 @@ public class VentanaEditarPerfil extends AppCompatActivity {
             }
         });
     }
+
+
+    //Metodo para el boton que abre el selector de imagenes
     public void abrirSelectorImagen() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
+    // Recibe la imagen seleccionada por el usuario y la muestra en el ImageView
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        // Imagen seleccionada desde galería
         if (requestCode == PICK_IMAGE_REQUEST
                 && resultCode == RESULT_OK
                 && data != null
                 && data.getData() != null) {
 
             imagenUri = data.getData();
+            // Abrimos uCrop para recortar
             iniciarRecorte(imagenUri);
         }
-
+        // Imagen ya recortada
         if (requestCode == UCrop.REQUEST_CROP && resultCode == RESULT_OK) {
             croppedImageUri = UCrop.getOutput(data);
 
@@ -158,11 +182,12 @@ public class VentanaEditarPerfil extends AppCompatActivity {
                 ivImagenEditar.setImageURI(croppedImageUri);
             }
         }
-
+        // Error en recorte
         if (resultCode == UCrop.RESULT_ERROR) {
             Toast.makeText(this, "Error al recortar imagen", Toast.LENGTH_SHORT).show();
         }
     }
+    //Metodo para iniciar el recorte de imagen
     public void iniciarRecorte(Uri sourceUri) {
 
         Uri destinationUri = Uri.fromFile(
@@ -175,6 +200,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
                 .start(this);
     }
 
+    //Metodo para actualizar los datos del usuario
     private void actualizarUsuario() {
 
         String nombreUser = etNombreUserEditar.getText().toString().trim();
@@ -184,31 +210,25 @@ public class VentanaEditarPerfil extends AppCompatActivity {
 
         String nombreCompleto = nombre + " " + apellidos;
 
-        // =========================
-        // VALIDACIÓN DE FECHA
-        // =========================
+        //Validar la fecha
         try {
-            // acepta 1999-5-4
             SimpleDateFormat parser = new SimpleDateFormat("yyyy-M-d");
             parser.setLenient(false);
 
             Date date = parser.parse(fecha);
 
-            // convierte a formato correcto 1999-05-04
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             fecha = formatter.format(date);
 
         } catch (Exception e) {
             etFechaEditar.setError("Formato incorrecto (yyyy-MM-dd)");
             Toast.makeText(this,
-                    "Introduce una fecha válida (yyyy-MM-dd)",
+                    "Introduce una fecha válida",
                     Toast.LENGTH_SHORT).show();
-            return; // 🚨 IMPORTANTE: corta el flujo
+            return;
         }
 
-        // =========================
-        // REQUEST BODY
-        // =========================
+        //Crear los REQUEST BODY
         RequestBody nombreUserBody =
                 RequestBody.create(nombreUser, MediaType.parse("text/plain"));
 
@@ -222,6 +242,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
 
         if (croppedImageUri != null) {
             File file = crearArchivoDesdeUri(croppedImageUri);
+
             RequestBody requestFile =
                     RequestBody.create(file, MediaType.parse("image/*"));
 
@@ -232,17 +253,27 @@ public class VentanaEditarPerfil extends AppCompatActivity {
             );
         }
 
-        // =========================
-        // LLAMADA API
-        // =========================
-        Call<RegistroRespuesta> call = apiService.actualizarUsuario(
-                "Bearer " + token,
-                idUsuario,
-                nombreUserBody,
-                nombreCompletoBody,
-                fechaBody,
-                imagenPart
-        );
+        //Realizar la llamada a la API
+        Call<RegistroRespuesta> call;
+
+        if (croppedImageUri != null) {
+            call = apiService.actualizarUsuario(
+                    "Bearer " + token,
+                    idUsuario,
+                    nombreUserBody,
+                    nombreCompletoBody,
+                    fechaBody,
+                    imagenPart
+            );
+        } else {
+            call = apiService.actualizarUsuarioSinImagen(
+                    "Bearer " + token,
+                    idUsuario,
+                    nombreUserBody,
+                    nombreCompletoBody,
+                    fechaBody
+            );
+        }
 
         call.enqueue(new Callback<RegistroRespuesta>() {
             @Override
@@ -254,8 +285,15 @@ public class VentanaEditarPerfil extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
+                    Log.e("API_ERROR", "Código: " + response.code());
+                    try {
+                        Log.e("API_ERROR", "Error body: " + response.errorBody().string());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     Toast.makeText(VentanaEditarPerfil.this,
-                            "Error al actualizar",
+                            "Error: " + response.code(),
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -268,26 +306,29 @@ public class VentanaEditarPerfil extends AppCompatActivity {
             }
         });
     }
+    //Metodo auxiliar para convertir URI a FILE
     private File crearArchivoDesdeUri(Uri uri) {
-        // Creamos un archivo temporal en la caché de la aplicación
-        // Copiamos el contenido de la imagen seleccionada dentro del archivo temporal
+
         File file = new File(getCacheDir(), "imagen_subida.jpg");
+
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
             FileOutputStream outputStream = new FileOutputStream(file);
 
             byte[] buffer = new byte[1024];
             int length;
+
             while ((length = inputStream.read(buffer)) > 0) {
                 outputStream.write(buffer, 0, length);
             }
+
             outputStream.close();
             inputStream.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return file;
     }
 }
-

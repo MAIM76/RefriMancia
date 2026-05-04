@@ -53,6 +53,16 @@ public interface ApiService {
             @Part("fecha_nac") RequestBody fecha_nac,
             @Part MultipartBody.Part imagen_perfil
     );
+    //Mismo que el anterior pero sin imagen
+    @Multipart
+    @PUT("api/usuarios/modificar/{id}")
+    Call<RegistroRespuesta> actualizarUsuarioSinImagen(
+            @Header("Authorization") String token,
+            @Path("id") int id,
+            @Part("nombre_usuario") RequestBody nombre_usuario,
+            @Part("nombre_completo") RequestBody nombre_completo,
+            @Part("fecha_nac") RequestBody fecha_nac
+    );
 }
 
 

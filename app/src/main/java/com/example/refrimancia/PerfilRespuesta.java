@@ -4,6 +4,7 @@ public class PerfilRespuesta {
 
     private String status;
     private Perfil data;
+    private String message;
 
     public String getStatus() {
         return status;
@@ -11,5 +12,8 @@ public class PerfilRespuesta {
 
     public Perfil getData() {
         return data;
+    }
+    public String getMessage() {
+        return message;
     }
 }

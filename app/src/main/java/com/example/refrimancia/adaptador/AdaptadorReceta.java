@@ -1,6 +1,7 @@
 package com.example.refrimancia.adaptador;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +10,13 @@ import android.widget.TextView;
 import android.widget.RatingBar;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
-import com.example.refrimancia.modelo.Receta;
+import com.example.refrimancia.modelo.entidad.Receta;
+import com.example.refrimancia.modelo.response.ValoracionReceta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +25,6 @@ import java.util.HashMap;
 
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.ValoracionService;
-import com.example.refrimancia.modelo.RespuestaValoracionReceta;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -117,11 +119,15 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
     public void onBindViewHolder(@NonNull RecetaViewHolder holder, int posicion) {
         Receta receta = listaRecetas.get(posicion);
 
-        // Configurar título
-        holder.tituloReceta.setText(receta.getTitulo() != null ? receta.getTitulo() : "Sin título");
+        // Configurar titulo
+        holder.tituloReceta.setText(receta.getTitulo() != null ? receta.getTitulo() : "Sin titulo");
 
-        // Configurar descripción (limitada)
-        holder.descripcionReceta.setText(receta.getDescripcion() != null ? receta.getDescripcion() : "Sin descripción");
+        // Configurar descripcion (fallback a ingredientes)
+        String descripcion = receta.getDescripcion();
+        if (descripcion == null || descripcion.trim().isEmpty()) {
+            descripcion = receta.getIngredientes();
+        }
+        holder.descripcionReceta.setText(descripcion != null ? descripcion : "Sin descripcion");
 
         // Configurar tiempo de preparación
         holder.tiempoPrep.setText(formatTiempo(receta.getTiempoPreparacion()));
@@ -131,8 +137,12 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
             holder.valoracionReceta.setRating(0); // placeholder mientras carga
             Integer idReceta = receta.getIdReceta();
             holder.valoracionReceta.setTag(idReceta);
-            
-            if (valoracionesCache.containsKey(idReceta)) {
+
+            Float mediaPuntuacion = receta.getMediaPuntuacionFloat();
+            if (mediaPuntuacion != null) {
+                valoracionesCache.put(idReceta, mediaPuntuacion);
+                holder.valoracionReceta.setRating(mediaPuntuacion);
+            } else if (valoracionesCache.containsKey(idReceta)) {
                 Float valorCacheado = valoracionesCache.get(idReceta);
                 if (valorCacheado != null) {
                     holder.valoracionReceta.setRating(valorCacheado);
@@ -162,6 +172,26 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
             holder.nombreUsuario.setText(contexto.getString(R.string.recipe_username_format, receta.getNombreUsuario()));
         } else {
             holder.nombreUsuario.setText(contexto.getString(R.string.recipe_user_id_format, receta.getIdUsuario()));
+        }
+
+        String tipo = receta.getCategoria() != null ? receta.getCategoria() : "";
+        holder.metaReceta.setText(!tipo.isEmpty() ? "Tipo: " + tipo : "Tipo: N/A");
+
+        int colorSemaforo = obtenerColorSemaforo(receta.getSemaforo());
+        if (colorSemaforo != 0) {
+            holder.semaforoDot.setVisibility(View.VISIBLE);
+            GradientDrawable fondo = (GradientDrawable) holder.semaforoDot.getBackground().mutate();
+            fondo.setColor(colorSemaforo);
+        } else {
+            holder.semaforoDot.setVisibility(View.GONE);
+        }
+
+        String consumo = receta.getConsumoHabitual();
+        if (consumo != null && !consumo.isEmpty()) {
+            holder.consumoReceta.setText(consumo);
+            holder.consumoReceta.setVisibility(View.VISIBLE);
+        } else {
+            holder.consumoReceta.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -204,7 +234,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
         ValoracionService valoracionService = ClienteRetrofit.obtenerInstancia(contexto).create(ValoracionService.class);
         valoracionService.obtenerValoracionesPorReceta(idReceta).enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<RespuestaValoracionReceta> call, Response<RespuestaValoracionReceta> response) {
+            public void onResponse(Call<ValoracionReceta> call, Response<ValoracionReceta> response) {
                 float valoracionFinal = 0f;
                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                     valoracionFinal = response.body().getData().getNotaMedia();
@@ -214,7 +244,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
             }
 
             @Override
-            public void onFailure(Call<RespuestaValoracionReceta> call, Throwable t) {
+            public void onFailure(Call<ValoracionReceta> call, Throwable t) {
                 // Se mantiene el valor actual si falla la consulta.
             }
         });
@@ -244,6 +274,26 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
         }
     }
 
+    private int obtenerColorSemaforo(String semaforo) {
+        if (semaforo == null) {
+            return 0;
+        }
+        switch (semaforo) {
+            case "rojo":
+                return ContextCompat.getColor(contexto, android.R.color.holo_red_dark);
+            case "naranja":
+                return ContextCompat.getColor(contexto, android.R.color.holo_orange_dark);
+            case "amarillo":
+                return ContextCompat.getColor(contexto, android.R.color.holo_orange_light);
+            case "verde_claro":
+                return ContextCompat.getColor(contexto, android.R.color.holo_green_light);
+            case "verde_oscuro":
+                return ContextCompat.getColor(contexto, android.R.color.holo_green_dark);
+            default:
+                return 0;
+        }
+    }
+
     @Override
     public int getItemCount() {
         return listaRecetas.size();
@@ -256,8 +306,11 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
         RatingBar valoracionReceta;
         ImageView imagenReceta;
         TextView nombreUsuario;
+        TextView metaReceta;
+        TextView consumoReceta;
         ImageView btnResena;
         ImageView btnComentarios;
+        View semaforoDot;
 
         public RecetaViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -267,8 +320,11 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
             valoracionReceta = itemView.findViewById(R.id.recipe_rating);
             imagenReceta = itemView.findViewById(R.id.iv_imagen_receta);
             nombreUsuario = itemView.findViewById(R.id.tv_nombre_usuario);
+            metaReceta = itemView.findViewById(R.id.recipe_meta);
+            consumoReceta = itemView.findViewById(R.id.recipe_consumo);
             btnResena = itemView.findViewById(R.id.btn_megusta);
             btnComentarios = itemView.findViewById(R.id.btn_comentarios);
+            semaforoDot = itemView.findViewById(R.id.recipe_semaforo_dot);
         }
     }
 }

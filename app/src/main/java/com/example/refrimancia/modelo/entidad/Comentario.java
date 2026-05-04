@@ -1,21 +1,17 @@
-package com.example.refrimancia.modelo;
+package com.example.refrimancia.modelo.entidad;
 
 import com.google.gson.annotations.SerializedName;
 
 public class Comentario {
-    // Identificador único del comentario
     @SerializedName("id_comentario")
     private int idComentario;
 
-    // Contenido del mensaje del comentario
     @SerializedName("mensaje")
     private String mensaje;
 
-    // Fecha en que se escribió el comentario
     @SerializedName("fecha_comentario")
     private String fechaComentario;
 
-    // ID del usuario que escribió el comentario
     @SerializedName("id_usuario")
     private int idUsuario;
 
@@ -31,7 +27,7 @@ public class Comentario {
     @SerializedName("nombre_usuario")
     private String nombreUsuario;
 
-    @SerializedName(value="url_foto_perfil", alternate={"imagen_perfil"})
+    @SerializedName(value = "url_foto_perfil", alternate = {"imagen_perfil"})
     private String urlFotoPerfil;
 
     public Comentario() {
@@ -58,43 +54,20 @@ public class Comentario {
     public void setFechaComentario(String fechaComentario) { this.fechaComentario = fechaComentario; }
 
     public int getIdUsuario() { return idUsuario; }
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
-    }
+    public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
 
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
+    public String getNombreUsuario() { return nombreUsuario; }
+    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
 
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
+    public String getContenido() { return contenido; }
+    public void setContenido(String contenido) { this.contenido = contenido; }
 
-    public String getContenido() {
-        return contenido;
-    }
+    public String getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(String fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 
-    public void setContenido(String contenido) {
-        this.contenido = contenido;
-    }
+    public String getUrlFotoPerfil() { return urlFotoPerfil; }
+    public void setUrlFotoPerfil(String urlFotoPerfil) { this.urlFotoPerfil = urlFotoPerfil; }
 
-    public String getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(String fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-
-    public String getUrlFotoPerfil() {
-        return urlFotoPerfil;
-    }
-
-    public void setUrlFotoPerfil(String urlFotoPerfil) {
-        this.urlFotoPerfil = urlFotoPerfil;
-    }
-
-    // Devuelve el texto disponible independientemente del nombre del campo en backend.
     public String getTexto() {
         if (contenido != null && !contenido.trim().isEmpty()) {
             return contenido;
@@ -107,7 +80,6 @@ public class Comentario {
         this.contenido = texto;
     }
 
-    // Normaliza la fecha para consumidores UI.
     public String getFechaNormalizada() {
         if (fechaCreacion != null && !fechaCreacion.trim().isEmpty()) {
             return fechaCreacion;
@@ -115,3 +87,4 @@ public class Comentario {
         return fechaComentario != null ? fechaComentario : "";
     }
 }
+

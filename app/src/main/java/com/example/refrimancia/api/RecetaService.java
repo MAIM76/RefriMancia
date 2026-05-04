@@ -1,8 +1,8 @@
 package com.example.refrimancia.api;
 
-import com.example.refrimancia.modelo.Receta;
-import com.example.refrimancia.modelo.RespuestaPaginada;
-import com.example.refrimancia.modelo.RespuestaUnica;
+import com.example.refrimancia.modelo.entidad.Receta;
+import com.example.refrimancia.modelo.response.RespuestaPaginada;
+import com.example.refrimancia.modelo.response.RespuestaUnica;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;

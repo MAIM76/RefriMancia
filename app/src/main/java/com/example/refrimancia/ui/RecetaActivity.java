@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
@@ -26,11 +29,11 @@ import com.example.refrimancia.adaptador.AdaptadorComentario;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.ComentarioService;
 import com.example.refrimancia.api.RecetaService;
-import com.example.refrimancia.modelo.Comentario;
-import com.example.refrimancia.modelo.ComentarioRequest;
-import com.example.refrimancia.modelo.Receta;
-import com.example.refrimancia.modelo.RespuestaPaginada;
-import com.example.refrimancia.modelo.RespuestaUnica;
+import com.example.refrimancia.modelo.entidad.Comentario;
+import com.example.refrimancia.modelo.entidad.Receta;
+import com.example.refrimancia.modelo.request.ComentarioRequest;
+import com.example.refrimancia.modelo.response.RespuestaPaginada;
+import com.example.refrimancia.modelo.response.RespuestaUnica;
 import java.util.ArrayList;
 import java.util.List;
 import okhttp3.ResponseBody;
@@ -48,6 +51,7 @@ public class RecetaActivity extends AppCompatActivity {
     private TextView tvPasos;
     private TextView tvAutor;
     private TextView tvTiempo;
+    private View semaforoDot;
     private Button btnVerComentarios;
 
     public static Intent crearIntent(Context context, Receta receta) {
@@ -67,6 +71,7 @@ public class RecetaActivity extends AppCompatActivity {
         tvPasos = findViewById(R.id.tv_detalle_pasos);
         tvAutor = findViewById(R.id.tv_detalle_autor);
         tvTiempo = findViewById(R.id.tv_detalle_tiempo);
+        semaforoDot = findViewById(R.id.tv_detalle_semaforo_dot);
         btnVerComentarios = findViewById(R.id.btn_ver_comentarios);
 
         ImageButton btnVolver = findViewById(R.id.btn_volver_detalle);
@@ -185,10 +190,41 @@ public class RecetaActivity extends AppCompatActivity {
         tvAutor.setText(receta.getNombreUsuario() != null ? "@" + receta.getNombreUsuario() : "@usuario_desconocido");
         tvTiempo.setText(receta.getTiempoPreparacion() > 0 ? formatTiempo(receta.getTiempoPreparacion()) : "N/A");
 
+        int colorSemaforo = obtenerColorSemaforo(receta.getSemaforo());
+        if (semaforoDot != null) {
+            if (colorSemaforo != 0) {
+                semaforoDot.setVisibility(View.VISIBLE);
+                GradientDrawable fondo = (GradientDrawable) semaforoDot.getBackground().mutate();
+                fondo.setColor(colorSemaforo);
+            } else {
+                semaforoDot.setVisibility(View.GONE);
+            }
+        }
+
         if (receta.getImagenUrl() != null && !receta.getImagenUrl().isEmpty()) {
             Glide.with(this).load(receta.getImagenUrl()).into(ivImagen);
         } else {
             ivImagen.setImageResource(R.drawable.ic_launcher_background);
+        }
+    }
+
+    private int obtenerColorSemaforo(String semaforo) {
+        if (semaforo == null) {
+            return 0;
+        }
+        switch (semaforo) {
+            case "rojo":
+                return ContextCompat.getColor(this, android.R.color.holo_red_dark);
+            case "naranja":
+                return ContextCompat.getColor(this, android.R.color.holo_orange_dark);
+            case "amarillo":
+                return ContextCompat.getColor(this, android.R.color.holo_orange_light);
+            case "verde_claro":
+                return ContextCompat.getColor(this, android.R.color.holo_green_light);
+            case "verde_oscuro":
+                return ContextCompat.getColor(this, android.R.color.holo_green_dark);
+            default:
+                return 0;
         }
     }
 

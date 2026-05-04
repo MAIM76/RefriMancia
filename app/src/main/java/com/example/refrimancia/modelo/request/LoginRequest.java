@@ -1,4 +1,4 @@
-package com.example.refrimancia.modelo;
+package com.example.refrimancia.modelo.request;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -10,6 +10,10 @@ public class LoginRequest {
     // Contraseña del usuario
     @SerializedName("contrasena")
     private String contrasena;
+
+    // Constructor vacío
+    public LoginRequest() {
+    }
 
     // Constructor con parámetros
     public LoginRequest(String correoElectronico, String contrasena) {

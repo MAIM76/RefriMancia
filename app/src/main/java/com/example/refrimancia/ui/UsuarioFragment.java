@@ -2,6 +2,7 @@ package com.example.refrimancia.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
@@ -23,10 +25,10 @@ import com.example.refrimancia.SessionManager;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.RecetaService;
 import com.example.refrimancia.api.UsuarioService;
-import com.example.refrimancia.modelo.Receta;
-import com.example.refrimancia.modelo.RespuestaPaginada;
-import com.example.refrimancia.modelo.RespuestaUnica;
-import com.example.refrimancia.modelo.Usuario;
+import com.example.refrimancia.modelo.entidad.Receta;
+import com.example.refrimancia.modelo.entidad.Usuario;
+import com.example.refrimancia.modelo.response.RespuestaPaginada;
+import com.example.refrimancia.modelo.response.RespuestaUnica;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +40,22 @@ import retrofit2.Response;
 public class UsuarioFragment extends Fragment {
 
     private static final String TAG = "UsuarioFragment";
+    private static final int MAX_PAGES = 50;
+    private static final long REFRESH_INTERVAL_MS = 60_000L;
 
     private ImageView imagenPerfil;
     private TextView nombreUsuario;
     private Button btnEditarPerfil;
+    private Button btnCerrarSesion;
     private RecyclerView rvMisRecetas;
     private View contenidoVacio;
     private SessionManager sessionManager;
+    private AdaptadorMisRecetas adaptadorMisRecetas;
+    private SwipeRefreshLayout swipeRecetas;
+    private boolean perfilCargado = false;
+    private boolean refrescandoRecetas = false;
+    private boolean primeraCarga = true;
+    private long lastRefreshAt = 0L;
 
     @Nullable
     @Override
@@ -62,17 +73,34 @@ public class UsuarioFragment extends Fragment {
         cargarDatosUsuario();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (perfilCargado && adaptadorMisRecetas != null && !refrescandoRecetas) {
+            long ahora = SystemClock.elapsedRealtime();
+            if (ahora - lastRefreshAt >= REFRESH_INTERVAL_MS) {
+                refrescarRecetas(false);
+            }
+        }
+    }
+
     private void inicializarVistas(View vista) {
         sessionManager = new SessionManager(requireContext());
         imagenPerfil = vista.findViewById(R.id.profile_image);
         nombreUsuario = vista.findViewById(R.id.nombre_usuario);
         btnEditarPerfil = vista.findViewById(R.id.btn_editar_perfil);
+        btnCerrarSesion = vista.findViewById(R.id.btn_cerrar_sesion);
         rvMisRecetas = vista.findViewById(R.id.rv_recetas_usuario);
         contenidoVacio = vista.findViewById(R.id.empty_state);
+        swipeRecetas = vista.findViewById(R.id.swipe_recetas_usuario);
 
         rvMisRecetas.setLayoutManager(new LinearLayoutManager(getContext()));
 
         btnEditarPerfil.setOnClickListener(v -> abrirEditarPerfil());
+        btnCerrarSesion.setOnClickListener(v -> cerrarSesion());
+        if (swipeRecetas != null) {
+            swipeRecetas.setOnRefreshListener(() -> refrescarRecetas(true));
+        }
     }
 
     private void cargarDatosUsuario() {
@@ -80,7 +108,11 @@ public class UsuarioFragment extends Fragment {
             mostrarEstadoVacio();
             return;
         }
-        obtenerPerfilUsuario();
+        if (!perfilCargado) {
+            obtenerPerfilUsuario();
+        } else if (!refrescandoRecetas) {
+            refrescarRecetas(false);
+        }
     }
 
     private void obtenerPerfilUsuario() {
@@ -91,7 +123,9 @@ public class UsuarioFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
                     Usuario usuario = response.body().getData();
                     actualizarUI(usuario);
-                    cargarRecetasUsuarioLogueado(usuario.getIdUsuario());
+                    perfilCargado = true;
+                    primeraCarga = false;
+                    cargarRecetasUsuarioLogueado(usuario.getIdUsuario(), usuario.getNombreUsuario());
                 } else {
                     mostrarDesdeSesion();
                 }
@@ -113,45 +147,125 @@ public class UsuarioFragment extends Fragment {
             nombreUsuario.setText("@" + nombre);
             imagenPerfil.setImageResource(R.drawable.bg_placeholder_circular);
             contenidoVacio.setVisibility(View.GONE);
-            cargarRecetasUsuarioLogueado(idUsuario);
+            perfilCargado = true;
+            primeraCarga = false;
+            cargarRecetasUsuarioLogueado(idUsuario, nombre);
         } else {
             mostrarEstadoVacio();
         }
     }
 
-    private void cargarRecetasUsuarioLogueado(int idUsuario) {
+    private void refrescarRecetas() {
+        refrescarRecetas(true);
+    }
+
+    private void refrescarRecetas(boolean forzar) {
+        if (primeraCarga) {
+            return;
+        }
+        long ahora = SystemClock.elapsedRealtime();
+        if (!forzar && (ahora - lastRefreshAt) < REFRESH_INTERVAL_MS) {
+            return;
+        }
+        int idUsuario = sessionManager.fetchUserId();
+        String nombre = sessionManager.fetchUserName();
+        if (idUsuario <= 0) {
+            if (swipeRecetas != null) {
+                swipeRecetas.setRefreshing(false);
+            }
+            return;
+        }
+        lastRefreshAt = ahora;
+        refrescandoRecetas = true;
+        cargarRecetasUsuarioLogueado(idUsuario, nombre);
+    }
+
+    private void cargarRecetasUsuarioLogueado(int idUsuario, String nombreUsuario) {
         RecetaService recetaService = ClienteRetrofit.obtenerInstancia(requireContext()).create(RecetaService.class);
-        recetaService.obtenerRecetas().enqueue(new Callback<RespuestaPaginada<Receta>>() {
+        contenidoVacio.setVisibility(View.GONE);
+        cargarPaginaRecetas(recetaService, idUsuario, nombreUsuario, 1, new ArrayList<>());
+    }
+
+    private void cargarPaginaRecetas(RecetaService recetaService, int idUsuario, String nombreUsuario, int pagina, List<Receta> acumuladas) {
+        recetaService.obtenerRecetas(pagina).enqueue(new Callback<RespuestaPaginada<Receta>>() {
             @Override
             public void onResponse(Call<RespuestaPaginada<Receta>> call, Response<RespuestaPaginada<Receta>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Receta> todasRecetas = response.body().getData();
-                    List<Receta> misRecetas = new ArrayList<>();
+                    RespuestaPaginada<Receta> cuerpo = response.body();
+                    List<Receta> todasRecetas = cuerpo.getData();
+                    String nombreNormalizado = normalizarUsuario(nombreUsuario);
                     if (todasRecetas != null) {
                         for (Receta r : todasRecetas) {
-                            if (r.getIdUsuario() == idUsuario) {
-                                misRecetas.add(r);
+                            boolean coincideId = r.getIdUsuario() == idUsuario;
+                            boolean coincideNombre = normalizarUsuario(r.getNombreUsuario()).equals(nombreNormalizado);
+                            if (coincideId || coincideNombre) {
+                                acumuladas.add(r);
                             }
                         }
                     }
 
-                    if (misRecetas.isEmpty()) {
-                        mostrarEstadoVacio();
+                    Integer totalPaginas = cuerpo.getTotalPages();
+                    boolean hayDatos = todasRecetas != null && !todasRecetas.isEmpty();
+                    if (totalPaginas != null) {
+                        if (pagina < totalPaginas) {
+                            cargarPaginaRecetas(recetaService, idUsuario, nombreUsuario, pagina + 1, acumuladas);
+                        } else {
+                            mostrarRecetasUsuario(acumuladas);
+                        }
+                    } else if (hayDatos && pagina < MAX_PAGES) {
+                        cargarPaginaRecetas(recetaService, idUsuario, nombreUsuario, pagina + 1, acumuladas);
                     } else {
-                        contenidoVacio.setVisibility(View.GONE);
-                        rvMisRecetas.setAdapter(new AdaptadorMisRecetas(misRecetas));
+                        mostrarRecetasUsuario(acumuladas);
                     }
                 } else {
-                    mostrarEstadoVacio();
+                    mostrarRecetasUsuario(acumuladas);
                 }
+                if (swipeRecetas != null && swipeRecetas.isRefreshing()) {
+                    swipeRecetas.setRefreshing(false);
+                }
+                refrescandoRecetas = false;
             }
 
             @Override
             public void onFailure(Call<RespuestaPaginada<Receta>> call, Throwable t) {
                 Log.e(TAG, "Error al cargar recetas API: " + t.getMessage());
-                mostrarEstadoVacio();
+                mostrarRecetasUsuario(acumuladas);
+                if (swipeRecetas != null && swipeRecetas.isRefreshing()) {
+                    swipeRecetas.setRefreshing(false);
+                }
+                refrescandoRecetas = false;
             }
         });
+    }
+
+    private String normalizarUsuario(String nombre) {
+        if (nombre == null) {
+            return "";
+        }
+        String limpio = nombre.trim();
+        if (limpio.startsWith("@")) {
+            limpio = limpio.substring(1);
+        }
+        return limpio.toLowerCase();
+    }
+
+    private void mostrarRecetasUsuario(List<Receta> misRecetas) {
+        if (misRecetas == null || misRecetas.isEmpty()) {
+            if (adaptadorMisRecetas == null || adaptadorMisRecetas.getItemCount() == 0) {
+                mostrarEstadoVacio();
+            } else {
+                contenidoVacio.setVisibility(View.GONE);
+            }
+            return;
+        }
+
+        contenidoVacio.setVisibility(View.GONE);
+        if (adaptadorMisRecetas == null) {
+            adaptadorMisRecetas = new AdaptadorMisRecetas(misRecetas);
+            rvMisRecetas.setAdapter(adaptadorMisRecetas);
+        } else {
+            adaptadorMisRecetas.actualizarDatos(misRecetas);
+        }
     }
 
     private void actualizarUI(Usuario usuario) {
@@ -194,11 +308,26 @@ public class UsuarioFragment extends Fragment {
         startActivity(intent);
     }
 
+    private void cerrarSesion() {
+        sessionManager.clearSession();
+        Intent intent = new Intent(requireContext(), com.example.refrimancia.LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
     private class AdaptadorMisRecetas extends RecyclerView.Adapter<AdaptadorMisRecetas.MiRecetaViewHolder> {
         private final List<Receta> recetas;
 
         public AdaptadorMisRecetas(List<Receta> recetas) {
-            this.recetas = recetas;
+            this.recetas = new ArrayList<>(recetas);
+        }
+
+        public void actualizarDatos(List<Receta> nuevasRecetas) {
+            this.recetas.clear();
+            if (nuevasRecetas != null) {
+                this.recetas.addAll(nuevasRecetas);
+            }
+            notifyDataSetChanged();
         }
 
         @NonNull
@@ -214,7 +343,39 @@ public class UsuarioFragment extends Fragment {
             Receta r = recetas.get(position);
             holder.tvTitulo.setText(r.getTitulo());
             holder.tvFecha.setText(r.getFechaCreacion() != null ? r.getFechaCreacion() : "Reciente");
-            holder.ivImagen.setImageResource(R.drawable.ic_launcher_background);
+            String meta = construirMetaReceta(r);
+            if (meta.isEmpty()) {
+                holder.tvMeta.setVisibility(View.GONE);
+            } else {
+                holder.tvMeta.setVisibility(View.VISIBLE);
+                holder.tvMeta.setText(meta);
+            }
+            if (r.getImagenUrl() != null && !r.getImagenUrl().isEmpty()) {
+                Glide.with(holder.itemView)
+                        .load(r.getImagenUrl())
+                        .placeholder(R.drawable.bg_placeholder_circular)
+                        .centerCrop()
+                        .into(holder.ivImagen);
+            } else {
+                holder.ivImagen.setImageResource(R.drawable.bg_placeholder_circular);
+            }
+        }
+
+        private String construirMetaReceta(Receta receta) {
+            List<String> partes = new ArrayList<>();
+            if (receta.getCategoria() != null && !receta.getCategoria().isEmpty()) {
+                partes.add(receta.getCategoria());
+            }
+            if (receta.getTiempoPreparacion() > 0) {
+                partes.add(formatTiempo(receta.getTiempoPreparacion()));
+            }
+            if (receta.getSemaforo() != null && !receta.getSemaforo().isEmpty()) {
+                partes.add("Semaforo: " + receta.getSemaforo());
+            }
+            if (partes.isEmpty()) {
+                return "";
+            }
+            return android.text.TextUtils.join(" | ", partes);
         }
 
         @Override
@@ -226,14 +387,31 @@ public class UsuarioFragment extends Fragment {
             ImageView ivImagen;
             TextView tvTitulo;
             TextView tvFecha;
+            TextView tvMeta;
 
             MiRecetaViewHolder(@NonNull View itemView) {
                 super(itemView);
                 ivImagen = itemView.findViewById(R.id.iv_receta_usuario);
                 tvTitulo = itemView.findViewById(R.id.tv_titulo_receta_usuario);
                 tvFecha = itemView.findViewById(R.id.tv_fecha_receta_usuario);
+                tvMeta = itemView.findViewById(R.id.tv_meta_receta_usuario);
             }
         }
     }
+
+    private String formatTiempo(int minutos) {
+        if (minutos <= 0) return "0 min";
+        int horas = minutos / 60;
+        int minRestantes = minutos % 60;
+        if (horas > 0) {
+            if (minRestantes > 0) {
+                return horas + " h " + minRestantes + " min";
+            } else {
+                return horas + " h";
+            }
+        }
+        return minutos + " min";
+    }
 }
+
 

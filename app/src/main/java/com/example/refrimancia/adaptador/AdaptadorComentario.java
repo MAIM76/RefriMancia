@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
-import com.example.refrimancia.modelo.Comentario;
+import com.example.refrimancia.modelo.entidad.Comentario;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -1,6 +1,7 @@
 package com.example.refrimancia.ui;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,11 +38,11 @@ import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.ComentarioService;
 import com.example.refrimancia.api.RecetaService;
 import com.example.refrimancia.api.ValoracionService;
-import com.example.refrimancia.modelo.Comentario;
-import com.example.refrimancia.modelo.Receta;
-import com.example.refrimancia.modelo.RespuestaPaginada;
-import com.example.refrimancia.modelo.Valoracion;
-import com.example.refrimancia.modelo.ValoracionRequest;
+import com.example.refrimancia.modelo.entidad.Comentario;
+import com.example.refrimancia.modelo.entidad.Receta;
+import com.example.refrimancia.modelo.entidad.Valoracion;
+import com.example.refrimancia.modelo.request.ValoracionRequest;
+import com.example.refrimancia.modelo.response.RespuestaPaginada;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,10 +61,13 @@ public class InicioFragment extends Fragment {
     private FrameLayout searchOverlay;
     private ArrayAdapter<String> suggestionsAdapter;
     private List<String> currentSuggestions;
+    private ProgressBar loadingIndicator;
 
     private int paginaActual = 1;
     private boolean cargando = false;
     private boolean esUltimaPagina = false;
+    private boolean modoBusquedaIngredientes = false;
+    private String ultimaConsultaIngredientes = "";
 
     @Nullable
     @Override
@@ -80,6 +85,7 @@ public class InicioFragment extends Fragment {
         SearchView barraBusqueda = vista.findViewById(R.id.search_view);
         searchOverlay = vista.findViewById(R.id.search_overlay);
         ListView searchSuggestionsList = vista.findViewById(R.id.search_suggestions_list);
+        loadingIndicator = vista.findViewById(R.id.loading_indicator);
 
         currentSuggestions = new ArrayList<>();
         suggestionsAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, currentSuggestions);
@@ -112,7 +118,12 @@ public class InicioFragment extends Fragment {
         barraBusqueda.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String consulta) {
-                adaptador.filtrar(consulta);
+                String consultaNormalizada = consulta != null ? consulta.trim() : "";
+                if (consultaNormalizada.isEmpty()) {
+                    salirBusquedaIngredientes();
+                } else {
+                    buscarRecetasPorIngredientes(consultaNormalizada);
+                }
                 barraBusqueda.clearFocus();
                 searchOverlay.setVisibility(View.GONE);
                 return true;
@@ -123,7 +134,7 @@ public class InicioFragment extends Fragment {
                 if (barraBusqueda.hasFocus()) {
                     if (nuevoTexto.isEmpty()) {
                         searchOverlay.setVisibility(View.GONE);
-                        adaptador.filtrar("");
+                        salirBusquedaIngredientes();
                     } else {
                         searchOverlay.setVisibility(View.VISIBLE);
                         actualizarSugerencias(nuevoTexto);
@@ -137,15 +148,21 @@ public class InicioFragment extends Fragment {
 
         SessionManager sessionManager = new SessionManager(requireContext());
         if (sessionManager.fetchAuthToken() == null) {
-            mostrarMensajeError("Sesion no iniciada");
+            Intent loginIntent = new Intent(requireContext(), com.example.refrimancia.LoginActivity.class);
+            loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(loginIntent);
+            requireActivity().finish();
             return;
         }
         cargarRecetasDesdeAPI();
     }
 
     private void cargarRecetasDesdeAPI() {
-        if (cargando || esUltimaPagina) return;
+        if (cargando || esUltimaPagina || modoBusquedaIngredientes) return;
         cargando = true;
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisibility(View.VISIBLE);
+        }
 
         RecetaService servicio = ClienteRetrofit.obtenerInstancia(requireContext()).create(RecetaService.class);
         Call<RespuestaPaginada<Receta>> llamada = servicio.obtenerRecetas(paginaActual);
@@ -154,8 +171,12 @@ public class InicioFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<RespuestaPaginada<Receta>> call, @NonNull Response<RespuestaPaginada<Receta>> response) {
                 cargando = false;
+                if (loadingIndicator != null) {
+                    loadingIndicator.setVisibility(View.GONE);
+                }
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Receta> recetas = response.body().getData();
+                    RespuestaPaginada<Receta> cuerpo = response.body();
+                    List<Receta> recetas = cuerpo.getData();
                     Log.d(TAG, "Recetas cargadas: " + (recetas != null ? recetas.size() : 0));
                     if (recetas != null && !recetas.isEmpty()) {
                         if (paginaActual == 1) {
@@ -163,7 +184,13 @@ public class InicioFragment extends Fragment {
                         } else {
                             adaptador.agregarDatos(recetas);
                         }
-                        paginaActual++;
+
+                        Integer totalPaginas = cuerpo.getTotalPages();
+                        if (totalPaginas != null && paginaActual >= totalPaginas) {
+                            esUltimaPagina = true;
+                        } else {
+                            paginaActual++;
+                        }
                     } else {
                         esUltimaPagina = true;
                     }
@@ -176,6 +203,9 @@ public class InicioFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<RespuestaPaginada<Receta>> call, @NonNull Throwable error) {
                 cargando = false;
+                if (loadingIndicator != null) {
+                    loadingIndicator.setVisibility(View.GONE);
+                }
                 Log.e(TAG, "Error en la llamada API: " + error.getMessage());
                 mostrarMensajeError("Error de conexion");
             }
@@ -212,20 +242,10 @@ public class InicioFragment extends Fragment {
     }
 
     private void manejarSeleccionSugerencia(String nombreReceta) {
-        List<Receta> coincidencias = new ArrayList<>();
-        String nombreLower = nombreReceta.toLowerCase();
-
-        for (Receta r : adaptador.getListaRecetasCompleta()) {
-            if (r.getTitulo() != null && r.getTitulo().toLowerCase().equals(nombreLower)) {
-                coincidencias.add(r);
-            }
+        if (nombreReceta == null || nombreReceta.trim().isEmpty()) {
+            return;
         }
-
-        if (coincidencias.size() == 1) {
-            startActivity(RecetaActivity.crearIntent(requireContext(), coincidencias.get(0)));
-        } else if (coincidencias.size() > 1) {
-            adaptador.filtrar(nombreReceta);
-        }
+        buscarRecetasPorIngredientes(nombreReceta.trim());
     }
 
     private void configurarRecyclerView() {
@@ -245,17 +265,66 @@ public class InicioFragment extends Fragment {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                if (modoBusquedaIngredientes) {
+                    return;
+                }
                 if (dy > 0) {
                     int visibleItemCount = layoutManager.getChildCount();
                     int totalItemCount = layoutManager.getItemCount();
                     int pastVisibleItems = layoutManager.findFirstVisibleItemPosition();
 
-                    if (!cargando && !esUltimaPagina && (visibleItemCount + pastVisibleItems) >= totalItemCount - 2) {
+                    if (!cargando && !esUltimaPagina && (visibleItemCount + pastVisibleItems) >= totalItemCount) {
                         cargarRecetasDesdeAPI();
                     }
                 }
             }
         });
+    }
+
+    private void buscarRecetasPorIngredientes(String consulta) {
+        modoBusquedaIngredientes = true;
+        ultimaConsultaIngredientes = consulta;
+        cargando = true;
+        esUltimaPagina = true;
+        paginaActual = 1;
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        RecetaService servicio = ClienteRetrofit.obtenerInstancia(requireContext()).create(RecetaService.class);
+        servicio.buscarPorIngredientes(consulta).enqueue(new Callback<>() {
+            @Override
+            public void onResponse(@NonNull Call<RespuestaPaginada<Receta>> call, @NonNull Response<RespuestaPaginada<Receta>> response) {
+                cargando = false;
+                if (loadingIndicator != null) {
+                    loadingIndicator.setVisibility(View.GONE);
+                }
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Receta> recetas = response.body().getData();
+                    adaptador.actualizarDatos(recetas != null ? recetas : new ArrayList<>());
+                } else {
+                    mostrarMensajeError("No se encontraron recetas con esos ingredientes");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<RespuestaPaginada<Receta>> call, @NonNull Throwable error) {
+                cargando = false;
+                if (loadingIndicator != null) {
+                    loadingIndicator.setVisibility(View.GONE);
+                }
+                mostrarMensajeError("Error de conexion al buscar recetas");
+            }
+        });
+    }
+
+    private void salirBusquedaIngredientes() {
+        if (!modoBusquedaIngredientes) {
+            return;
+        }
+        modoBusquedaIngredientes = false;
+        ultimaConsultaIngredientes = "";
+        refrescarListadoRecetas();
     }
 
     private void mostrarPopupComentarios(Receta receta) {
@@ -308,6 +377,7 @@ public class InicioFragment extends Fragment {
                             cargarComentariosReceta(comentarioService, receta.getIdReceta(), adaptadorComentario);
                             rvComentarios.scrollToPosition(Math.max(adaptadorComentario.getItemCount() - 1, 0));
                             Toast.makeText(requireContext(), "Comentario publicado", Toast.LENGTH_SHORT).show();
+                            refrescarListadoRecetas();
                         } else {
                             Toast.makeText(requireContext(), "No se pudo publicar el comentario", Toast.LENGTH_SHORT).show();
                         }
@@ -415,6 +485,7 @@ public class InicioFragment extends Fragment {
                             adaptador.refrescarValoracionReceta(receta.getIdReceta());
                             dialog.dismiss();
                             Toast.makeText(requireContext(), "Reseña guardada", Toast.LENGTH_SHORT).show();
+                            refrescarListadoRecetas();
                         } else {
                             Toast.makeText(requireContext(), "No se pudo guardar la reseña", Toast.LENGTH_SHORT).show();
                         }
@@ -431,6 +502,15 @@ public class InicioFragment extends Fragment {
 
         dialog.show();
     }
+
+    private void refrescarListadoRecetas() {
+        paginaActual = 1;
+        esUltimaPagina = false;
+        modoBusquedaIngredientes = false;
+        ultimaConsultaIngredientes = "";
+        if (adaptador != null) {
+            adaptador.actualizarDatos(new ArrayList<>());
+        }
+        cargarRecetasDesdeAPI();
+    }
 }
-
-

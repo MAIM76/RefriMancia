@@ -1,8 +1,8 @@
 package com.example.refrimancia.api;
 
-import com.example.refrimancia.modelo.Comentario;
-import com.example.refrimancia.modelo.ComentarioRequest;
-import com.example.refrimancia.modelo.RespuestaPaginada;
+import com.example.refrimancia.modelo.entidad.Comentario;
+import com.example.refrimancia.modelo.request.ComentarioRequest;
+import com.example.refrimancia.modelo.response.RespuestaPaginada;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;

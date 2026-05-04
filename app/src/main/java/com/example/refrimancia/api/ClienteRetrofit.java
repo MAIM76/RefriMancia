@@ -1,6 +1,7 @@
 package com.example.refrimancia.api;
 
 import android.content.Context;
+import android.content.Intent;
 
 import com.example.refrimancia.SessionManager;
 import com.google.gson.Gson;
@@ -18,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ClienteRetrofit {
     private static final String URL_BASE = "https://refrimacia-backend.onrender.com/";
+    public static final String ACTION_SESSION_EXPIRED = "com.example.refrimancia.SESSION_EXPIRED";
     private static Retrofit instancia;
 
     public static Retrofit obtenerInstancia(Context context) {
@@ -41,6 +43,8 @@ public class ClienteRetrofit {
                     Response response = chain.proceed(requestBuilder.build());
                     if (response.code() == 401) {
                         sessionManager.clearSession();
+                        Intent intent = new Intent(ACTION_SESSION_EXPIRED);
+                        context.getApplicationContext().sendBroadcast(intent);
                         if (token != null) {
                             response.close();
                         }

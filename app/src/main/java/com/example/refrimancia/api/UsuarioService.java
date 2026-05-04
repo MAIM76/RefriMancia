@@ -1,10 +1,10 @@
 package com.example.refrimancia.api;
 
-import com.example.refrimancia.modelo.AuthToken;
-import com.example.refrimancia.modelo.LoginRequest;
-import com.example.refrimancia.modelo.Usuario;
-import com.example.refrimancia.modelo.RespuestaPaginada;
-import com.example.refrimancia.modelo.RespuestaUnica;
+import com.example.refrimancia.modelo.request.LoginRequest;
+import com.example.refrimancia.modelo.entidad.Usuario;
+import com.example.refrimancia.modelo.response.AuthToken;
+import com.example.refrimancia.modelo.response.RespuestaPaginada;
+import com.example.refrimancia.modelo.response.RespuestaUnica;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.example.refrimancia.modelo;
+package com.example.refrimancia.modelo.response;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -17,4 +17,5 @@ public class RespuestaUnica<T> {
         return data;
     }
 }
+
 

@@ -1,17 +1,14 @@
-package com.example.refrimancia.modelo;
+package com.example.refrimancia.modelo.entidad;
 
 import com.google.gson.annotations.SerializedName;
 
 public class Usuario {
-    // Identificador único del usuario
     @SerializedName("id_usuario")
     private int idUsuario;
 
-    // Nombre de usuario único para login
     @SerializedName("nombre_usuario")
     private String nombreUsuario;
 
-    // Email del usuario
     @SerializedName("correo_electronico")
     private String correoElectronico;
 
@@ -27,13 +24,24 @@ public class Usuario {
     @SerializedName("is_active")
     private Integer isActive;
 
-    @SerializedName(value="url_foto_perfil", alternate={"imagen_perfil"})
+    @SerializedName(value = "url_foto_perfil", alternate = {"imagen_perfil"})
     private String urlFotoPerfil;
+
+    @SerializedName("nombre_completo")
+    private String nombreCompleto;
+
+    @SerializedName("fecha_nac")
+    private String fechaNac;
+
+    @SerializedName("ultimo_token")
+    private String ultimoToken;
+
+    @SerializedName("codigo_verificacion")
+    private String codigoVerificacion;
 
     public Usuario() {
     }
 
-    // Constructor con parámetros principales
     public Usuario(String nombreUsuario, String correoElectronico) {
         this.nombreUsuario = nombreUsuario;
         this.correoElectronico = correoElectronico;
@@ -48,7 +56,6 @@ public class Usuario {
         this.isActive = isActive;
     }
 
-    // ============ GETTERS ============
     public int getIdUsuario() { return idUsuario; }
     public String getNombreUsuario() { return nombreUsuario; }
     public String getCorreoElectronico() { return correoElectronico; }
@@ -57,8 +64,11 @@ public class Usuario {
     public String getFechaRegistro() { return fechaRegistro; }
     public Integer getIsActive() { return isActive; }
     public String getUrlFotoPerfil() { return urlFotoPerfil; }
+    public String getNombreCompleto() { return nombreCompleto; }
+    public String getFechaNac() { return fechaNac; }
+    public String getUltimoToken() { return ultimoToken; }
+    public String getCodigoVerificacion() { return codigoVerificacion; }
 
-    // ============ SETTERS ============
     public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
     public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
     public void setCorreoElectronico(String correoElectronico) { this.correoElectronico = correoElectronico; }
@@ -67,4 +77,8 @@ public class Usuario {
     public void setFechaRegistro(String fechaRegistro) { this.fechaRegistro = fechaRegistro; }
     public void setIsActive(Integer isActive) { this.isActive = isActive; }
     public void setUrlFotoPerfil(String urlFotoPerfil) { this.urlFotoPerfil = urlFotoPerfil; }
+    public void setNombreCompleto(String nombreCompleto) { this.nombreCompleto = nombreCompleto; }
+    public void setFechaNac(String fechaNac) { this.fechaNac = fechaNac; }
+    public void setUltimoToken(String ultimoToken) { this.ultimoToken = ultimoToken; }
+    public void setCodigoVerificacion(String codigoVerificacion) { this.codigoVerificacion = codigoVerificacion; }
 }

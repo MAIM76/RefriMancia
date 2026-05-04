@@ -1,8 +1,8 @@
 package com.example.refrimancia.api;
 
-import com.example.refrimancia.modelo.RespuestaValoracionReceta;
-import com.example.refrimancia.modelo.Valoracion;
-import com.example.refrimancia.modelo.ValoracionRequest;
+import com.example.refrimancia.modelo.entidad.Valoracion;
+import com.example.refrimancia.modelo.request.ValoracionRequest;
+import com.example.refrimancia.modelo.response.ValoracionReceta;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public interface ValoracionService {
 
     // Obtener todas las valoraciones de una receta especfica
     @GET("api/valoraciones/receta/{id}")
-    Call<RespuestaValoracionReceta> obtenerValoracionesPorReceta(@Path("id") int idReceta);
+    Call<ValoracionReceta> obtenerValoracionesPorReceta(@Path("id") int idReceta);
 
     // Crear una nueva valoracion o actualizar una existente
     @POST("api/valoraciones/")

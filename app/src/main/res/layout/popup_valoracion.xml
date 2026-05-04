@@ -38,18 +38,18 @@
         app:layout_constraintTop_toBottomOf="@id/valoracion_divider" />
 
     <RatingBar
-        android:id="@+id/rb_valoracion"
-        style="?android:attr/ratingBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:isIndicator="false"
-        android:numStars="5"
-        android:stepSize="1"
-        android:rating="0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_valoracion_receta" />
+            android:id="@+id/rb_valoracion"
+            style="@style/Widget.AppCompat.RatingBar.Indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:numStars="5"
+            android:stepSize="1"
+            android:rating="0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_valoracion_receta"
+            android:isIndicator="false" />
 
     <TextView
         android:id="@+id/tv_valoracion_seleccionada"

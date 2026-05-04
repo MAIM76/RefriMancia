@@ -1,5 +1,6 @@
-package com.example.refrimancia.modelo;
+package com.example.refrimancia.modelo.response;
 
+import com.example.refrimancia.modelo.entidad.Usuario;
 import com.google.gson.annotations.SerializedName;
 
 public class AuthToken {

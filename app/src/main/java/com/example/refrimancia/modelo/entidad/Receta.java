@@ -1,17 +1,16 @@
-package com.example.refrimancia.modelo;
+package com.example.refrimancia.modelo.entidad;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class Receta implements Serializable {
-    // Identificador único de la receta
     @SerializedName("id_receta")
     private int idReceta;
 
     @SerializedName("id_usuario")
     private int idUsuario;
 
-    @SerializedName("nombre_usuario")
+    @SerializedName(value = "nombre_usuario", alternate = {"autor"})
     private String nombreUsuario;
 
     @SerializedName(value = "imagen_receta", alternate = {"imagen"})
@@ -19,7 +18,7 @@ public class Receta implements Serializable {
 
     @SerializedName("fecha_publicacion")
     private String fechaCreacion;
-    
+
     @SerializedName("dificultad")
     private String dificultad;
 
@@ -47,11 +46,21 @@ public class Receta implements Serializable {
     @SerializedName("aprobada")
     private Boolean aprobada;
 
-    // Constructor sin argumentos (requerido por Gson para deserialización)
+    @SerializedName("media_puntuacion")
+    private String mediaPuntuacion;
+
+    @SerializedName("consumo_habitual")
+    private String consumoHabitual;
+
+    @SerializedName("semaforo")
+    private String semaforo;
+
+    @SerializedName("comentarios")
+    private java.util.List<Comentario> comentarios;
+
     public Receta() {
     }
 
-    // Constructor simplificado para crear datos de ejemplo o pruebas rápidas
     public Receta(String titulo, String descripcion) {
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -81,7 +90,6 @@ public class Receta implements Serializable {
         this.fechaCreacion = fechaCreacion;
     }
 
-    // ============ GETTERS ============
     public int getIdReceta() { return idReceta; }
     public int getIdUsuario() { return idUsuario; }
     public String getNombreUsuario() { return nombreUsuario; }
@@ -96,8 +104,22 @@ public class Receta implements Serializable {
     public String getFechaCreacion() { return fechaCreacion; }
     public String getImagenUrl() { return imagenUrl; }
     public Boolean getAprobada() { return aprobada; }
+    public String getMediaPuntuacion() { return mediaPuntuacion; }
+    public String getConsumoHabitual() { return consumoHabitual; }
+    public String getSemaforo() { return semaforo; }
+    public java.util.List<Comentario> getComentarios() { return comentarios; }
 
-    // ============ SETTERS ============
+    public Float getMediaPuntuacionFloat() {
+        if (mediaPuntuacion == null || mediaPuntuacion.trim().isEmpty()) {
+            return null;
+        }
+        try {
+            return Float.parseFloat(mediaPuntuacion);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     public void setIdReceta(int idReceta) { this.idReceta = idReceta; }
     public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
     public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
@@ -108,11 +130,10 @@ public class Receta implements Serializable {
     public void setTiempoPreparacion(int tiempoPreparacion) { this.tiempoPreparacion = tiempoPreparacion; }
     public void setPorciones(int porciones) { this.porciones = porciones; }
     public void setAprobada(Boolean aprobada) { this.aprobada = aprobada; }
-    public void setImagenUrl(String imagenUrl) {
-        this.imagenUrl = imagenUrl;
-    }
-
-    public void setFechaCreacion(String fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
+    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
+    public void setFechaCreacion(String fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    public void setMediaPuntuacion(String mediaPuntuacion) { this.mediaPuntuacion = mediaPuntuacion; }
+    public void setConsumoHabitual(String consumoHabitual) { this.consumoHabitual = consumoHabitual; }
+    public void setSemaforo(String semaforo) { this.semaforo = semaforo; }
+    public void setComentarios(java.util.List<Comentario> comentarios) { this.comentarios = comentarios; }
 }

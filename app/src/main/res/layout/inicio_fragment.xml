@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F5F5"
     android:fitsSystemWindows="true">
 
     <!-- Barra superior con búsqueda -->
@@ -12,23 +13,30 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
         android:paddingHorizontal="16dp"
         android:paddingTop="16dp"
         android:paddingBottom="8dp"
-        android:elevation="4dp">
+        android:background="@android:color/white"
+        android:elevation="4dp"
+        android:gravity="center_vertical">
 
-        <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:src="@android:drawable/ic_menu_search"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="@string/search_hint" />
+        <!-- Botón de filtros -->
+        <ImageButton
+            android:id="@+id/btn_filtros"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/filter_by_ingredients"
+            android:tint="@color/purple_500"
+            android:layout_marginEnd="8dp" />
 
+        <!-- Búsqueda principal -->
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/fondo_busqueda"
             app:iconifiedByDefault="false"
             app:queryHint="@string/search_hint"
@@ -83,6 +91,15 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="12dp"
+        android:visibility="gone" />
+
+    <!-- Layout de error de conexión (incluido pero oculto inicialmente) -->
+    <include
+        android:id="@+id/error_conexion_container"
+        layout="@layout/error_conexion_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top_bar"
         android:visibility="gone" />
 
 </RelativeLayout>

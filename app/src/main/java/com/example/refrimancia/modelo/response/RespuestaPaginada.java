@@ -65,7 +65,8 @@ public class RespuestaPaginada<T> {
         @SerializedName("pagina_actual")
         private Integer paginaActual;
 
-        @SerializedName(value = "recetas_por_pagina", alternate = {"usuarios_por_pagina", "comentarios_por_pagina"})
+        @SerializedName(value = "recetas_por_pagina", alternate = {"usuarios_por_pagina", 
+                "comentarios_por_pagina"})
         private Integer itemsPorPagina;
 
         public Integer getTotalItems() {

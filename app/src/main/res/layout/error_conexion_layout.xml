@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Layout para mostrar mensaje de error de conexión con botón de reintento.
+  Se muestra cuando hay problemas de conexión con el servidor.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/error_conexion_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:visibility="gone"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@android:drawable/ic_dialog_alert"
+        android:contentDescription="@string/error_icon"
+        android:tint="?attr/colorError" />
+
+    <TextView
+        android:id="@+id/tv_error_mensaje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/error_conexion_mensaje"
+        android:textSize="16sp"
+        android:textAlignment="center"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/error_conexion_sugerencia"
+        android:textSize="14sp"
+        android:textAlignment="center"
+        android:textColor="#666666" />
+
+    <Button
+        android:id="@+id/btn_reintentar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/btn_reintentar"
+        android:textAllCaps="false" />
+
+</LinearLayout>

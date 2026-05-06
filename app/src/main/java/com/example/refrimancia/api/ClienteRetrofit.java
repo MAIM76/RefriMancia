@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Interceptor;
@@ -17,58 +18,138 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Cliente Retrofit para la comunicación con la API del backend.
+ * Proporciona una instancia singleton de Retrofit configurada con:
+ * - Autenticación mediante tokens Bearer
+ * - Logging de peticiones HTTP
+ * - Manejo automático de sesiones expiradas
+ * - Configuración Gson para parsing JSON
+ */
 public class ClienteRetrofit {
+    
+    // ======================== CONSTANTES ========================
+    
+    /** URL base del servidor backend */
     private static final String URL_BASE = "https://refrimacia-backend.onrender.com/";
+    
+    /** Acción broadcast para notificar sesión expirada */
     public static final String ACTION_SESSION_EXPIRED = "com.example.refrimancia.SESSION_EXPIRED";
+    
+    // ======================== VARIABLES DE INSTANCIA ========================
+    
+    /** Instancia singleton de Retrofit */
     private static Retrofit instancia;
 
+    // ======================== MÉTODOS PÚBLICOS ========================
+    
+    /**
+     * Obtiene la instancia singleton de Retrofit configurada.
+     * Si no existe, crea una nueva instancia con toda la configuración necesaria.
+     * 
+     * @param context Contexto de la aplicación para acceder a SessionManager
+     * @return Instancia de Retrofit configurada y lista para usar
+     */
     public static Retrofit obtenerInstancia(Context context) {
         if (instancia == null) {
-            SessionManager sessionManager = new SessionManager(context.getApplicationContext());
-
-            HttpLoggingInterceptor interceptorLog = new HttpLoggingInterceptor();
-            interceptorLog.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-            Interceptor authInterceptor = new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Request originalRequest = chain.request();
-                    Request.Builder requestBuilder = originalRequest.newBuilder();
-
-                    String token = sessionManager.fetchAuthToken();
-                    if (token != null && !token.isEmpty()) {
-                        requestBuilder.addHeader("Authorization", "Bearer " + token);
-                    }
-
-                    Response response = chain.proceed(requestBuilder.build());
-                    if (response.code() == 401) {
-                        sessionManager.clearSession();
-                        Intent intent = new Intent(ACTION_SESSION_EXPIRED);
-                        context.getApplicationContext().sendBroadcast(intent);
-                        if (token != null) {
-                            response.close();
-                        }
-                    }
-
-                    return response;
-                }
-            };
-
-            OkHttpClient clienteOkHttp = new OkHttpClient.Builder()
-                    .addInterceptor(interceptorLog)
-                    .addInterceptor(authInterceptor)
-                    .build();
-
-            Gson gson = new GsonBuilder()
-                    .setLenient()
-                    .create();
-
-            instancia = new Retrofit.Builder()
-                    .baseUrl(URL_BASE)
-                    .client(clienteOkHttp)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .build();
+            instancia = crearInstanciaRetrofit(context);
         }
         return instancia;
+    }
+    
+    // ======================== MÉTODOS PRIVADOS ========================
+    
+    /**
+     * Crea una nueva instancia de Retrofit con toda la configuración necesaria.
+     * 
+     * @param context Contexto de la aplicación
+     * @return Nueva instancia de Retrofit configurada
+     */
+    private static Retrofit crearInstanciaRetrofit(Context context) {
+        SessionManager sessionManager = new SessionManager(context.getApplicationContext());
+
+        // Configurar interceptores
+        OkHttpClient clienteOkHttp = new OkHttpClient.Builder()
+                .addInterceptor(crearInterceptorLogging())
+                .addInterceptor(crearInterceptorAuth(context, sessionManager))
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .build();
+
+        // Configurar Gson
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        // Crear instancia de Retrofit
+        return new Retrofit.Builder()
+                .baseUrl(URL_BASE)
+                .client(clienteOkHttp)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+    }
+    
+    /**
+     * Crea el interceptor para logging de peticiones HTTP.
+     * 
+     * @return Interceptor de logging configurado
+     */
+    private static HttpLoggingInterceptor crearInterceptorLogging() {
+        HttpLoggingInterceptor interceptorLog = new HttpLoggingInterceptor();
+        interceptorLog.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        return interceptorLog;
+    }
+    
+    /**
+     * Crea el interceptor de autenticación que añade tokens Bearer
+     * y maneja sesiones expiradas.
+     * 
+     * @param context Contexto de la aplicación
+     * @param sessionManager Gestor de sesiones
+     * @return Interceptor de autenticación configurado
+     */
+    private static Interceptor crearInterceptorAuth(Context context, SessionManager sessionManager) {
+        return new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request originalRequest = chain.request();
+                Request.Builder requestBuilder = originalRequest.newBuilder();
+
+                // Añadir token de autenticación si existe
+                String token = sessionManager.fetchAuthToken();
+                if (token != null && !token.isEmpty()) {
+                    requestBuilder.addHeader("Authorization", "Bearer " + token);
+                }
+
+                // Ejecutar petición
+                Response response = chain.proceed(requestBuilder.build());
+                
+                // Manejar sesión expirada (código 401)
+                if (response.code() == 401) {
+                    manejarSesionExpirada(context, sessionManager, token, response);
+                }
+
+                return response;
+            }
+        };
+    }
+    
+    /**
+     * Maneja el caso de sesión expirada limpiando la sesión y notificando a la aplicación.
+     * 
+     * @param context Contexto de la aplicación
+     * @param sessionManager Gestor de sesiones
+     * @param token Token que causó el error (no usado, mantenido por compatibilidad)
+     * @param response Respuesta HTTP con error 401
+     */
+    private static void manejarSesionExpirada(Context context, SessionManager sessionManager, 
+            String token, Response response) {
+        // Limpiar sesión local
+        sessionManager.clearSession();
+        
+        // Notificar a la aplicación mediante broadcast
+        Intent intent = new Intent(ACTION_SESSION_EXPIRED);
+        context.getApplicationContext().sendBroadcast(intent);
     }
 }

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Layout para popup de filtros de búsqueda.
+  Permite filtrar recetas por texto e ingredientes.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:padding="16dp">
+
+    <!-- Título -->
+    <TextView
+        android:id="@+id/tv_filtros_titulo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/filters_title"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="16dp" />
+
+    <!-- Divisor -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DDDDDD"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Filtro por texto -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/filter_text_label"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginBottom="4dp" />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view_popup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/fondo_busqueda"
+        app:iconifiedByDefault="false"
+        app:queryHint="@string/search_hint"
+        app:queryBackground="@null"
+        app:searchIcon="@null"
+        app:closeIcon="@null"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Filtro por ingredientes -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/filter_ingredients_label"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginBottom="4dp" />
+
+    <EditText
+        android:id="@+id/et_ingredientes_filtro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/filter_ingredients_hint"
+        android:background="@drawable/fondo_busqueda"
+        android:padding="12dp"
+        android:textSize="14sp"
+        android:inputType="text"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Botones de acción -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/btn_limpiar_filtros"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/clear_filters"
+            style="?attr/borderlessButtonStyle"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btn_aplicar_filtros"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/apply_filters"
+            style="?attr/materialButtonStyle"
+            android:backgroundTint="@color/purple_500"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

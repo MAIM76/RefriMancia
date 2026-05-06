@@ -46,4 +46,3 @@
         <activity android:name=".ExampleActivity" />
     </application>
 </manifest>
-

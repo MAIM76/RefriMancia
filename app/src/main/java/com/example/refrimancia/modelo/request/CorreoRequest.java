@@ -11,5 +11,7 @@ public class CorreoRequest {
     }
 
     public String getCorreoElectronico() {return correoElectronico;}
-    public void setCorreoElectronico(String correoElectronico) {this.correoElectronico = correoElectronico;}
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
+    }
 }

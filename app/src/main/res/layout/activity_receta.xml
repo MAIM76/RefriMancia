@@ -3,18 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="#F5F5F5">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <!-- ===== CABECERA CON IMAGEN ===== -->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp">
+                android:layout_height="260dp">
+
                 <ImageView
                     android:id="@+id/iv_detalle_imagen"
                     android:layout_width="match_parent"
@@ -22,171 +27,231 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_launcher_background" />
 
+                <!-- Degradado inferior sobre la imagen -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/gradiente_sombra"
+                    android:rotation="180" />
+
+                <!-- Botón volver circular -->
                 <ImageButton
-                        android:id="@+id/btn_volver_detalle"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@android:drawable/ic_menu_revert"
-                        android:background="#40000000"
-                        app:tint="@android:color/white"
-                        android:contentDescription="Volver"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginTop="40dp"
-                        android:backgroundTint="#6F6F6F" />
+                    android:id="@+id/btn_volver_detalle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@android:drawable/ic_menu_revert"
+                    android:background="@drawable/bg_btn_volver"
+                    android:padding="8dp"
+                    app:tint="@android:color/white"
+                    android:contentDescription="@string/recipe_back"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="44dp" />
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#66000000"
-                        android:layout_gravity="bottom"
-                        android:padding="16dp">
+                <!-- Título sobre el degradado -->
+                <TextView
+                    android:id="@+id/tv_detalle_titulo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:padding="16dp"
+                    android:text="@string/recipe_no_title"
+                    android:textColor="@android:color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:shadowColor="#80000000"
+                    android:shadowRadius="4" />
 
-                    <TextView
-                            android:id="@+id/tv_detalle_titulo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Título"
-                            android:textColor="@android:color/white"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
-                </LinearLayout>
             </FrameLayout>
+
+            <!-- ===== TARJETA DE METADATOS ===== -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:background="@android:color/white"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:elevation="2dp">
 
+                <!-- Autor -->
                 <TextView
                     android:id="@+id/tv_detalle_autor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/recipe_user_placeholder"
+                    android:textSize="14sp"
+                    android:textColor="#6750A4"
+                    android:layout_marginBottom="10dp" />
+
+                <!-- Fila: Tiempo · Dificultad -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="\@usuario"
-                    android:textSize="16sp"
-                    android:textStyle="italic"
-                    android:textColor="?attr/colorPrimary"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/recipe_time_label"
+                        android:textSize="13sp"
+                        android:textColor="#9E9E9E" />
 
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="6dp">
+                    <TextView
+                        android:id="@+id/tv_detalle_tiempo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="—"
+                        android:textSize="13sp"
+                        android:textColor="#212121"
+                        android:textStyle="bold" />
 
-                        <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Tiempo: "
-                                android:textStyle="bold"
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp" />
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="14dp"
+                        android:background="#DDDDDD"
+                        android:layout_marginHorizontal="12dp" />
 
-                        <TextView
-                                android:id="@+id/tv_detalle_tiempo"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:text="30 min"
-                                android:textStyle="bold"
-                                android:textColor="#333333"
-                                android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/recipe_difficulty"
+                        android:textSize="13sp"
+                        android:textColor="#9E9E9E" />
 
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/tv_detalle_dificultad"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="—"
+                        android:textSize="13sp"
+                        android:textColor="#212121"
+                        android:textStyle="bold" />
 
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="6dp">
-
-                        <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Dificultad: "
-                                android:textStyle="bold"
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp" />
-
-                        <TextView
-                                android:id="@+id/tv_detalle_dificultad"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="4dp"
-                                android:text="Media"
-                                android:textStyle="bold"
-                                android:textColor="#333333"
-                                android:textSize="16sp" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginBottom="6dp">
-
-                        <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Salud: "
-                                android:textStyle="bold"
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp" />
-
-                        <View
-                                android:id="@+id/tv_detalle_semaforo_dot"
-                                android:layout_width="10dp"
-                                android:layout_height="10dp"
-                                android:layout_marginStart="4dp"
-                                android:background="@drawable/semaforo_dot" />
-                    </LinearLayout>
                 </LinearLayout>
 
+                <!-- Fila: Salud -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/recipe_health_prefix"
+                        android:textSize="13sp"
+                        android:textColor="#9E9E9E" />
+
+                    <View
+                        android:id="@+id/tv_detalle_semaforo_dot"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/semaforo_dot" />
+
+                    <TextView
+                        android:id="@+id/tv_detalle_semaforo_texto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="@string/semaforo_unknown"
+                        android:textSize="13sp"
+                        android:textColor="#757575" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ===== CONTENIDO ===== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@android:color/white"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="24dp">
+
+                <!-- Descripción -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ingredientes"
+                    android:text="@string/recipe_description_title"
                     android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:textColor="?attr/colorPrimary"
-                    android:layout_marginTop="8dp" />
-
-                <TextView
-                    android:id="@+id/tv_detalle_desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Descripción de la receta aquí..."
                     android:textSize="16sp"
-                    android:layout_marginTop="8dp"
-                    android:lineSpacingExtra="4dp"/>
+                    android:textColor="#1A1A1A" />
+
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#DDDDDD"
-                    android:layout_marginVertical="16dp" />
+                    android:layout_height="2dp"
+                    android:background="#6750A4"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/tv_detalle_descripcion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="#424242"
+                    android:lineSpacingExtra="4dp" />
+
+                <!-- Ingredientes -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pasos de Preparación"
+                    android:text="@string/recipe_ingredients_title"
                     android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:textColor="?attr/colorPrimary" />
+                    android:textSize="16sp"
+                    android:textColor="#1A1A1A"
+                    android:layout_marginTop="20dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#6750A4"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/tv_detalle_ingredientes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="#424242"
+                    android:lineSpacingExtra="4dp" />
+
+                <!-- Pasos -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/recipe_steps_title"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="#1A1A1A"
+                    android:layout_marginTop="20dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#6750A4"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="8dp" />
+
                 <TextView
                     android:id="@+id/tv_detalle_pasos"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="1. Paso uno\n2. Paso dos..."
-                    android:textSize="16sp"
-                    android:layout_marginTop="8dp"
-                    android:lineSpacingExtra="6dp"/>
+                    android:textSize="15sp"
+                    android:textColor="#424242"
+                    android:lineSpacingExtra="6dp" />
 
                 <Button
                     android:id="@+id/btn_ver_comentarios"
@@ -196,6 +261,8 @@
                     android:text="@string/recipe_view_comments" />
 
             </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
+
 </FrameLayout>

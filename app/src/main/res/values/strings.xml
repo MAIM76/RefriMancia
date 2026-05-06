@@ -1,6 +1,15 @@
 <resources>
     <string name="app_name">RefriMancia</string>
     <string name="search_hint">Buscar recetas…</string>
+    <string name="filter_by_ingredients">Filtrar por ingredientes</string>
+    <string name="hide_filter">Ocultar filtro</string>
+    <string name="filter_ingredients_hint">Ingredientes (ej: pollo, arroz)</string>
+    <string name="clear_filter">Limpiar filtro</string>
+    <string name="filters_title">Filtros de búsqueda</string>
+    <string name="filter_text_label">Buscar por título o descripción</string>
+    <string name="filter_ingredients_label">Filtrar por ingredientes</string>
+    <string name="clear_filters">Limpiar</string>
+    <string name="apply_filters">Aplicar</string>
     <string name="nav_home">Inicio</string>
     <string name="nav_user">Usuario</string>
     <string name="nav_create">Nueva</string>
@@ -11,6 +20,9 @@
     <string name="user_greeting">¡Bienvenido, chef!</string>
     <string name="user_email_placeholder">usuario@ejemplo.com</string>
     <string name="user_recipes_label">Mis recetas</string>
+    <string name="btn_editar_perfil">Editar perfil</string>
+    <string name="btn_cerrar_sesion">Cerrar sesión</string>
+    <string name="user_no_recipes">No tienes recetas aún</string>
     <string name="placeholder_recipe_title">Receta de ejemplo</string>
     <string name="placeholder_recipe_desc">Una deliciosa receta fácil de preparar en casa.</string>
     <string name="recipe_user_placeholder">\@usuario</string>
@@ -21,12 +33,6 @@
     <string name="recipe_review">Reseña</string>
     <string name="recipe_comment">Comentar</string>
     <string name="recipe_view_comments">Ver comentarios</string>
-    <string name="recipe_comment_empty">Escribe un comentario antes de enviar</string>
-    <string name="recipe_comment_sent">Comentario publicado</string>
-    <string name="recipe_comment_send_error">No se pudo publicar el comentario</string>
-    <string name="recipe_comment_send_network_error">Error de red al publicar comentario</string>
-    <string name="recipe_comments_load_error">Error al cargar comentarios</string>
-    <string name="recipe_comments_load_network_error">Error de red al cargar comentarios</string>
     <string name="review_dialog_title">Valorar receta</string>
     <string name="review_dialog_hint">Selecciona una puntuación para esta receta</string>
     <string name="review_dialog_selection_empty">Puntuación: sin elegir</string>
@@ -37,4 +43,94 @@
     <string name="btn_back">Volver</string>
     <string name="image_placeholder">Imagen</string>
     <string name="add_photo">+ Añadir foto</string>
+
+    <!-- Strings para sistema de reintento de conexión -->
+    <string name="error_icon">Icono de error</string>
+    <string name="error_conexion_mensaje">No se pudo conectar con el servidor</string>
+    <string name="error_conexion_sugerencia">Verifica tu conexión a internet e intenta nuevamente</string>
+    <string name="btn_reintentar">Reintentar</string>
+    <string name="reintentando">Reintentando...</string>
+    <string name="reintento_exitoso">Conexión restablecida</string>
+    <string name="error_reintento_agotado">Se agotaron los intentos de conexión</string>
+    <string name="error_login_conexion">Error de conexión. ¿Deseas reintentar?</string>
+    <string name="si">Sí</string>
+    <string name="no">No</string>
+
+    <!-- Strings para detalle de receta -->
+    <string name="recipe_time_label">Tiempo:</string>
+    <string name="recipe_health_prefix">Salud:</string>
+    <string name="recipe_back">Volver</string>
+    <string name="recipe_description_title">Descripción</string>
+    <string name="recipe_ingredients_title">Ingredientes</string>
+    <string name="recipe_steps_title">Pasos de Preparación</string>
+    <string name="recipe_no_description">Sin descripción disponible.</string>
+    <string name="recipe_no_ingredients">Sin ingredientes disponibles.</string>
+    <string name="recipe_no_steps">Sin pasos de preparación disponibles.</string>
+    <string name="recipe_difficulty">Dificultad</string>
+
+    <!-- Textos para recetas sin datos -->
+    <string name="recipe_no_title">Receta sin título</string>
+    <string name="recipe_no_category">Sin categoría</string>
+    <string name="recipe_difficulty_not_specified">No especificada</string>
+    <string name="recipe_time_not_available">N/A</string>
+    <string name="recipe_unknown_user">@usuario_desconocido</string>
+    <string name="recipe_user_format">@%1$s</string>
+    <string name="recipe_recent">Reciente</string>
+    <string name="recipe_health_label">Salud:</string>
+    <string name="recipe_meta_placeholder">Tipo - 0 min</string>
+
+    <!-- Semáforo nutricional -->
+    <string name="semaforo_unknown">Desconocido</string>
+    <string name="semaforo_red">Muy poco saludable</string>
+    <string name="semaforo_orange">Poco saludable</string>
+    <string name="semaforo_yellow">Regular</string>
+    <string name="semaforo_light_green">Saludable</string>
+    <string name="semaforo_dark_green">Muy saludable</string>
+
+    <!-- Formato de tiempo -->
+    <string name="time_minutes_format">%1$d min</string>
+    <string name="time_hours_format">%1$d h</string>
+    <string name="time_hours_minutes_format">%1$d h %2$d min</string>
+    <string name="time_zero_minutes">0 min</string>
+
+    <!-- Mensajes de error y Toast -->
+    <string name="error_session_not_available">No se pudo obtener la sesión del usuario</string>
+    <string name="error_open_recipe">Error al abrir receta</string>
+    <string name="error_configure_recipe_list">Error al configurar la lista de recetas</string>
+    <string name="error_load_recipes">Error al cargar recetas</string>
+    <string name="error_connection_retrying">Error de conexión. Reintentando en %1$ds…</string>
+    <string name="error_connection_attempts_exhausted">No se pudo conectar con el servidor después de %1$d intentos</string>
+    <string name="error_no_recipes_found">No se encontraron recetas con esos ingredientes</string>
+    <string name="error_search_recipes_connection">Error de conexión al buscar recetas</string>
+    <string name="error_waiting_recipes">Espere a que se carguen las recetas para filtrar</string>
+    <string name="error_load_comments">Error al cargar comentarios</string>
+    <string name="error_load_comments_network">Error de red al cargar comentarios</string>
+    <string name="error_comment_empty">Escribe un comentario antes de enviar</string>
+    <string name="error_publish_comment">No se pudo publicar el comentario</string>
+    <string name="error_publish_comment_network">Error de red al publicar comentario</string>
+    <string name="error_login_required_rating">Debes iniciar sesión para valorar</string>
+    <string name="error_select_rating">Selecciona una puntuación entre 1 y 5</string>
+    <string name="error_save_review">No se pudo guardar la reseña</string>
+    <string name="error_save_review_network">Error de red al guardar la reseña</string>
+
+    <!-- Mensajes de éxito -->
+    <string name="comment_published">Comentario publicado</string>
+    <string name="review_saved">Reseña guardada</string>
+
+    <!-- Títulos y diálogos -->
+    <string name="rating_title_format">Valorar: %1$s</string>
+    <string name="rating_title_default">Valorar receta</string>
+    <string name="rating_score_format">Puntuación: %1$d/5</string>
+    <string name="rating_score_empty">Puntuación: sin elegir</string>
+
+    <!-- Logs y debug (opcional) -->
+    <string name="log_user_retry">Usuario presionó reintentar</string>
+    <string name="log_error_api_call">Error en la llamada API: %1$s</string>
+    <string name="log_retrying_connection">Reintentando conexión en %1$dms (intento %2$d/%3$d)</string>
+    <string name="log_connection_attempts_exhausted">Se agotaron los intentos de conexión</string>
+    <string name="log_error_response">Error en la respuesta: %1$d</string>
+    <string name="log_recipes_loaded">Recetas cargadas: %1$d</string>
+    <string name="log_first_recipe_title">Primera receta - Titulo: %1$s</string>
+    <string name="log_first_recipe_desc">Primera receta - Descripcion: %1$s</string>
+    <string name="log_first_recipe_ingredients">Primera receta - Ingredientes: %1$s</string>
 </resources>

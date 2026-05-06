@@ -1,0 +1,88 @@
+GUIA DE MODELOS - Metodos copiados a paquete modelo
+====================================================
+
+RESUMEN: Clases expandidas con metodos de clases duplicadas del paquete raiz
+
+----------------------------------------------------
+PAQUETE: modelo.request
+----------------------------------------------------
+
+CambiarPassRequest.java
+  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/request/
+  - Metodos copiados de: CambiarPassRequest (paquete raiz)
+  - Campos: correoElectronico, codigo, nuevaContrasena
+  - Constructores: vacio, (correo, codigo, nuevaPass)
+
+RegistroRequest.java
+  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/request/
+  - Metodos copiados de: RegistroRequest (paquete raiz)
+  - Nota: Marcado como @Deprecated - usar multipart directamente
+
+----------------------------------------------------
+PAQUETE: modelo.response
+----------------------------------------------------
+
+Login.java (EXPANDIDA)
+  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/response/
+  - Metodos nuevos agregados desde LoginResponse (paquete raiz):
+    * getIdUsuario() - extrae de data.getIdUsuario()
+    * getNombreUsuario() - extrae de data.getNombreUsuario()
+  - Usa: entidad Usuario como data
+
+Registro.java (EXPANDIDA)
+  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/response/
+  - Campos nuevos agregados desde RegistroRespuesta (paquete raiz):
+    * exito (boolean)
+    * mensaje (String)
+  - Metodos nuevos:
+    * isExito(), setExito()
+    * getMensaje(), setMensaje()
+    * setStatus(), setMessage(), setId(), setFoto()
+  - Nota: Ahora soporta ambos formatos (status/message y exito/mensaje)
+
+RecetaCreada.java (EXPANDIDA)
+  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/response/
+  - Metodos nuevos agregados desde CreateRecipeResponse (paquete raiz):
+    * setStatus()
+    * setIdReceta()
+    * setFoto()
+
+Estado.java (EXISTENTE - sin cambios)
+  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/response/
+  - Puede usarse como reemplazo de: CambiarPassRespuesta (paquete raiz)
+  - Campos: status, message
+
+----------------------------------------------------
+CLASES DUPLICADAS ELIMINADAS
+----------------------------------------------------
+
+Se eliminaron del paquete modelo/response:
+  - LoginResponse.java (duplicado de Login.java)
+  - RegistroResponse.java (duplicado de Registro.java)
+  - CreateRecipeResponse.java (duplicado de RecetaCreada.java)
+
+----------------------------------------------------
+MAPA DE MIGRACION
+----------------------------------------------------
+
+Para migrar desde clases del paquete raiz:
+
+LoginResponse (raiz)  -->  Login (modelo.response)
+RegistroRespuesta (raiz)  -->  Registro (modelo.response)
+CreateRecipeResponse (raiz)  -->  RecetaCreada (modelo.response)
+CambiarPassRespuesta (raiz)  -->  Estado (modelo.response)
+CambiarPassRequest (raiz)  -->  CambiarPassRequest (modelo.request)
+RegistroRequest (raiz)  -->  RegistroRequest (modelo.request) @Deprecated
+
+----------------------------------------------------
+NOTA IMPORTANTE
+----------------------------------------------------
+
+Los archivos fuera de los paquetes adaptador/api/modelo/ui NO han sido
+modificados. Los companeros deben actualizar manualmente los imports.
+
+Ejemplo de cambio en ApiService.java:
+  Call<Login> login(...)
+  Call<Registro> registro(...)
+  Call<Estado> cambiarPassword(...)
+  Call<RecetaCreada> crearReceta(...)

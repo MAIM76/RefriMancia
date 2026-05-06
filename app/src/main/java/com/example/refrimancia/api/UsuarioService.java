@@ -21,17 +21,45 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+/**
+ * Interfaz de servicio Retrofit para la gestión de usuarios.
+ * Proporciona endpoints para autenticación, registro, gestión de perfiles
+ * y recuperación de contraseñas en la aplicación RefriMancia.
+ */
 public interface UsuarioService {
-
-    // Autenticar usuario y obtener token de acceso
+    
+    // ======================== ENDPOINTS DE AUTENTICACIÓN ========================
+    
+    /**
+     * Autentica un usuario y devuelve un token de acceso.
+     * @param loginRequest Objeto con las credenciales de login
+     * @return Token de autenticación JWT
+     */
     @POST("api/usuarios/login")
     Call<AuthToken> login(@Body LoginRequest loginRequest);
 
-    // Cerrar sesión del usuario autenticado
+    /**
+     * Cierra la sesión del usuario autenticado.
+     * Invalida el token actual en el servidor.
+     * @return ResponseBody con el resultado de la operación
+     */
     @POST("api/usuarios/logout")
     Call<ResponseBody> logout();
-
-    // Crear nuevo usuario con imagen de perfil
+    
+    // ======================== ENDPOINTS DE GESTIÓN DE USUARIOS ========================
+    
+    /**
+     * Crea un nuevo usuario con imagen de perfil.
+     * Utiliza multipart/form-data para enviar tanto los datos como la imagen.
+     * 
+     * @param nombreUsuario Nombre de usuario único
+     * @param contrasena Contraseña del usuario
+     * @param nombreCompleto Nombre completo del usuario
+     * @param correoElectronico Correo electrónico válido
+     * @param fechaNacimiento Fecha de nacimiento del usuario
+     * @param imagenPerfil Imagen de perfil (opcional)
+     * @return ResponseBody con el resultado de la operación
+     */
     @Multipart
     @POST("api/usuarios/crear")
     Call<ResponseBody> crearUsuario(
@@ -43,11 +71,27 @@ public interface UsuarioService {
             @Part MultipartBody.Part imagenPerfil
     );
 
-    // Obtener datos del perfil del usuario autenticado
+    /**
+     * Obtiene los datos del perfil del usuario autenticado.
+     * Requiere estar autenticado con un token válido.
+     * @return Respuesta única con los datos del perfil
+     */
     @GET("api/usuarios/perfil")
     Call<RespuestaUnica<Usuario>> obtenerPerfil();
 
-    // Modificar datos de un usuario existente
+    /**
+     * Modifica los datos de un usuario existente.
+     * Utiliza multipart/form-data para enviar tanto los datos como la imagen.
+     * 
+     * @param id ID del usuario a modificar
+     * @param nombreUsuario Nuevo nombre de usuario
+     * @param contrasena Nueva contraseña (opcional)
+     * @param nombreCompleto Nuevo nombre completo
+     * @param correoElectronico Nuevo correo electrónico
+     * @param fechaNacimiento Nueva fecha de nacimiento
+     * @param imagenPerfil Nueva imagen de perfil (opcional)
+     * @return ResponseBody con el resultado de la operación
+     */
     @Multipart
     @PUT("api/usuarios/modificar/{id}")
     Call<ResponseBody> modificarUsuario(
@@ -60,15 +104,34 @@ public interface UsuarioService {
             @Part MultipartBody.Part imagenPerfil
     );
 
-    // Listar todos los usuarios con paginación
+    /**
+     * Lista todos los usuarios con soporte de paginación.
+     * Requiere privilegios de administrador.
+     * @param page Número de página (opcional)
+     * @return Respuesta paginada con la lista de usuarios
+     */
     @GET("api/usuarios/listar")
     Call<RespuestaPaginada<Usuario>> listarUsuarios(@Query("page") Integer page);
-
-    // Solicitar código de recuperación de contraseña
+    
+    // ======================== ENDPOINTS DE RECUPERACIÓN DE CONTRASEÑA ========================
+    
+    /**
+     * Solicita un código de recuperación de contraseña.
+     * Envía un código al correo electrónico del usuario.
+     * 
+     * @param request Map con el correo electrónico del usuario
+     * @return ResponseBody con el resultado de la operación
+     */
     @POST("api/usuarios/solicitar-codigo")
     Call<ResponseBody> solicitarCodigo(@Body Map<String, String> request);
 
-    // Cambiar contraseña con código de recuperación
+    /**
+     * Cambia la contraseña usando un código de recuperación.
+     * Valida el código y actualiza la contraseña del usuario.
+     * 
+     * @param request Map con el código de recuperación y la nueva contraseña
+     * @return ResponseBody con el resultado de la operación
+     */
     @POST("api/usuarios/cambiar-contrasena")
     Call<ResponseBody> cambiarContrasena(@Body Map<String, String> request);
 }

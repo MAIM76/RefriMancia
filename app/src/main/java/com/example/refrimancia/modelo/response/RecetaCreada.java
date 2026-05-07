@@ -2,12 +2,6 @@ package com.example.refrimancia.modelo.response;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Response de la creación de una receta.
- *
- * @see com.example.refrimancia.CreateRecipeActivity
- * @see com.example.refrimancia.api.ApiService#crearReceta
- */
 public class RecetaCreada {
 
     @SerializedName("status")
@@ -19,8 +13,6 @@ public class RecetaCreada {
     @SerializedName("foto")
     private String foto;
 
-    // ============ GETTERS Y SETTERS ============
-
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
@@ -30,4 +22,3 @@ public class RecetaCreada {
     public String getFoto() { return foto; }
     public void setFoto(String foto) { this.foto = foto; }
 }
-

@@ -2,24 +2,14 @@ package com.example.refrimancia.modelo.response;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Response del registro de usuario.
- * Compatible con múltiples formatos de respuesta del backend.
- *
- * @see com.example.refrimancia.VentanaRegistro
- * @see com.example.refrimancia.VentanaEditarPerfil
- * @see com.example.refrimancia.api.ApiService
- */
 public class Registro {
 
-    // Campos formato 1: status/message
     @SerializedName("status")
     private String status;
 
     @SerializedName("message")
     private String message;
 
-    // Campos formato 2: exito/mensaje (usado en registro/actualización)
     @SerializedName("exito")
     private boolean exito;
 
@@ -31,8 +21,6 @@ public class Registro {
 
     @SerializedName("foto")
     private String foto;
-
-    // ============ GETTERS Y SETTERS ============
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

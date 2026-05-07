@@ -147,16 +147,6 @@ public class Comentario {
     }
 
     /**
-     * Establece el texto del comentario en ambos campos.
-     * Actualiza tanto 'contenido' como 'mensaje' para compatibilidad.
-     * @param texto Nuevo texto del comentario
-     */
-    public void setTexto(String texto) {
-        this.mensaje = texto;
-        this.contenido = texto;
-    }
-
-    /**
      * Obtiene la fecha normalizada con fallback entre campos.
      * Prioriza 'fechaCreacion' sobre 'fechaComentario'.
      * @return Fecha normalizada o cadena vacía si ambas son nulas

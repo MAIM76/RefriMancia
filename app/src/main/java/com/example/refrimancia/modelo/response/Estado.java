@@ -3,6 +3,7 @@ package com.example.refrimancia.modelo.response;
 import com.google.gson.annotations.SerializedName;
 
 public class Estado {
+
     @SerializedName("status")
     private String status;
 
@@ -12,4 +13,3 @@ public class Estado {
     public String getStatus() { return status; }
     public String getMessage() { return message; }
 }
-

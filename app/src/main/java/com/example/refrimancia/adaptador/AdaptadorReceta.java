@@ -16,21 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import com.example.refrimancia.api.ClienteRetrofit;
-import com.example.refrimancia.api.ValoracionService;
 import com.example.refrimancia.R;
 import com.example.refrimancia.modelo.entidad.Receta;
-import com.example.refrimancia.modelo.response.ValoracionReceta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Adaptador para mostrar una lista de recetas en un RecyclerView.
@@ -44,8 +34,6 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
     private List<Receta> listaRecetas;
     // Copia de la lista completa para realizar búsquedas sin perder datos
     private final List<Receta> listaRecetasCompleta;
-    // Caché de valoraciones para evitar múltiples peticiones
-    private final Map<Integer, Float> valoracionesCache = new HashMap<>();
     // Contexto para acceder a recursos
     private Context contexto;
     // Listeners para eventos de clic
@@ -236,12 +224,10 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
      * @param idReceta ID de la receta a refrescar
      */
     public void refrescarValoracionReceta(int idReceta) {
-        solicitarValoracionReceta(idReceta, valoracion -> {
-            int posicion = obtenerPosicionReceta(idReceta);
-            if (posicion != -1) {
-                notifyItemChanged(posicion);
-            }
-        });
+        int posicion = obtenerPosicionReceta(idReceta);
+        if (posicion != -1) {
+            notifyItemChanged(posicion);
+        }
     }
 
     /**
@@ -386,42 +372,6 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
                 }
             });
         }
-    }
-
-    // ======================== MÉTODOS DE CARGA DE VALORACIONES ========================
-    
-    /**
-     * Interfaz para manejar la carga asíncrona de valoraciones.
-     */
-    private interface OnValoracionCargadaListener {
-        void onValoracionCargada(float valoracion);
-    }
-
-    /**
-     * Solicita la valoración de una receta de forma asíncrona.
-     * @param idReceta ID de la receta
-     * @param listenerValoracion Listener para manejar el resultado
-     */
-    private void solicitarValoracionReceta(int idReceta, OnValoracionCargadaListener listenerValoracion) {
-        ValoracionService valoracionService = 
-                ClienteRetrofit.obtenerInstancia(contexto).create(ValoracionService.class);
-        valoracionService.obtenerValoracionesPorReceta(idReceta).enqueue(new Callback<>() {
-            @Override
-            public void onResponse(Call<ValoracionReceta> call, Response<ValoracionReceta> response) {
-                float valoracionFinal = 0f;
-                if (response.isSuccessful() && response.body() != null && response.body().getData() != 
-                        null) {
-                    valoracionFinal = response.body().getData().getNotaMedia();
-                }
-                valoracionesCache.put(idReceta, valoracionFinal);
-                listenerValoracion.onValoracionCargada(valoracionFinal);
-            }
-
-            @Override
-            public void onFailure(Call<ValoracionReceta> call, Throwable t) {
-                // Se mantiene el valor actual si falla la consulta.
-            }
-        });
     }
 
     // ======================== MÉTODOS UTILITARIOS ========================

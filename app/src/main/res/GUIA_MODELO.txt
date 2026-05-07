@@ -53,13 +53,25 @@ Estado.java (EXISTENTE - sin cambios)
   - Campos: status, message
 
 ----------------------------------------------------
-CLASES DUPLICADAS ELIMINADAS
+CLASES DUPLICADAS ELIMINADAS (paquete modelo/response)
 ----------------------------------------------------
 
-Se eliminaron del paquete modelo/response:
+Duplicados del paquete raiz ya eliminados previamente:
   - LoginResponse.java (duplicado de Login.java)
   - RegistroResponse.java (duplicado de Registro.java)
   - CreateRecipeResponse.java (duplicado de RecetaCreada.java)
+
+Clases sin uso activo eliminadas en limpieza posterior:
+  - AuthToken.java (duplicaba Login.java; endpoint login() movido a ApiService)
+  - CambiarPassResponse.java (duplicaba Estado.java)
+  - RecetaDetalle.java (no referenciada en codigo activo)
+  - RecomendacionDiaria.java (no referenciada en codigo activo)
+  - ComentarioCreado.java (no referenciada en codigo activo)
+  - PerfilActualizado.java (no referenciada en codigo activo)
+  - Perfil.java (response) (no referenciada en codigo activo)
+
+Clase entidad eliminada:
+  - modelo/entidad/Perfil.java (clase vacia que extendia Usuario sin anhadir nada)
 
 ----------------------------------------------------
 MAPA DE MIGRACION

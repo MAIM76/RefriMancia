@@ -1,8 +1,6 @@
 package com.example.refrimancia.api;
 
-import com.example.refrimancia.modelo.request.LoginRequest;
 import com.example.refrimancia.modelo.entidad.Usuario;
-import com.example.refrimancia.modelo.response.AuthToken;
 import com.example.refrimancia.modelo.response.RespuestaPaginada;
 import com.example.refrimancia.modelo.response.RespuestaUnica;
 
@@ -30,14 +28,6 @@ public interface UsuarioService {
     
     // ======================== ENDPOINTS DE AUTENTICACIÓN ========================
     
-    /**
-     * Autentica un usuario y devuelve un token de acceso.
-     * @param loginRequest Objeto con las credenciales de login
-     * @return Token de autenticación JWT
-     */
-    @POST("api/usuarios/login")
-    Call<AuthToken> login(@Body LoginRequest loginRequest);
-
     /**
      * Cierra la sesión del usuario autenticado.
      * Invalida el token actual en el servidor.

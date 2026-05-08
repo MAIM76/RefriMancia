@@ -74,8 +74,8 @@
     <string name="recipe_no_category">Sin categoría</string>
     <string name="recipe_difficulty_not_specified">No especificada</string>
     <string name="recipe_time_not_available">N/A</string>
-    <string name="recipe_unknown_user">@usuario_desconocido</string>
-    <string name="recipe_user_format">@%1$s</string>
+    <string name="recipe_unknown_user">\@usuario_desconocido</string>
+    <string name="recipe_user_format">\@%1$s</string>
     <string name="recipe_recent">Reciente</string>
     <string name="recipe_health_label">Salud:</string>
     <string name="recipe_meta_placeholder">Tipo - 0 min</string>

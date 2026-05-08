@@ -1,14 +1,14 @@
 package com.example.refrimancia.api;
 
-import com.example.refrimancia.modelo.entidad.Usuario;
-import com.example.refrimancia.modelo.request.CambiarPassRequest;
-import com.example.refrimancia.modelo.request.CorreoRequest;
-import com.example.refrimancia.modelo.request.LoginRequest;
-import com.example.refrimancia.modelo.response.Estado;
-import com.example.refrimancia.modelo.response.Login;
-import com.example.refrimancia.modelo.response.Registro;
-import com.example.refrimancia.modelo.response.RespuestaPaginada;
-import com.example.refrimancia.modelo.response.RespuestaUnica;
+import com.example.refrimancia.model.entity.Usuario;
+import com.example.refrimancia.model.request.CambiarPassRequest;
+import com.example.refrimancia.model.request.CorreoRequest;
+import com.example.refrimancia.model.request.LoginRequest;
+import com.example.refrimancia.model.response.Estado;
+import com.example.refrimancia.model.response.Login;
+import com.example.refrimancia.model.response.Registro;
+import com.example.refrimancia.model.response.RespuestaPaginada;
+import com.example.refrimancia.model.response.RespuestaUnica;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;

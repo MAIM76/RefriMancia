@@ -42,7 +42,5 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.UCrop"/>
 
-        <!-- 345: This activity is for testing purposes and can be removed. -->
-        <activity android:name=".ExampleActivity" />
     </application>
 </manifest>

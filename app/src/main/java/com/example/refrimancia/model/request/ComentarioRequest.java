@@ -1,4 +1,4 @@
-package com.example.refrimancia.modelo.request;
+package com.example.refrimancia.model.request;
 
 import com.google.gson.annotations.SerializedName;
 

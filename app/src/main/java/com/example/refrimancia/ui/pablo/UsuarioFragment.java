@@ -25,10 +25,10 @@ import com.example.refrimancia.util.SessionManager;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.RecetaService;
 import com.example.refrimancia.api.UsuarioService;
-import com.example.refrimancia.modelo.entidad.Receta;
-import com.example.refrimancia.modelo.entidad.Usuario;
-import com.example.refrimancia.modelo.response.RespuestaPaginada;
-import com.example.refrimancia.modelo.response.RespuestaUnica;
+import com.example.refrimancia.model.entity.Receta;
+import com.example.refrimancia.model.entity.Usuario;
+import com.example.refrimancia.model.response.RespuestaPaginada;
+import com.example.refrimancia.model.response.RespuestaUnica;
 import com.example.refrimancia.ui.LoginActivity;
 import com.example.refrimancia.ui.VentanaEditarPerfil;
 
@@ -186,7 +186,7 @@ public class UsuarioFragment extends Fragment {
 
     /**
      * Fallback cuando la API de perfil no responde.
-     * Muestra los datos básicos guardados en {@link com.example.refrimancia.SessionManager}.
+     * Muestra los datos básicos guardados en {@link com.example.refrimancia.util.SessionManager}.
      */
     private void mostrarDesdeSesion() {
         int idUsuario = sessionManager.fetchUserId();

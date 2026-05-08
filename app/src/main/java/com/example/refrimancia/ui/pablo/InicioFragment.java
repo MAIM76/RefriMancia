@@ -33,19 +33,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.refrimancia.R;
+import com.example.refrimancia.adapter.RecetaAdapter;
 import com.example.refrimancia.util.SessionManager;
-import com.example.refrimancia.adaptador.AdaptadorComentario;
-import com.example.refrimancia.adaptador.AdaptadorReceta;
+import com.example.refrimancia.adapter.ComentarioAdapter;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.ComentarioService;
 import com.example.refrimancia.api.RecetaService;
 import com.example.refrimancia.api.ValoracionService;
-import com.example.refrimancia.modelo.entidad.Comentario;
-import com.example.refrimancia.modelo.entidad.Receta;
-import com.example.refrimancia.modelo.entidad.Valoracion;
-import com.example.refrimancia.modelo.request.ComentarioRequest;
-import com.example.refrimancia.modelo.request.ValoracionRequest;
-import com.example.refrimancia.modelo.response.RespuestaPaginada;
+import com.example.refrimancia.model.entity.Comentario;
+import com.example.refrimancia.model.entity.Receta;
+import com.example.refrimancia.model.entity.Valoracion;
+import com.example.refrimancia.model.request.ComentarioRequest;
+import com.example.refrimancia.model.request.ValoracionRequest;
+import com.example.refrimancia.model.response.RespuestaPaginada;
 import com.example.refrimancia.ui.LoginActivity;
 
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class InicioFragment extends Fragment {
 
     // ======================== VISTAS ========================
 
-    private AdaptadorReceta adaptador;
+    private RecetaAdapter adaptador;
     private RecyclerView rvRecetas;
     private SearchView barraBusqueda;
     private FrameLayout searchOverlay;
@@ -406,7 +406,7 @@ public class InicioFragment extends Fragment {
     private void configurarRecyclerView() {
         try {
             List<Receta> listaRecetas = new ArrayList<>();
-            adaptador = new AdaptadorReceta(listaRecetas, requireContext(),
+            adaptador = new RecetaAdapter(listaRecetas, requireContext(),
                     receta -> startActivity(RecetaActivity.crearIntent(requireContext(), receta)));
 
             adaptador.setOnComentarioClickListener(this::mostrarPopupComentarios);
@@ -722,7 +722,7 @@ public class InicioFragment extends Fragment {
 
         RecyclerView rvComentarios = dialog.findViewById(R.id.rv_comentarios);
         rvComentarios.setLayoutManager(new LinearLayoutManager(requireContext()));
-        AdaptadorComentario adaptadorComentario = new AdaptadorComentario(new ArrayList<>());
+        ComentarioAdapter adaptadorComentario = new ComentarioAdapter(new ArrayList<>());
         rvComentarios.setAdapter(adaptadorComentario);
 
         EditText etNuevoComentario = dialog.findViewById(R.id.et_nuevo_comentario);
@@ -779,7 +779,7 @@ public class InicioFragment extends Fragment {
     }
 
     private void cargarComentariosReceta(ComentarioService comentarioService, int idReceta,
-            AdaptadorComentario adaptadorComentario) {
+            ComentarioAdapter adaptadorComentario) {
         Call<RespuestaPaginada<Comentario>> call = comentarioService.obtenerComentariosPorReceta(idReceta);
 
         call.enqueue(new Callback<>() {

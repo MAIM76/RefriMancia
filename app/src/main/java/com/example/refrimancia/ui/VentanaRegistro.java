@@ -3,7 +3,7 @@ package com.example.refrimancia.ui;
 import com.example.refrimancia.R;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.UsuarioService;
-import com.example.refrimancia.modelo.response.Registro;
+import com.example.refrimancia.model.response.Registro;
 
 import retrofit2.Call;
 import retrofit2.Callback;

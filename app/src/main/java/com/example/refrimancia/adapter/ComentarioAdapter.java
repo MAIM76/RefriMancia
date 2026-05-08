@@ -1,4 +1,4 @@
-package com.example.refrimancia.adaptador;
+package com.example.refrimancia.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
-import com.example.refrimancia.modelo.entidad.Comentario;
+import com.example.refrimancia.model.entity.Comentario;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,7 +23,7 @@ import java.util.Locale;
  * Adaptador para mostrar una lista de comentarios en un RecyclerView.
  * Cada comentario muestra el nombre de usuario, el contenido, la fecha y la foto de perfil.
  */
-public class AdaptadorComentario extends RecyclerView.Adapter<AdaptadorComentario.ComentarioViewHolder> {
+public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.ComentarioViewHolder> {
 
     // Lista de comentarios a mostrar
     private List<Comentario> comentarios;
@@ -32,7 +32,7 @@ public class AdaptadorComentario extends RecyclerView.Adapter<AdaptadorComentari
      * Constructor del adaptador.
      * @param comentarios Lista inicial de comentarios a mostrar
      */
-    public AdaptadorComentario(List<Comentario> comentarios) {
+    public ComentarioAdapter(List<Comentario> comentarios) {
         this.comentarios = comentarios;
     }
 

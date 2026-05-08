@@ -25,15 +25,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
-import com.example.refrimancia.adaptador.AdaptadorComentario;
+import com.example.refrimancia.adapter.ComentarioAdapter;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.ComentarioService;
 import com.example.refrimancia.api.RecetaService;
-import com.example.refrimancia.modelo.entidad.Comentario;
-import com.example.refrimancia.modelo.entidad.Receta;
-import com.example.refrimancia.modelo.request.ComentarioRequest;
-import com.example.refrimancia.modelo.response.RespuestaPaginada;
-import com.example.refrimancia.modelo.response.RespuestaUnica;
+import com.example.refrimancia.model.entity.Comentario;
+import com.example.refrimancia.model.entity.Receta;
+import com.example.refrimancia.model.request.ComentarioRequest;
+import com.example.refrimancia.model.response.RespuestaPaginada;
+import com.example.refrimancia.model.response.RespuestaUnica;
 import java.util.ArrayList;
 import java.util.List;
 import okhttp3.ResponseBody;
@@ -157,7 +157,7 @@ public class RecetaActivity extends AppCompatActivity {
 
         RecyclerView rvComentarios = dialog.findViewById(R.id.rv_comentarios);
         rvComentarios.setLayoutManager(new LinearLayoutManager(this));
-        AdaptadorComentario adaptadorComentario = new AdaptadorComentario(new ArrayList<>());
+        ComentarioAdapter adaptadorComentario = new ComentarioAdapter(new ArrayList<>());
         rvComentarios.setAdapter(adaptadorComentario);
 
         EditText etNuevoComentario = dialog.findViewById(R.id.et_nuevo_comentario);
@@ -215,7 +215,7 @@ public class RecetaActivity extends AppCompatActivity {
      * @param adaptadorComentario Adaptador del RecyclerView de comentarios
      */
     private void cargarComentariosReceta(ComentarioService comentarioService, int recetaId,
-            AdaptadorComentario adaptadorComentario) {
+            ComentarioAdapter adaptadorComentario) {
         Call<RespuestaPaginada<Comentario>> call = comentarioService.obtenerComentariosPorReceta(recetaId);
         call.enqueue(new Callback<>() {
             @Override

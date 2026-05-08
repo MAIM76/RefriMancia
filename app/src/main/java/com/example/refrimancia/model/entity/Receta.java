@@ -1,4 +1,4 @@
-package com.example.refrimancia.modelo.entidad;
+package com.example.refrimancia.model.entity;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;

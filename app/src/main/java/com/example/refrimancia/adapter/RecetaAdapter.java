@@ -1,4 +1,4 @@
-package com.example.refrimancia.adaptador;
+package com.example.refrimancia.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import com.example.refrimancia.R;
-import com.example.refrimancia.modelo.entidad.Receta;
+import com.example.refrimancia.model.entity.Receta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.List;
  * Adaptador para mostrar una lista de recetas en un RecyclerView.
  * Soporta filtrado, carga de valoraciones asíncrona y múltiples acciones por receta.
  */
-public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.RecetaViewHolder> {
+public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaViewHolder> {
 
     // ======================== VARIABLES DE INSTANCIA ========================
     
@@ -72,7 +72,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
      * @param contexto Contexto de la aplicación
      * @param listener Listener para clics en recetas
      */
-    public AdaptadorReceta(List<Receta> listaRecetas, Context contexto, OnRecetaClickListener listener) {
+    public RecetaAdapter(List<Receta> listaRecetas, Context contexto, OnRecetaClickListener listener) {
         // Validaciones nulas para prevenir crashes
         if (listaRecetas == null) {
             this.listaRecetas = new ArrayList<>();
@@ -190,13 +190,13 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
     public void onBindViewHolder(@NonNull RecetaViewHolder holder, int posicion) {
         // Validar posición para prevenir IndexOutOfBoundsException
         if (posicion < 0 || posicion >= listaRecetas.size()) {
-            Log.e("AdaptadorReceta", "Posición inválida: " + posicion + ", tamaño: " + listaRecetas.size());
+            Log.e("RecetaAdapter", "Posición inválida: " + posicion + ", tamaño: " + listaRecetas.size());
             return;
         }
         
         Receta receta = listaRecetas.get(posicion);
         if (receta == null) {
-            Log.e("AdaptadorReceta", "Receta nula en posición: " + posicion);
+            Log.e("RecetaAdapter", "Receta nula en posición: " + posicion);
             return;
         }
 
@@ -213,7 +213,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
             // Configurar listeners de clic
             configurarListeners(holder, receta);
         } catch (Exception e) {
-            Log.e("AdaptadorReceta", "Error al configurar receta en posición " + posicion, e);
+            Log.e("RecetaAdapter", "Error al configurar receta en posición " + posicion, e);
         }
     }
 
@@ -255,7 +255,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
                 holder.dificultadCategoria.setText(texto);
             }
         } catch (Exception e) {
-            Log.e("AdaptadorReceta", "Error en configurarInformacionBasica", e);
+            Log.e("RecetaAdapter", "Error en configurarInformacionBasica", e);
         }
     }
 
@@ -282,7 +282,7 @@ public class AdaptadorReceta extends RecyclerView.Adapter<AdaptadorReceta.Receta
                                 Object model, 
                                 com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable> target, 
                                 boolean isFirstResource) {
-                            Log.e("AdaptadorReceta", "Error al cargar imagen: " + receta.getImagenUrl(), e);
+                            Log.e("RecetaAdapter", "Error al cargar imagen: " + receta.getImagenUrl(), e);
                             return false; // Permitir que Glide maneje el error
                         }
 

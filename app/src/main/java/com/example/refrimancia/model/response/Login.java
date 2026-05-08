@@ -1,6 +1,6 @@
-package com.example.refrimancia.modelo.response;
+package com.example.refrimancia.model.response;
 
-import com.example.refrimancia.modelo.entidad.Usuario;
+import com.example.refrimancia.model.entity.Usuario;
 import com.google.gson.annotations.SerializedName;
 
 public class Login {

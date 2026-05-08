@@ -28,7 +28,7 @@
             android:src="@android:drawable/ic_menu_sort_by_size"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/filter_by_ingredients"
-            android:tint="@color/purple_500"
+            app:tint="@color/purple_500"
             android:layout_marginEnd="8dp" />
 
         <!-- Búsqueda principal -->

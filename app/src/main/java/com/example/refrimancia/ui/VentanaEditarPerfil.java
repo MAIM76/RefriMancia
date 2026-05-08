@@ -16,8 +16,8 @@ import com.example.refrimancia.R;
 import com.example.refrimancia.util.SessionManager;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.UsuarioService;
-import com.example.refrimancia.modelo.entidad.Usuario;
-import com.example.refrimancia.modelo.response.RespuestaUnica;
+import com.example.refrimancia.model.entity.Usuario;
+import com.example.refrimancia.model.response.RespuestaUnica;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;

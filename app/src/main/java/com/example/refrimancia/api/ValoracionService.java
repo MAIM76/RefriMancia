@@ -1,8 +1,8 @@
 package com.example.refrimancia.api;
 
-import com.example.refrimancia.modelo.entidad.Valoracion;
-import com.example.refrimancia.modelo.request.ValoracionRequest;
-import com.example.refrimancia.modelo.response.ValoracionReceta;
+import com.example.refrimancia.model.entity.Valoracion;
+import com.example.refrimancia.model.request.ValoracionRequest;
+import com.example.refrimancia.model.response.ValoracionReceta;
 
 import java.util.List;
 

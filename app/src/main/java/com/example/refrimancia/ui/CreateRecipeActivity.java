@@ -26,7 +26,7 @@ import androidx.core.content.ContextCompat;
 import com.example.refrimancia.R;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.RecetaService;
-import com.example.refrimancia.modelo.response.RecetaCreada;
+import com.example.refrimancia.model.response.RecetaCreada;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;

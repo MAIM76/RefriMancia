@@ -14,8 +14,8 @@ import com.example.refrimancia.R;
 import com.example.refrimancia.util.SessionManager;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.UsuarioService;
-import com.example.refrimancia.modelo.request.LoginRequest;
-import com.example.refrimancia.modelo.response.Login;
+import com.example.refrimancia.model.request.LoginRequest;
+import com.example.refrimancia.model.response.Login;
 import com.example.refrimancia.ui.pablo.ContenedorPrincipalActivity;
 
 import retrofit2.Call;

@@ -12,8 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.refrimancia.R;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.UsuarioService;
-import com.example.refrimancia.modelo.request.CambiarPassRequest;
-import com.example.refrimancia.modelo.response.Estado;
+import com.example.refrimancia.model.request.CambiarPassRequest;
+import com.example.refrimancia.model.response.Estado;
 
 import retrofit2.Call;
 import retrofit2.Callback;

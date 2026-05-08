@@ -1,4 +1,4 @@
-package com.example.refrimancia;
+package com.example.refrimancia.ui;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +12,12 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.refrimancia.R;
+import com.example.refrimancia.util.SessionManager;
+import com.example.refrimancia.api.ClienteRetrofit;
+import com.example.refrimancia.api.UsuarioService;
+import com.example.refrimancia.modelo.entidad.Usuario;
+import com.example.refrimancia.modelo.response.RespuestaUnica;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -24,13 +30,15 @@ import java.util.Date;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import retrofit2.*;
-import retrofit2.converter.gson.GsonConverterFactory;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class VentanaEditarPerfil extends AppCompatActivity {
 
-    private ApiService apiService;
-    private Retrofit retrofit;
+    private UsuarioService usuarioService;
+    private SessionManager sessionManager;
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imagenUri;
@@ -46,7 +54,6 @@ public class VentanaEditarPerfil extends AppCompatActivity {
     Button botonCancelarEditar;
     Button botonEditarImagen;
 
-    private String token;
     private int idUsuario;
 
     @Override
@@ -54,12 +61,9 @@ public class VentanaEditarPerfil extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ventana_editar_perfil);
 
-        //Recibir los datos necesarios desde el intent
-        token = getIntent().getStringExtra("TOKEN");
-        idUsuario = getIntent().getIntExtra("ID_USUARIO", -1);
+        sessionManager = new SessionManager(this);
+        idUsuario = sessionManager.fetchUserId();
 
-        //Mensaje al log para mayor ayuda
-        Log.d("EDITAR", "Token: " + token);
         Log.d("EDITAR", "ID Usuario: " + idUsuario);
 
 
@@ -73,13 +77,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
         botonCancelarEditar = findViewById(R.id.botonCancelarEditar);
         botonEditarImagen = findViewById(R.id.botonEditarImagen);
 
-        //Configurar retrofit
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://refrimacia-backend.onrender.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        apiService = retrofit.create(ApiService.class);
+        usuarioService = ClienteRetrofit.obtenerInstancia(this).create(UsuarioService.class);
 
         //Cargar los datos del usuario
         cargarPerfil();
@@ -94,48 +92,41 @@ public class VentanaEditarPerfil extends AppCompatActivity {
     //Metodo para cargar los datos del perfil
     private void cargarPerfil() {
 
-        Call<PerfilRespuesta> call = apiService.obtenerPerfil("Bearer " + token);
-
-        call.enqueue(new Callback<PerfilRespuesta>() {
+        usuarioService.obtenerPerfil().enqueue(new Callback<RespuestaUnica<Usuario>>() {
             @Override
-            public void onResponse(Call<PerfilRespuesta> call, Response<PerfilRespuesta> response) {
+            public void onResponse(Call<RespuestaUnica<Usuario>> call,
+                    Response<RespuestaUnica<Usuario>> response) {
 
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getData() != null) {
 
-                    if (response.body().getStatus().equals("success")) {
+                    Usuario data = response.body().getData();
 
-                        Perfil data = response.body().getData();
+                    // Actualizar ID real del usuario
+                    idUsuario = data.getIdUsuario();
 
-                        // Guardar ID REAL del usuario
-                        idUsuario = data.getIdUsuario();
+                    etNombreUserEditar.setText(data.getNombreUsuario());
 
-                        etNombreUserEditar.setText(data.getNombreUsuario());
-
-                        // Separar nombre completo
-                        String nombreCompleto = data.getNombreCompleto();
-                        if (nombreCompleto.contains(" ")) {
-                            String[] partes = nombreCompleto.split(" ", 2);
-                            etNombreEditar.setText(partes[0]);
-                            etApellidosEditar.setText(partes[1]);
-                        } else {
-                            etNombreEditar.setText(nombreCompleto);
-                        }
-
-                        // Formatear fecha
-                        String fecha = data.getFechaNac().split("T")[0];
-                        etFechaEditar.setText(fecha);
-
-                        // Guardar la ruta de la imagen y cargar imagen
-                        imagenActualUrl = data.getImagenPerfil();
-                        Glide.with(VentanaEditarPerfil.this)
-                                .load(data.getImagenPerfil())
-                                .into(ivImagenEditar);
-
+                    // Separar nombre completo
+                    String nombreCompleto = data.getNombreCompleto();
+                    if (nombreCompleto != null && nombreCompleto.contains(" ")) {
+                        String[] partes = nombreCompleto.split(" ", 2);
+                        etNombreEditar.setText(partes[0]);
+                        etApellidosEditar.setText(partes[1]);
                     } else {
-                        Toast.makeText(VentanaEditarPerfil.this,
-                                response.body().getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                        etNombreEditar.setText(nombreCompleto);
                     }
+
+                    // Formatear fecha
+                    if (data.getFechaNac() != null) {
+                        etFechaEditar.setText(data.getFechaNac().split("T")[0]);
+                    }
+
+                    // Guardar la ruta de la imagen y cargarla
+                    imagenActualUrl = data.getUrlFotoPerfil();
+                    Glide.with(VentanaEditarPerfil.this)
+                            .load(imagenActualUrl)
+                            .into(ivImagenEditar);
 
                 } else {
                     Toast.makeText(VentanaEditarPerfil.this,
@@ -145,7 +136,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<PerfilRespuesta> call, Throwable t) {
+            public void onFailure(Call<RespuestaUnica<Usuario>> call, Throwable t) {
                 Toast.makeText(VentanaEditarPerfil.this,
                         "Error conexión",
                         Toast.LENGTH_SHORT).show();
@@ -253,31 +244,23 @@ public class VentanaEditarPerfil extends AppCompatActivity {
             );
         }
 
+        RequestBody contrasenaVacia = RequestBody.create("", MediaType.parse("text/plain"));
+        RequestBody correoVacio = RequestBody.create("", MediaType.parse("text/plain"));
+
         //Realizar la llamada a la API
-        Call<RegistroRespuesta> call;
+        Call<ResponseBody> call = usuarioService.modificarUsuario(
+                idUsuario,
+                nombreUserBody,
+                contrasenaVacia,
+                nombreCompletoBody,
+                correoVacio,
+                fechaBody,
+                imagenPart
+        );
 
-        if (croppedImageUri != null) {
-            call = apiService.actualizarUsuario(
-                    "Bearer " + token,
-                    idUsuario,
-                    nombreUserBody,
-                    nombreCompletoBody,
-                    fechaBody,
-                    imagenPart
-            );
-        } else {
-            call = apiService.actualizarUsuarioSinImagen(
-                    "Bearer " + token,
-                    idUsuario,
-                    nombreUserBody,
-                    nombreCompletoBody,
-                    fechaBody
-            );
-        }
-
-        call.enqueue(new Callback<RegistroRespuesta>() {
+        call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<RegistroRespuesta> call, Response<RegistroRespuesta> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
                 if (response.isSuccessful()) {
                     Toast.makeText(VentanaEditarPerfil.this,
@@ -299,7 +282,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<RegistroRespuesta> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(VentanaEditarPerfil.this,
                         "Error conexión",
                         Toast.LENGTH_SHORT).show();

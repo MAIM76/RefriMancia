@@ -1,4 +1,4 @@
-package com.example.refrimancia.ui;
+package com.example.refrimancia.ui.pablo;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
-import com.example.refrimancia.SessionManager;
+import com.example.refrimancia.util.SessionManager;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.RecetaService;
 import com.example.refrimancia.api.UsuarioService;
@@ -29,6 +29,8 @@ import com.example.refrimancia.modelo.entidad.Receta;
 import com.example.refrimancia.modelo.entidad.Usuario;
 import com.example.refrimancia.modelo.response.RespuestaPaginada;
 import com.example.refrimancia.modelo.response.RespuestaUnica;
+import com.example.refrimancia.ui.LoginActivity;
+import com.example.refrimancia.ui.VentanaEditarPerfil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,11 +43,23 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Fragmento de perfil del usuario.
+ * Muestra los datos del usuario logueado (nombre, foto) y el listado de sus recetas.
+ * Soporta refresco manual por swipe y recarga automática cada {@code REFRESH_INTERVAL_MS} ms
+ * al volver al fragmento. Permite editar el perfil y cerrar sesión.
+ */
 public class UsuarioFragment extends Fragment {
 
+    // ======================== CONSTANTES ========================
+
     private static final String TAG = "UsuarioFragment";
+    /** Máximo de páginas a recorrer en la paginación de recetas (guard frente a bucles). */
     private static final int MAX_PAGES = 50;
+    /** Intervalo mínimo entre recargas automáticas de recetas al hacer onResume. */
     private static final long REFRESH_INTERVAL_MS = 60_000L;
+
+    // ======================== VARIABLES DE INSTANCIA ========================
 
     private ImageView imagenPerfil;
     private TextView nombreUsuario;
@@ -56,10 +70,16 @@ public class UsuarioFragment extends Fragment {
     private SessionManager sessionManager;
     private AdaptadorMisRecetas adaptadorMisRecetas;
     private SwipeRefreshLayout swipeRecetas;
+    /** true una vez que el perfil del usuario se ha cargado correctamente. */
     private boolean perfilCargado = false;
+    /** true mientras hay una recarga de recetas en curso (evita llamadas duplicadas). */
     private boolean refrescandoRecetas = false;
+    /** true hasta que finaliza la primera carga, impide recargas prematuras en onResume. */
     private boolean primeraCarga = true;
+    /** Marca de tiempo (elapsedRealtime) de la última recarga de recetas. */
     private long lastRefreshAt = 0L;
+
+    // ======================== CICLO DE VIDA ========================
 
     @Nullable
     @Override
@@ -77,6 +97,9 @@ public class UsuarioFragment extends Fragment {
         cargarDatosUsuario();
     }
 
+    /**
+     * Recarga las recetas del usuario si ha pasado el intervalo mínimo desde la última recarga.
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -88,6 +111,11 @@ public class UsuarioFragment extends Fragment {
         }
     }
 
+    // ======================== INICIALIZACIÓN ========================
+
+    /**
+     * Enlaza las vistas del layout, configura el adaptador y asigna los listeners de botones.
+     */
     private void inicializarVistas(View vista) {
         sessionManager = new SessionManager(requireContext());
         imagenPerfil = vista.findViewById(R.id.profile_image);
@@ -107,8 +135,14 @@ public class UsuarioFragment extends Fragment {
         }
     }
 
+    // ======================== CARGA DE DATOS ========================
+
+    /**
+     * Punto de entrada para la carga inicial de datos.
+     * Si no hay sesión válida muestra estado vacío; si ya se cargó el perfil, refresca recetas.
+     */
     private void cargarDatosUsuario() {
-        if (sessionManager.fetchAuthToken() == null) {
+        if (!sessionManager.isSessionValid()) {
             mostrarEstadoVacio();
             return;
         }
@@ -119,6 +153,10 @@ public class UsuarioFragment extends Fragment {
         }
     }
 
+    /**
+     * Llama a la API para obtener el perfil completo del usuario y actualiza la UI.
+     * Si falla, intenta mostrar los datos guardados en sesión local.
+     */
     private void obtenerPerfilUsuario() {
         UsuarioService usuarioService = 
                 ClienteRetrofit.obtenerInstancia(requireContext()).create(UsuarioService.class);
@@ -146,6 +184,10 @@ public class UsuarioFragment extends Fragment {
         });
     }
 
+    /**
+     * Fallback cuando la API de perfil no responde.
+     * Muestra los datos básicos guardados en {@link com.example.refrimancia.SessionManager}.
+     */
     private void mostrarDesdeSesion() {
         int idUsuario = sessionManager.fetchUserId();
         String nombre = sessionManager.fetchUserName();
@@ -162,6 +204,10 @@ public class UsuarioFragment extends Fragment {
         }
     }
 
+    /**
+     * Recarga las recetas del usuario.
+     * @param forzar Si es {@code true}, ignora el intervalo de refresco y carga siempre.
+     */
     private void refrescarRecetas(boolean forzar) {
         if (primeraCarga) {
             return;
@@ -183,6 +229,11 @@ public class UsuarioFragment extends Fragment {
         cargarRecetasUsuarioLogueado(idUsuario, nombre);
     }
 
+    /**
+     * Inicia la carga paginada de todas las recetas del usuario.
+     * @param idUsuario     ID del usuario logueado
+     * @param nombreUsuario Nombre del usuario (para filtrar por nombre cuando el ID no coincide)
+     */
     private void cargarRecetasUsuarioLogueado(int idUsuario, String nombreUsuario) {
         RecetaService recetaService = 
                 ClienteRetrofit.obtenerInstancia(requireContext()).create(RecetaService.class);
@@ -190,7 +241,15 @@ public class UsuarioFragment extends Fragment {
         cargarPaginaRecetas(recetaService, idUsuario, nombreUsuario, 1, new ArrayList<>());
     }
 
-    private void cargarPaginaRecetas(RecetaService recetaService, int idUsuario, String nombreUsuario, 
+    /**
+     * Carga recursivamente página a página y filtra las recetas que pertenecen al usuario.
+     * @param recetaService  Servicio Retrofit de recetas
+     * @param idUsuario      ID del usuario
+     * @param nombreUsuario  Nombre del usuario (normalizdo)
+     * @param pagina         Página actual a cargar
+     * @param acumuladas     Lista donde se acumulan las recetas del usuario
+     */
+    private void cargarPaginaRecetas(RecetaService recetaService, int idUsuario, String nombreUsuario,
             int pagina, List<Receta> acumuladas) {
         recetaService.obtenerRecetas(pagina).enqueue(new Callback<RespuestaPaginada<Receta>>() {
             @Override
@@ -247,6 +306,11 @@ public class UsuarioFragment extends Fragment {
         });
     }
 
+    /**
+     * Normaliza el nombre de usuario para comparaciones (quita {@code @}, trim, minúsculas).
+     * @param nombre Nombre de usuario original
+     * @return Nombre normalizado
+     */
     private String normalizarUsuario(String nombre) {
         if (nombre == null) {
             return "";
@@ -258,6 +322,10 @@ public class UsuarioFragment extends Fragment {
         return limpio.toLowerCase();
     }
 
+    /**
+     * Muestra las recetas del usuario en el RecyclerView o el estado vacío si no hay ninguna.
+     * @param misRecetas Lista de recetas filtradas del usuario
+     */
     private void mostrarRecetasUsuario(List<Receta> misRecetas) {
         if (misRecetas == null || misRecetas.isEmpty()) {
             if (adaptadorMisRecetas == null || adaptadorMisRecetas.getItemCount() == 0) {
@@ -277,10 +345,22 @@ public class UsuarioFragment extends Fragment {
         }
     }
 
+    // ======================== INTERFAZ DE COMUNICACIÓN ========================
+
+    /**
+     * Interfaz implementada por la actividad contenedora para recibir actualizaciones
+     * de la foto de perfil y reflejarlas en el icono de la barra de navegación inferior.
+     */
     public interface OnFotoPerfilCargadaListener {
         void onFotoPerfilCargada(String url);
     }
 
+    // ======================== MÉTODOS DE UI ========================
+
+    /**
+     * Actualiza las vistas con los datos del usuario: nombre, foto de perfil e icono de nav.
+     * @param usuario Datos del usuario obtenidos de la API
+     */
     private void actualizarUI(Usuario usuario) {
         if (usuario != null) {
             nombreUsuario.setText(getString(R.string.recipe_user_format, usuario.getNombreUsuario()));
@@ -309,34 +389,45 @@ public class UsuarioFragment extends Fragment {
         }
     }
 
+    /**
+     * Muestra el estado vacío (sin datos de usuario disponibles).
+     */
     private void mostrarEstadoVacio() {
         contenidoVacio.setVisibility(View.VISIBLE);
         Log.d(TAG, "No hay datos de usuario disponibles");
     }
 
-    private void abrirEditarPerfil() {
-        int idUsuario = sessionManager.fetchUserId();
-        String token = sessionManager.fetchAuthToken();
+    // ======================== ACCIONES DE USUARIO ========================
 
-        if (idUsuario <= 0 || token == null || token.isEmpty()) {
-            Toast.makeText(requireContext(), R.string.error_session_not_available, 
+    /**
+     * Abre la pantalla de edición de perfil si la sesión es válida.
+     */
+    private void abrirEditarPerfil() {
+        if (!sessionManager.isSessionValid()) {
+            Toast.makeText(requireContext(), R.string.error_session_not_available,
                     Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Intent intent = new Intent(requireContext(), com.example.refrimancia.VentanaEditarPerfil.class);
-        intent.putExtra("ID_USUARIO", idUsuario);
-        intent.putExtra("TOKEN", token);
+        Intent intent = new Intent(requireContext(), VentanaEditarPerfil.class);
         startActivity(intent);
     }
 
+    /**
+     * Cierra la sesión del usuario y redirige al login.
+     */
     private void cerrarSesion() {
         sessionManager.clearSession();
-        Intent intent = new Intent(requireContext(), com.example.refrimancia.LoginActivity.class);
+        Intent intent = new Intent(requireContext(), LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
+    // ======================== ADAPTADOR INTERNO ========================
+
+    /**
+     * Adaptador interno para el RecyclerView de recetas del usuario.
+     */
     private class AdaptadorMisRecetas extends RecyclerView.Adapter<AdaptadorMisRecetas.MiRecetaViewHolder> {
         private final List<Receta> recetas;
 

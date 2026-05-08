@@ -15,7 +15,7 @@
         android:theme="@style/Theme.RefriMancia">
         <activity
 
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
 
             android:exported="true">
             <intent-filter>
@@ -24,16 +24,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreateRecipeActivity" />
+        <activity android:name=".ui.CreateRecipeActivity" />
 
-        <activity android:name=".VentanaRegistro" />
-        <activity android:name=".VentanaVerificar" />
-        <activity android:name=".VentanaRecuperarPassword" />
+        <activity android:name=".ui.VentanaRegistro" />
+        <activity android:name=".ui.VentanaVerificar" />
+        <activity android:name=".ui.VentanaRecuperarPassword" />
 
-        <activity android:name="VentanaEditarPerfil" />
+        <activity android:name=".ui.VentanaEditarPerfil" />
 
-        <activity android:name=".ui.ContenedorPrincipalActivity" />
-        <activity android:name=".ui.RecetaActivity" />
+        <activity android:name=".ui.pablo.ContenedorPrincipalActivity" />
+        <activity android:name=".ui.pablo.RecetaActivity" />
 
 
       <!-- Actividad de recorte de uCrop con el nuevo tema corregido -->

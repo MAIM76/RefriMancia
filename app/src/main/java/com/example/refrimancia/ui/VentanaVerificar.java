@@ -1,4 +1,4 @@
-package com.example.refrimancia;
+package com.example.refrimancia.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,19 +11,19 @@ import android.util.Patterns;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.example.refrimancia.R;
+import com.example.refrimancia.api.ClienteRetrofit;
+import com.example.refrimancia.api.UsuarioService;
+import com.example.refrimancia.modelo.request.CorreoRequest;
+import com.example.refrimancia.modelo.response.Estado;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class VentanaVerificar extends AppCompatActivity {
-    private Retrofit retrofit;
-    private ApiService apiService;
+    private UsuarioService usuarioService;
     TextView tvTituloVerificar;
     TextView tvCorreoVerificar;
     EditText etCorreoVerificar;
@@ -42,13 +42,7 @@ public class VentanaVerificar extends AppCompatActivity {
         botonEnviarCode = findViewById(R.id.botonEnviarCode);
         botonCancelarVerificar = findViewById(R.id.botonCancelarVerificar);
 
-        // Configurar Retrofit con tu URL de Render
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://refrimacia-backend.onrender.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        apiService = retrofit.create(ApiService.class);
+        usuarioService = ClienteRetrofit.obtenerInstancia(this).create(UsuarioService.class);
 
         botonEnviarCode.setOnClickListener(v -> {
             String correo = etCorreoVerificar.getText().toString().trim();
@@ -71,15 +65,15 @@ public class VentanaVerificar extends AppCompatActivity {
 
         CorreoRequest request = new CorreoRequest(correo);
 
-        Call<CorreoRespuesta> call = apiService.solicitarCodigo(request);
+        Call<Estado> call = usuarioService.solicitarCodigo(request);
 
-        call.enqueue(new Callback<CorreoRespuesta>() {
+        call.enqueue(new Callback<Estado>() {
             @Override
-            public void onResponse(Call<CorreoRespuesta> call, Response<CorreoRespuesta> response) {
+            public void onResponse(Call<Estado> call, Response<Estado> response) {
 
                 if (response.isSuccessful() && response.body() != null) {
 
-                    CorreoRespuesta res = response.body();
+                    Estado res = response.body();
 
                     if (res.getStatus().equals("success")) {
 
@@ -105,7 +99,7 @@ public class VentanaVerificar extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<CorreoRespuesta> call, Throwable t) {
+            public void onFailure(Call<Estado> call, Throwable t) {
                 Toast.makeText(VentanaVerificar.this,
                         "Error de conexión",
                         Toast.LENGTH_SHORT).show();

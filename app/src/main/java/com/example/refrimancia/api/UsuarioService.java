@@ -1,10 +1,14 @@
 package com.example.refrimancia.api;
 
 import com.example.refrimancia.modelo.entidad.Usuario;
+import com.example.refrimancia.modelo.request.CambiarPassRequest;
+import com.example.refrimancia.modelo.request.CorreoRequest;
+import com.example.refrimancia.modelo.request.LoginRequest;
+import com.example.refrimancia.modelo.response.Estado;
+import com.example.refrimancia.modelo.response.Login;
+import com.example.refrimancia.modelo.response.Registro;
 import com.example.refrimancia.modelo.response.RespuestaPaginada;
 import com.example.refrimancia.modelo.response.RespuestaUnica;
-
-import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -27,7 +31,15 @@ import retrofit2.http.Query;
 public interface UsuarioService {
     
     // ======================== ENDPOINTS DE AUTENTICACIÓN ========================
-    
+
+    /**
+     * Inicia sesión con credenciales de usuario.
+     * @param request Objeto con correo y contraseña
+     * @return Respuesta tipada con token y datos del usuario
+     */
+    @POST("api/usuarios/login")
+    Call<Login> login(@Body LoginRequest request);
+
     /**
      * Cierra la sesión del usuario autenticado.
      * Invalida el token actual en el servidor.
@@ -41,18 +53,10 @@ public interface UsuarioService {
     /**
      * Crea un nuevo usuario con imagen de perfil.
      * Utiliza multipart/form-data para enviar tanto los datos como la imagen.
-     * 
-     * @param nombreUsuario Nombre de usuario único
-     * @param contrasena Contraseña del usuario
-     * @param nombreCompleto Nombre completo del usuario
-     * @param correoElectronico Correo electrónico válido
-     * @param fechaNacimiento Fecha de nacimiento del usuario
-     * @param imagenPerfil Imagen de perfil (opcional)
-     * @return ResponseBody con el resultado de la operación
      */
     @Multipart
     @POST("api/usuarios/crear")
-    Call<ResponseBody> crearUsuario(
+    Call<Registro> registrarUsuario(
             @Part("nombre_usuario") RequestBody nombreUsuario,
             @Part("contrasena") RequestBody contrasena,
             @Part("nombre_completo") RequestBody nombreCompleto,
@@ -108,20 +112,14 @@ public interface UsuarioService {
     /**
      * Solicita un código de recuperación de contraseña.
      * Envía un código al correo electrónico del usuario.
-     * 
-     * @param request Map con el correo electrónico del usuario
-     * @return ResponseBody con el resultado de la operación
      */
     @POST("api/usuarios/solicitar-codigo")
-    Call<ResponseBody> solicitarCodigo(@Body Map<String, String> request);
+    Call<Estado> solicitarCodigo(@Body CorreoRequest request);
 
     /**
      * Cambia la contraseña usando un código de recuperación.
      * Valida el código y actualiza la contraseña del usuario.
-     * 
-     * @param request Map con el código de recuperación y la nueva contraseña
-     * @return ResponseBody con el resultado de la operación
      */
     @POST("api/usuarios/cambiar-contrasena")
-    Call<ResponseBody> cambiarContrasena(@Body Map<String, String> request);
+    Call<Estado> cambiarContrasena(@Body CambiarPassRequest request);
 }

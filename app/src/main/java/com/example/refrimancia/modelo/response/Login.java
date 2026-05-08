@@ -36,4 +36,20 @@ public class Login {
     public String getNombreUsuario() {
         return data != null ? data.getNombreUsuario() : null;
     }
+
+    public String getImagenPerfil() {
+        return data != null ? data.getUrlFotoPerfil() : null;
+    }
+
+    public String getNombreCompleto() {
+        return data != null ? data.getNombreCompleto() : null;
+    }
+
+    public String getCorreoElectronico() {
+        return data != null ? data.getCorreoElectronico() : null;
+    }
+
+    public String getFechaNac() {
+        return data != null ? data.getFechaNac() : null;
+    }
 }

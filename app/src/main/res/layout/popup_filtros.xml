@@ -29,25 +29,22 @@
         android:background="#DDDDDD"
         android:layout_marginBottom="16dp" />
 
-    <!-- Filtro por texto -->
+    <!-- Filtro por tipo de comida -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/filter_text_label"
+        android:text="@string/filter_meal_type_label"
         android:textSize="14sp"
         android:textColor="@android:color/darker_gray"
         android:layout_marginBottom="4dp" />
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/search_view_popup"
+    <Spinner
+        android:id="@+id/spinner_tipo_comida"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:background="@drawable/fondo_busqueda"
-        app:iconifiedByDefault="false"
-        app:queryHint="@string/search_hint"
-        app:queryBackground="@null"
-        app:searchIcon="@null"
-        app:closeIcon="@null"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         android:layout_marginBottom="16dp" />
 
     <!-- Filtro por ingredientes -->

@@ -1,4 +1,4 @@
-package com.example.refrimancia;
+package com.example.refrimancia.ui;
 
 import android.os.Bundle;
 import android.widget.Button;
@@ -9,15 +9,18 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import retrofit2.Retrofit;
+import com.example.refrimancia.R;
+import com.example.refrimancia.api.ClienteRetrofit;
+import com.example.refrimancia.api.UsuarioService;
+import com.example.refrimancia.modelo.request.CambiarPassRequest;
+import com.example.refrimancia.modelo.response.Estado;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class VentanaRecuperarPassword extends AppCompatActivity {
-    private Retrofit retrofit;
-    private ApiService apiService;
+    private UsuarioService usuarioService;
     String correo; //Para recuperar el correo enviado desde la otra ventana
     TextView tvTituloRecuperar;
     TextView tvCodigoRecuperar;
@@ -46,13 +49,7 @@ public class VentanaRecuperarPassword extends AppCompatActivity {
         // Recuperar correo
         correo = getIntent().getStringExtra("correo");
 
-        // Retrofit
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://refrimacia-backend.onrender.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        apiService = retrofit.create(ApiService.class);
+        usuarioService = ClienteRetrofit.obtenerInstancia(this).create(UsuarioService.class);
 
         botonActualizarPassword.setOnClickListener(v -> cambiarPassword());
     }
@@ -83,10 +80,10 @@ public class VentanaRecuperarPassword extends AppCompatActivity {
         CambiarPassRequest request =
                 new CambiarPassRequest(correo, codigo, nuevaPwd);
         // LLAMADA API
-        Call<CambiarPassRespuesta> call = apiService.cambiarPassword(request);
-        call.enqueue(new Callback<CambiarPassRespuesta>() {
+        Call<Estado> call = usuarioService.cambiarContrasena(request);
+        call.enqueue(new Callback<Estado>() {
             @Override
-            public void onResponse(Call<CambiarPassRespuesta> call, Response<CambiarPassRespuesta> response) {
+            public void onResponse(Call<Estado> call, Response<Estado> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Toast.makeText(VentanaRecuperarPassword.this,
                             "Contraseña actualizada correctamente",
@@ -100,7 +97,7 @@ public class VentanaRecuperarPassword extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<CambiarPassRespuesta> call, Throwable t) {
+            public void onFailure(Call<Estado> call, Throwable t) {
                 Toast.makeText(VentanaRecuperarPassword.this,
                         "Error de conexión",
                         Toast.LENGTH_SHORT).show();

@@ -7,6 +7,7 @@
     <string name="clear_filter">Limpiar filtro</string>
     <string name="filters_title">Filtros de búsqueda</string>
     <string name="filter_text_label">Buscar por título o descripción</string>
+    <string name="filter_meal_type_label">Tipo de comida</string>
     <string name="filter_ingredients_label">Filtrar por ingredientes</string>
     <string name="clear_filters">Limpiar</string>
     <string name="apply_filters">Aplicar</string>
@@ -133,4 +134,15 @@
     <string name="log_first_recipe_title">Primera receta - Titulo: %1$s</string>
     <string name="log_first_recipe_desc">Primera receta - Descripcion: %1$s</string>
     <string name="log_first_recipe_ingredients">Primera receta - Ingredientes: %1$s</string>
+
+    <!-- Opciones del filtro de tipo de comida -->
+    <string-array name="tipos_comida">
+        <item>Todos</item>
+        <item>Desayuno</item>
+        <item>Almuerzo</item>
+        <item>Comida</item>
+        <item>Cena</item>
+        <item>Postre</item>
+        <item>Snack</item>
+    </string-array>
 </resources>

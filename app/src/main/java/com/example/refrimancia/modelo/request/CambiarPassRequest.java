@@ -6,8 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Request para cambiar la contraseña de un usuario.
  * Usado en el flujo de recuperación de contraseña.
  *
- * @see com.example.refrimancia.VentanaRecuperarPassword
- * @see com.example.refrimancia.api.ApiService#cambiarPassword(CambiarPassRequest)
+ * @see com.example.refrimancia.ui.VentanaRecuperarPassword
  */
 public class CambiarPassRequest {
 

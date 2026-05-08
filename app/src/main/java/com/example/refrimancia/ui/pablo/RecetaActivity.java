@@ -1,4 +1,4 @@
-package com.example.refrimancia.ui;
+package com.example.refrimancia.ui.pablo;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -41,8 +41,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Actividad de detalle de una receta.
+ * Muestra toda la información de la receta (imagen, descripción, ingredientes, pasos,
+ * semáforo nutricional) y permite ver y publicar comentarios mediante un popup.
+ * Recibe el objeto {@link Receta} parcial vía Intent y carga el detalle completo desde la API.
+ */
 public class RecetaActivity extends AppCompatActivity {
+
+    // ======================== CONSTANTES ========================
+
     private static final String EXTRA_RECETA = "extra_receta";
+
+    // ======================== VARIABLES DE INSTANCIA ========================
+
     private Receta receta;
 
     private ImageView ivImagen;
@@ -57,11 +69,22 @@ public class RecetaActivity extends AppCompatActivity {
     private TextView tvSemaforoTexto;
     private Button btnVerComentarios;
 
+    // ======================== MÉTODO FÁBRICA ========================
+
+    /**
+     * Crea el Intent necesario para abrir esta actividad con la receta indicada.
+     * @param context Contexto desde el que se lanza
+     * @param receta  Receta a mostrar
+     * @return Intent listo para usar en {@code startActivity}
+     */
     public static Intent crearIntent(Context context, Receta receta) {
         Intent intent = new Intent(context, RecetaActivity.class);
         intent.putExtra(EXTRA_RECETA, receta);
         return intent;
     }
+
+    // ======================== CICLO DE VIDA ========================
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +113,13 @@ public class RecetaActivity extends AppCompatActivity {
         }
     }
 
+    // ======================== MÉTODOS DE UI ========================
+
+    /**
+     * Formatea minutos en texto legible (ej. "1 h 30 min").
+     * @param minutos Tiempo total en minutos
+     * @return Cadena formateada
+     */
     private String formatTiempo(int minutos) {
         if (minutos <= 0) return getString(R.string.time_zero_minutes);
         int horas = minutos / 60;
@@ -103,6 +133,11 @@ public class RecetaActivity extends AppCompatActivity {
         }
         return getString(R.string.time_minutes_format, minutos);
     }
+    /**
+     * Muestra el popup inferior de comentarios de la receta.
+     * Carga los comentarios existentes y permite publicar nuevos.
+     * @param receta Receta cuyos comentarios se van a mostrar
+     */
     private void mostrarPopupComentarios(Receta receta) {
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -173,7 +208,13 @@ public class RecetaActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void cargarComentariosReceta(ComentarioService comentarioService, int recetaId, 
+    /**
+     * Obtiene los comentarios de la receta desde la API y los carga en el adaptador.
+     * @param comentarioService Servicio Retrofit de comentarios
+     * @param recetaId          ID de la receta
+     * @param adaptadorComentario Adaptador del RecyclerView de comentarios
+     */
+    private void cargarComentariosReceta(ComentarioService comentarioService, int recetaId,
             AdaptadorComentario adaptadorComentario) {
         Call<RespuestaPaginada<Comentario>> call = comentarioService.obtenerComentariosPorReceta(recetaId);
         call.enqueue(new Callback<>() {
@@ -199,6 +240,12 @@ public class RecetaActivity extends AppCompatActivity {
         });
     }
 
+    // ======================== MÉTODOS DE DATOS ========================
+
+    /**
+     * Vincula los datos de la receta a las vistas.
+     * @param receta Receta con los datos a mostrar
+     */
     private void bindReceta(Receta receta) {
         tvTitulo.setText(receta.getTitulo() != null ? receta.getTitulo() : getString(R.string.recipe_no_title));
 
@@ -259,6 +306,11 @@ public class RecetaActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Convierte el valor del semáforo nutricional a un color de recurso.
+     * @param semaforo Valor del semáforo (rojo, naranja, amarillo, verde_claro, verde_oscuro)
+     * @return Color resuelto o 0 si es desconocido
+     */
     private int obtenerColorSemaforo(String semaforo) {
         if (semaforo == null) {
             return 0;
@@ -305,6 +357,11 @@ public class RecetaActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Carga el detalle completo de la receta desde la API y actualiza las vistas.
+     * Si falla, mantiene los datos parciales ya mostrados.
+     * @param idReceta ID de la receta a cargar
+     */
     private void cargarDetalleReceta(int idReceta) {
         RecetaService recetaService = ClienteRetrofit.obtenerInstancia(this).create(RecetaService.class);
         recetaService.obtenerReceta(idReceta).enqueue(new Callback<>() {
@@ -327,6 +384,13 @@ public class RecetaActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Combina los datos de la receta base (parcial) con los del detalle (completo).
+     * Los campos del detalle sobreescriben los de la base si no son nulos.
+     * @param base    Receta con datos parciales ya mostrados
+     * @param detalle Receta con datos completos de la API
+     * @return Receta combinada
+     */
     private Receta combinarRecetas(Receta base, Receta detalle) {
         if (base == null) {
             return detalle;

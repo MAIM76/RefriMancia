@@ -1,7 +1,9 @@
-package com.example.refrimancia;
+package com.example.refrimancia.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.example.refrimancia.api.ClienteRetrofit;
 
 public class SessionManager {
     private static final String PREF_NAME = "RefriManciaSession";
@@ -51,8 +53,15 @@ public class SessionManager {
         return sharedPreferences.getString(KEY_USER_NAME, "Usuario");
     }
 
+    public boolean isSessionValid() {
+        String token = fetchAuthToken();
+        int userId = fetchUserId();
+        return token != null && !token.isEmpty() && userId > 0;
+    }
+
     public void clearSession() {
         editor.clear();
         editor.apply();
+        ClienteRetrofit.resetInstancia();
     }
 }

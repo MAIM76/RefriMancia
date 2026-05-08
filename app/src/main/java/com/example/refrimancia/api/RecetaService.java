@@ -1,6 +1,7 @@
 package com.example.refrimancia.api;
 
 import com.example.refrimancia.modelo.entidad.Receta;
+import com.example.refrimancia.modelo.response.RecetaCreada;
 import com.example.refrimancia.modelo.response.RespuestaPaginada;
 import com.example.refrimancia.modelo.response.RespuestaUnica;
 
@@ -89,6 +90,21 @@ public interface RecetaService {
     @Multipart
     @POST("api/recetas/crear")
     Call<Receta> crearReceta(
+            @Part("titulo_receta") RequestBody tituloReceta,
+            @Part("descripcion") RequestBody descripcion,
+            @Part("ingredientes") RequestBody ingredientes,
+            @Part("tipo_receta") RequestBody tipoReceta,
+            @Part("tiempo_preparacion") RequestBody tiempoPreparacion,
+            @Part MultipartBody.Part imagenReceta
+    );
+
+    /**
+     * Crea una nueva receta devolviendo la respuesta completa de creación.
+     * Devuelve status, id_receta y foto en lugar del objeto Receta completo.
+     */
+    @Multipart
+    @POST("api/recetas/crear")
+    Call<RecetaCreada> crearRecetaConRespuesta(
             @Part("titulo_receta") RequestBody tituloReceta,
             @Part("descripcion") RequestBody descripcion,
             @Part("ingredientes") RequestBody ingredientes,

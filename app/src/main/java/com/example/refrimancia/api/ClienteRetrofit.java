@@ -3,7 +3,7 @@ package com.example.refrimancia.api;
 import android.content.Context;
 import android.content.Intent;
 
-import com.example.refrimancia.SessionManager;
+import com.example.refrimancia.util.SessionManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -55,6 +55,10 @@ public class ClienteRetrofit {
             instancia = crearInstanciaRetrofit(context);
         }
         return instancia;
+    }
+
+    public static void resetInstancia() {
+        instancia = null;
     }
     
     // ======================== MÉTODOS PRIVADOS ========================

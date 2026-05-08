@@ -1,4 +1,4 @@
-package com.example.refrimancia.ui;
+package com.example.refrimancia.ui.pablo;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,10 +15,11 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.example.refrimancia.CreateRecipeActivity;
+import com.example.refrimancia.ui.CreateRecipeActivity;
 import com.example.refrimancia.R;
-import com.example.refrimancia.SessionManager;
+import com.example.refrimancia.util.SessionManager;
 import com.example.refrimancia.api.ClienteRetrofit;
+import com.example.refrimancia.ui.LoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 /**
@@ -106,9 +107,8 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
      */
     private boolean verificarSesion() {
         SessionManager sessionManager = new SessionManager(this);
-        String token = sessionManager.fetchAuthToken();
-        
-        if (token == null || token.isEmpty()) {
+        if (!sessionManager.isSessionValid()) {
+            sessionManager.clearSession();
             redirigirALogin();
             return false;
         }
@@ -143,14 +143,22 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
         }
     }
     
+    // ======================== MÉTODOS DE FOTO DE PERFIL ========================
+
     /**
-     * Configura la navegación inferior y sus listeners.
+     * Callback del fragmento de usuario cuando se carga o actualiza la foto de perfil.
+     * Actualiza el icono del nav inferior con la nueva URL.
      */
     @Override
     public void onFotoPerfilCargada(String url) {
         actualizarIconoUsuario(url);
     }
 
+    /**
+     * Carga la foto de perfil del usuario en el ítem de navegación inferior.
+     * Si la URL es nula o vacía, usa el icono genérico del sistema.
+     * @param url URL de la imagen de perfil
+     */
     private void actualizarIconoUsuario(String url) {
         if (navInferior == null) return;
         int size = (int) (40 * getResources().getDisplayMetrics().density);
@@ -177,6 +185,9 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Configura la barra de navegación inferior: selección inicial, foto de perfil e item listeners.
+     */
     private void configurarNavegacionInferior() {
         navInferior = findViewById(R.id.bottom_navigation);
         navInferior.setSelectedItemId(R.id.nav_home);
@@ -228,22 +239,16 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
     }
     
     /**
-     * Abre la actividad de crear receta verificando la sesión.
+     * Abre la actividad de crear receta verificando que la sesión sea válida.
+     * El token y el ID se obtienen desde {@link SessionManager} en la propia actividad destino.
      */
     private void abrirCrearRecetaConSesion() {
         SessionManager sessionManager = new SessionManager(this);
-        int idUsuario = sessionManager.fetchUserId();
-        String token = sessionManager.fetchAuthToken();
-
-        if (idUsuario <= 0 || token == null || token.isEmpty()) {
+        if (!sessionManager.isSessionValid()) {
             Toast.makeText(this, R.string.error_session_not_available, Toast.LENGTH_SHORT).show();
             return;
         }
-
-        Intent intent = new Intent(this, CreateRecipeActivity.class);
-        intent.putExtra("ID_USUARIO", idUsuario);
-        intent.putExtra("TOKEN", token);
-        startActivity(intent);
+        startActivity(new Intent(this, CreateRecipeActivity.class));
     }
     
     // ======================== MÉTODOS DE SESIÓN ========================
@@ -282,7 +287,7 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
      * Redirige a la actividad de login limpiando el stack de actividades.
      */
     private void redirigirALogin() {
-        Intent loginIntent = new Intent(this, com.example.refrimancia.LoginActivity.class);
+        Intent loginIntent = new Intent(this, LoginActivity.class);
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
         finish();

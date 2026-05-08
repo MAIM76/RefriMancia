@@ -1,100 +1,102 @@
-GUIA DE MODELOS - Metodos copiados a paquete modelo
-====================================================
+GUIA DE ARQUITECTURA - RefriMancia
+===================================
+La migracion esta completada. Esta guia describe la estructura actual del proyecto.
 
-RESUMEN: Clases expandidas con metodos de clases duplicadas del paquete raiz
 
-----------------------------------------------------
-PAQUETE: modelo.request
-----------------------------------------------------
+CLIENTE HTTP  (api/ClienteRetrofit.java)
+----------------------------------------
+ClienteRetrofit es el unico cliente Retrofit de la app. Es un singleton que:
+  - Inyecta automaticamente el token Bearer en cada peticion autenticada.
+  - Detecta respuestas 401 (sesion expirada), limpia la sesion y emite el
+    broadcast com.example.refrimancia.SESSION_EXPIRED.
+  - Omite el token en el endpoint /login.
 
-CambiarPassRequest.java
-  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/request/
-  - Metodos copiados de: CambiarPassRequest (paquete raiz)
-  - Campos: correoElectronico, codigo, nuevaContrasena
-  - Constructores: vacio, (correo, codigo, nuevaPass)
+Uso:
+  ClienteRetrofit.obtenerInstancia(context).create(UsuarioService.class)
+  ClienteRetrofit.obtenerInstancia(context).create(RecetaService.class)
+  ClienteRetrofit.obtenerInstancia(context).create(ComentarioService.class)
 
-RegistroRequest.java
-  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/request/
-  - Metodos copiados de: RegistroRequest (paquete raiz)
-  - Nota: Marcado como @Deprecated - usar multipart directamente
 
-----------------------------------------------------
-PAQUETE: modelo.response
-----------------------------------------------------
+SESION  (SessionManager.java)
+------------------------------
+SessionManager centraliza el acceso a los datos de sesion en SharedPreferences.
 
-Login.java (EXPANDIDA)
-  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/response/
-  - Metodos nuevos agregados desde LoginResponse (paquete raiz):
-    * getIdUsuario() - extrae de data.getIdUsuario()
-    * getNombreUsuario() - extrae de data.getNombreUsuario()
-  - Usa: entidad Usuario como data
+  sessionManager.isSessionValid()          // comprueba token + userId
+  sessionManager.fetchAuthToken()          // String con el token JWT
+  sessionManager.fetchUserId()             // int con el id del usuario
+  sessionManager.fetchUserName()           // String con el nombre de usuario
+  sessionManager.fetchUserPhoto()          // String con la URL de la foto
+  sessionManager.saveAuthToken(token)
+  sessionManager.saveUserDetail(id, nombre)
+  sessionManager.saveUserPhoto(url)
+  sessionManager.clearSession()            // limpia sesion y resetea ClienteRetrofit
 
-Registro.java (EXPANDIDA)
-  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/response/
-  - Campos nuevos agregados desde RegistroRespuesta (paquete raiz):
-    * exito (boolean)
-    * mensaje (String)
-  - Metodos nuevos:
-    * isExito(), setExito()
-    * getMensaje(), setMensaje()
-    * setStatus(), setMessage(), setId(), setFoto()
-  - Nota: Ahora soporta ambos formatos (status/message y exito/mensaje)
+Nota: NO pasar token ni userId via Intent entre actividades. Leerlos siempre
+desde SessionManager en la actividad o fragmento que los necesite.
 
-RecetaCreada.java (EXPANDIDA)
-  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/response/
-  - Metodos nuevos agregados desde CreateRecipeResponse (paquete raiz):
-    * setStatus()
-    * setIdReceta()
-    * setFoto()
 
-Estado.java (EXISTENTE - sin cambios)
-  - Ubicacion: app/src/main/java/com/example/refrimancia/modelo/response/
-  - Puede usarse como reemplazo de: CambiarPassRespuesta (paquete raiz)
-  - Campos: status, message
+REQUESTS  (modelo/request/)
+----------------------------
+  LoginRequest        -- correo + contrasena
+  CorreoRequest       -- correo (para solicitar codigo de recuperacion)
+  CambiarPassRequest  -- correo + codigo + nuevaContrasena
 
-----------------------------------------------------
-CLASES DUPLICADAS ELIMINADAS (paquete modelo/response)
-----------------------------------------------------
+Los campos usan camelCase. La serializacion JSON a snake_case la gestiona
+@SerializedName en cada clase.
 
-Duplicados del paquete raiz ya eliminados previamente:
-  - LoginResponse.java (duplicado de Login.java)
-  - RegistroResponse.java (duplicado de Registro.java)
-  - CreateRecipeResponse.java (duplicado de RecetaCreada.java)
+Nota: RegistroRequest ya no existe. El registro usa multipart directamente
+en UsuarioService.registrarUsuario(...).
 
-Clases sin uso activo eliminadas en limpieza posterior:
-  - AuthToken.java (duplicaba Login.java; endpoint login() movido a ApiService)
-  - CambiarPassResponse.java (duplicaba Estado.java)
-  - RecetaDetalle.java (no referenciada en codigo activo)
-  - RecomendacionDiaria.java (no referenciada en codigo activo)
-  - ComentarioCreado.java (no referenciada en codigo activo)
-  - PerfilActualizado.java (no referenciada en codigo activo)
-  - Perfil.java (response) (no referenciada en codigo activo)
 
-Clase entidad eliminada:
-  - modelo/entidad/Perfil.java (clase vacia que extendia Usuario sin anhadir nada)
+RESPONSES  (modelo/response/)
+------------------------------
+  Login                    -- token + datos del usuario (via getData() o getters directos)
+  Registro                 -- respuesta al registrar un usuario
+  RecetaCreada             -- status + idReceta + foto
+  Estado                   -- status + message  (recuperacion de contrasena, etc.)
+  RespuestaUnica<T>        -- status + data: T  (perfil de usuario, etc.)
+  RespuestaPaginada<T>     -- paginacion generica
 
-----------------------------------------------------
-MAPA DE MIGRACION
-----------------------------------------------------
+Acceso a datos de Login:
+  login.getToken()
+  login.getIdUsuario()
+  login.getNombreUsuario()
+  login.getImagenPerfil()
+  login.getNombreCompleto()
+  login.getCorreoElectronico()
+  login.getFechaNac()
+  login.getData()          // devuelve el objeto entidad.Usuario completo
 
-Para migrar desde clases del paquete raiz:
 
-LoginResponse (raiz)  -->  Login (modelo.response)
-RegistroRespuesta (raiz)  -->  Registro (modelo.response)
-CreateRecipeResponse (raiz)  -->  RecetaCreada (modelo.response)
-CambiarPassRespuesta (raiz)  -->  Estado (modelo.response)
-CambiarPassRequest (raiz)  -->  CambiarPassRequest (modelo.request)
-RegistroRequest (raiz)  -->  RegistroRequest (modelo.request) @Deprecated
+ENTIDADES  (modelo/entidad/)
+-----------------------------
+  Usuario     -- modelo completo del usuario (id, nombre, correo, foto, fecha, etc.)
+  Receta      -- modelo completo de receta
+  Comentario  -- modelo de comentario con autor y fecha
 
-----------------------------------------------------
-NOTA IMPORTANTE
-----------------------------------------------------
 
-Los archivos fuera de los paquetes adaptador/api/modelo/ui NO han sido
-modificados. Los companeros deben actualizar manualmente los imports.
+ENDPOINTS  (api/)
+-----------------
+UsuarioService:
+  login(LoginRequest)                                    --> Call<Login>
+  logout()                                               --> Call<ResponseBody>
+  registrarUsuario(nombre, pass, nombreCompleto,         --> Call<Registro>
+                   correo, fecha, imagenPart)
+  obtenerPerfil()                                        --> Call<RespuestaUnica<Usuario>>
+  modificarUsuario(id, nombre, pass, nombreCompleto,     --> Call<ResponseBody>
+                   correo, fecha, imagenPart)
+  listarUsuarios(page)                                   --> Call<RespuestaPaginada<Usuario>>
+  solicitarCodigo(CorreoRequest)                         --> Call<Estado>
+  cambiarContrasena(CambiarPassRequest)                  --> Call<Estado>
 
-Ejemplo de cambio en ApiService.java:
-  Call<Login> login(...)
-  Call<Registro> registro(...)
-  Call<Estado> cambiarPassword(...)
-  Call<RecetaCreada> crearReceta(...)
+RecetaService:
+  listarRecetas(page, tipo, search)                      --> Call<RespuestaPaginada<Receta>>
+  obtenerReceta(id)                                      --> Call<RespuestaUnica<Receta>>
+  listarRecetasPorUsuario(idUsuario, page)               --> Call<RespuestaPaginada<Receta>>
+  crearReceta(titulo, ingr, desc, tipo, tiempo, imagen)  --> Call<Receta>
+  crearRecetaConRespuesta(...)                           --> Call<RecetaCreada>
+  compartirReceta(id)                                    --> Call<ResponseBody>
+  eliminarReceta(id)                                     --> Call<ResponseBody>
+
+ComentarioService:
+  (ver ComentarioService.java para endpoints de comentarios)

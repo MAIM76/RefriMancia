@@ -1,4 +1,4 @@
-package com.example.refrimancia.ui;
+package com.example.refrimancia.ui.pablo;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,9 +30,10 @@ import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.refrimancia.R;
-import com.example.refrimancia.SessionManager;
+import com.example.refrimancia.util.SessionManager;
 import com.example.refrimancia.adaptador.AdaptadorComentario;
 import com.example.refrimancia.adaptador.AdaptadorReceta;
 import com.example.refrimancia.api.ClienteRetrofit;
@@ -44,6 +46,7 @@ import com.example.refrimancia.modelo.entidad.Valoracion;
 import com.example.refrimancia.modelo.request.ComentarioRequest;
 import com.example.refrimancia.modelo.request.ValoracionRequest;
 import com.example.refrimancia.modelo.response.RespuestaPaginada;
+import com.example.refrimancia.ui.LoginActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,13 +56,22 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Fragmento principal de la pantalla de inicio.
+ * Muestra un listado paginado de recetas con búsqueda por texto, ingredientes y tipo.
+ * Soporta refresco por swipe, reintentos automáticos ante fallos de red y un panel de error
+ * con botón de reintento manual. Permite ver el detalle de cada receta, sus comentarios
+ * y publicar valoraciones desde un popup.
+ */
 public class InicioFragment extends Fragment {
 
-    private static final String TAG = "InicioFragment";
+    // ======================== CONSTANTES ========================
 
-    // Constantes para sistema de reintento
+    private static final String TAG = "InicioFragment";
+    /** Número máximo de reintentos automáticos ante fallo de red en la carga principal. */
     private static final int MAX_REINTENTOS = 3;
-    private static final int DELAY_BASE_REINTENTO_MS = 500; // 0.5 segundos base
+
+    // ======================== VISTAS ========================
 
     private AdaptadorReceta adaptador;
     private RecyclerView rvRecetas;
@@ -68,25 +80,34 @@ public class InicioFragment extends Fragment {
     private ArrayAdapter<String> suggestionsAdapter;
     private List<String> currentSuggestions;
     private ProgressBar loadingIndicator;
+    private SwipeRefreshLayout swipeRecetas;
 
-    // Vistas para manejo de errores
+    /** Panel de error de conexión (contiene el mensaje y el botón de reintentar). */
     private View errorContainer;
     private TextView tvErrorMensaje;
     private Button btnReintentar;
 
+    // ======================== ESTADO DE PAGINACIÓN ========================
+
     private int paginaActual = 1;
     private boolean cargando = false;
     private boolean esUltimaPagina = false;
+
+    // ======================== ESTADO DE BÚSQL ========================
+
     private boolean modoBusqueda = false;
     private String ultimaConsultaTexto = "";
     private String ultimaConsultaIngredientes = "";
-    private int contadorReintentos = 0;
-    private android.os.Handler handlerReintento = new android.os.Handler(android.os.Looper.getMainLooper());
-
-    // Lista completa de recetas para búsqueda (todas las recetas, no solo paginadas)
+    private String ultimaConsultaTipo = "";
+    /** Caché de todas las recetas para permitir búsqueda local sin nueva paginación. */
     private List<Receta> todasLasRecetas = new ArrayList<>();
     private boolean recetasPrecargadas = false;
     private boolean reintentandoBusqueda = false;
+
+    // ======================== REINTENTOS ========================
+
+    private final android.os.Handler handlerReintento = new android.os.Handler(android.os.Looper.getMainLooper());
+    private int contadorReintentos = 0;
 
     @Nullable
     @Override
@@ -107,6 +128,15 @@ public class InicioFragment extends Fragment {
             searchOverlay = vista.findViewById(R.id.search_overlay);
             ListView searchSuggestionsList = vista.findViewById(R.id.search_suggestions_list);
             loadingIndicator = vista.findViewById(R.id.loading_indicator);
+            swipeRecetas = vista.findViewById(R.id.swipe_recetas);
+            if (swipeRecetas != null) {
+                swipeRecetas.setColorSchemeResources(R.color.purple_500);
+                swipeRecetas.setOnRefreshListener(() -> {
+                    contadorReintentos = 0;
+                    ocultarError();
+                    refrescarListadoRecetas();
+                });
+            }
 
             // Validar que todas las vistas se encontraron
             if (rvRecetas == null || barraBusqueda == null || searchOverlay == null
@@ -124,7 +154,7 @@ public class InicioFragment extends Fragment {
                 if (btnReintentar != null) {
                     btnReintentar.setOnClickListener(v -> {
                         Log.d(TAG, getString(R.string.log_user_retry));
-                        contadorReintentos = 0; // Resetear contador
+                        contadorReintentos = 0;
                         ocultarError();
                         cargarRecetasDesdeAPI();
                     });
@@ -197,8 +227,9 @@ public class InicioFragment extends Fragment {
             }
 
             SessionManager sessionManager = new SessionManager(requireContext());
-            if (sessionManager.fetchAuthToken() == null) {
-                Intent loginIntent = new Intent(requireContext(), com.example.refrimancia.LoginActivity.class);
+            if (!sessionManager.isSessionValid()) {
+                sessionManager.clearSession();
+                Intent loginIntent = new Intent(requireContext(), LoginActivity.class);
                 loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(loginIntent);
                 requireActivity().finish();
@@ -231,11 +262,10 @@ public class InicioFragment extends Fragment {
                 if (loadingIndicator != null) {
                     loadingIndicator.setVisibility(View.GONE);
                 }
+                if (swipeRecetas != null) swipeRecetas.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null) {
                     // Éxito: ocultar mensaje de error si estaba visible
                     ocultarError();
-                    contadorReintentos = 0; // Resetear contador de reintentos
-                    
                     RespuestaPaginada<Receta> cuerpo = response.body();
                     List<Receta> recetas = cuerpo.getData();
                     Log.d(TAG, getString(R.string.log_recipes_loaded, recetas != null ? recetas.size() : 0));
@@ -266,35 +296,30 @@ public class InicioFragment extends Fragment {
                     }
                 } else {
                     Log.e(TAG, getString(R.string.log_error_response, response.code()));
-                    mostrarMensajeError(getString(R.string.error_load_recipes));
+                    mostrarError(getString(R.string.error_load_recipes));
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaPaginada<Receta>> call, 
+            public void onFailure(@NonNull Call<RespuestaPaginada<Receta>> call,
                     @NonNull Throwable error) {
                 cargando = false;
-                if (loadingIndicator != null) {
-                    loadingIndicator.setVisibility(View.GONE);
-                }
+                if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
+                if (swipeRecetas != null) swipeRecetas.setRefreshing(false);
                 Log.e(TAG, getString(R.string.log_error_api_call, error.getMessage()));
-                
-                // Implementar sistema de reintento automático
+
                 if (contadorReintentos < MAX_REINTENTOS) {
                     contadorReintentos++;
-                    int delayMs = DELAY_BASE_REINTENTO_MS * contadorReintentos; // Delay exponencial
-                    Log.d(TAG, getString(R.string.log_retrying_connection, delayMs, contadorReintentos, MAX_REINTENTOS));
-                    mostrarMensajeError(getString(R.string.error_connection_retrying, delayMs/1000));
-                    
+                    int delaySeg = contadorReintentos;
+                    mostrarErrorSinBoton(getString(R.string.error_connection_retrying, delaySeg));
                     handlerReintento.postDelayed(() -> {
                         if (isAdded() && !isRemoving()) {
                             cargarRecetasDesdeAPI();
                         }
-                    }, delayMs);
+                    }, delaySeg * 1000L);
                 } else {
-                    // Se agotaron los reintentos: mostrar pantalla de error
-                    Log.e(TAG, getString(R.string.log_connection_attempts_exhausted));
-                    mostrarError(getString(R.string.error_connection_attempts_exhausted, MAX_REINTENTOS));
+                    contadorReintentos = 0;
+                    mostrarError(getString(R.string.error_conexion_mensaje));
                 }
             }
         });
@@ -410,17 +435,18 @@ public class InicioFragment extends Fragment {
     }
 
     /**
-     * Aplica ambos filtros combinados: texto (título/descripción) e ingredientes.
+     * Aplica filtros combinados: texto (título/descripción), ingredientes y tipo de comida.
      * - Sin filtros: vuelve a la lista paginada normal.
-     * - Solo texto: filtra localmente sobre todasLasRecetas.
-     * - Con ingredientes (con o sin texto): usa API /buscar/ingredientes y refina por texto localmente.
+     * - Solo texto/tipo: filtra localmente sobre todasLasRecetas.
+     * - Con ingredientes: usa API /buscar/ingredientes y refina localmente.
      */
     private void aplicarFiltrosCombinados() {
         boolean tieneFiltroTexto = !ultimaConsultaTexto.isEmpty();
         boolean tieneFiltroIngredientes = !ultimaConsultaIngredientes.isEmpty();
+        boolean tieneFiltroTipo = !ultimaConsultaTipo.isEmpty();
 
         // Si no hay filtros, volver a modo normal
-        if (!tieneFiltroTexto && !tieneFiltroIngredientes) {
+        if (!tieneFiltroTexto && !tieneFiltroIngredientes && !tieneFiltroTipo) {
             modoBusqueda = false;
             refrescarListadoRecetas();
             return;
@@ -440,7 +466,7 @@ public class InicioFragment extends Fragment {
             return;
         }
 
-        // Solo filtro de texto: filtrar localmente sobre las recetas precargadas
+        // Solo filtro de texto y/o tipo: filtrar localmente sobre las recetas precargadas
         if (recetasPrecargadas && !todasLasRecetas.isEmpty()) {
             filtrarRecetasLocalmenteCombinado(ultimaConsultaTexto, "");
         } else if (!reintentandoBusqueda) {
@@ -468,8 +494,8 @@ public class InicioFragment extends Fragment {
      */
     private void filtrarRecetasLocalmenteCombinado(String consultaTexto, String consultaIngredientes) {
         String textoLower = consultaTexto.toLowerCase().trim();
+        String tipoLower = ultimaConsultaTipo.toLowerCase().trim();
         String[] ingredientesArray = consultaIngredientes.toLowerCase().trim().split(",");
-        // Limpiar espacios en cada ingrediente y filtrar vacíos
         List<String> ingredientesList = new ArrayList<>();
         for (String ingrediente : ingredientesArray) {
             String trimmed = ingrediente.trim();
@@ -483,36 +509,42 @@ public class InicioFragment extends Fragment {
         for (Receta receta : todasLasRecetas) {
             boolean coincideTexto = true;
             boolean coincideIngredientes = true;
+            boolean coincideTipo = true;
 
-            // Filtro por texto (título o descripción) - debe coincidir si hay texto
+            // Filtro por texto (título o descripción)
             if (!textoLower.isEmpty()) {
                 coincideTexto = false;
-                if (receta.getTitulo() != null && 
+                if (receta.getTitulo() != null &&
                     receta.getTitulo().toLowerCase().contains(textoLower)) {
                     coincideTexto = true;
                 }
-                if (receta.getDescripcion() != null && 
+                if (receta.getDescripcion() != null &&
                     receta.getDescripcion().toLowerCase().contains(textoLower)) {
                     coincideTexto = true;
                 }
             }
 
-            // Filtro por ingredientes (CUALQUIERA de los ingredientes - OR lógico)
+            // Filtro por tipo de comida (consumo_habitual)
+            if (!tipoLower.isEmpty()) {
+                String consumo = receta.getConsumoHabitual() != null ?
+                    receta.getConsumoHabitual().toLowerCase().trim() : "";
+                coincideTipo = consumo.equals(tipoLower);
+            }
+
+            // Filtro por ingredientes (OR lógico)
             if (!ingredientesList.isEmpty()) {
-                String recetaIngredientesLower = receta.getIngredientes() != null ? 
+                String recetaIngredientesLower = receta.getIngredientes() != null ?
                     receta.getIngredientes().toLowerCase() : "";
-                
-                coincideIngredientes = false; // Inicializar como false para OR
+                coincideIngredientes = false;
                 for (String ingrediente : ingredientesList) {
                     if (recetaIngredientesLower.contains(ingrediente)) {
-                        coincideIngredientes = true; // Coincide si tiene AL MENOS UN ingrediente
+                        coincideIngredientes = true;
                         break;
                     }
                 }
             }
 
-            // La receta debe cumplir AMBOS filtros (AND entre texto e ingredientes)
-            if (coincideTexto && coincideIngredientes) {
+            if (coincideTexto && coincideIngredientes && coincideTipo) {
                 recetasFiltradas.add(receta);
             }
         }
@@ -554,21 +586,24 @@ public class InicioFragment extends Fragment {
                     }
                     Log.d(TAG, "API devolvió " + recetas.size() + " recetas con esos ingredientes");
 
-                    // Si hay filtro de texto adicional, refinar localmente
-                    if (filtroTexto != null && !filtroTexto.trim().isEmpty()) {
-                        String textoLower = filtroTexto.toLowerCase().trim();
+                    // Refinar localmente por texto y/o tipo de comida
+                    String textoLower = filtroTexto != null ? filtroTexto.toLowerCase().trim() : "";
+                    String tipoLower = ultimaConsultaTipo.toLowerCase().trim();
+                    if (!textoLower.isEmpty() || !tipoLower.isEmpty()) {
                         List<Receta> refinadas = new ArrayList<>();
                         for (Receta r : recetas) {
-                            boolean enTitulo = r.getTitulo() != null && 
-                                r.getTitulo().toLowerCase().contains(textoLower);
-                            boolean enDesc = r.getDescripcion() != null && 
-                                r.getDescripcion().toLowerCase().contains(textoLower);
-                            if (enTitulo || enDesc) {
+                            boolean pasaTexto = textoLower.isEmpty() ||
+                                (r.getTitulo() != null && r.getTitulo().toLowerCase().contains(textoLower)) ||
+                                (r.getDescripcion() != null && r.getDescripcion().toLowerCase().contains(textoLower));
+                            boolean pasaTipo = tipoLower.isEmpty() ||
+                                (r.getConsumoHabitual() != null &&
+                                 r.getConsumoHabitual().toLowerCase().trim().equals(tipoLower));
+                            if (pasaTexto && pasaTipo) {
                                 refinadas.add(r);
                             }
                         }
                         recetas = refinadas;
-                        Log.d(TAG, "Tras refinar por texto: " + recetas.size() + " recetas");
+                        Log.d(TAG, "Tras refinar por texto/tipo: " + recetas.size() + " recetas");
                     }
 
                     adaptador.actualizarDatos(recetas);
@@ -610,48 +645,56 @@ public class InicioFragment extends Fragment {
 
         dialog.setCanceledOnTouchOutside(true);
 
-        SearchView searchViewPopup = dialog.findViewById(R.id.search_view_popup);
+        Spinner spinnerTipo = dialog.findViewById(R.id.spinner_tipo_comida);
         EditText etIngredientes = dialog.findViewById(R.id.et_ingredientes_filtro);
         Button btnLimpiar = dialog.findViewById(R.id.btn_limpiar_filtros);
         Button btnAplicar = dialog.findViewById(R.id.btn_aplicar_filtros);
 
-        // Pre-cargar valores actuales
-        if (searchViewPopup != null && !ultimaConsultaTexto.isEmpty()) {
-            searchViewPopup.setQuery(ultimaConsultaTexto, false);
+        // Configurar spinner de tipo de comida
+        String[] tiposComida = getResources().getStringArray(R.array.tipos_comida);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(
+                requireContext(), android.R.layout.simple_spinner_item, tiposComida);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        if (spinnerTipo != null) {
+            spinnerTipo.setAdapter(spinnerAdapter);
+            // Pre-seleccionar el tipo actual
+            if (!ultimaConsultaTipo.isEmpty()) {
+                for (int i = 0; i < tiposComida.length; i++) {
+                    if (tiposComida[i].equalsIgnoreCase(ultimaConsultaTipo)) {
+                        spinnerTipo.setSelection(i);
+                        break;
+                    }
+                }
+            }
         }
+
+        // Pre-cargar ingredientes actuales
         if (etIngredientes != null && !ultimaConsultaIngredientes.isEmpty()) {
             etIngredientes.setText(ultimaConsultaIngredientes);
         }
 
         if (btnLimpiar != null) {
             btnLimpiar.setOnClickListener(v -> {
-                if (searchViewPopup != null) {
-                    searchViewPopup.setQuery("", false);
-                }
-                if (etIngredientes != null) {
-                    etIngredientes.setText("");
-                }
-                ultimaConsultaTexto = "";
+                if (spinnerTipo != null) spinnerTipo.setSelection(0);
+                if (etIngredientes != null) etIngredientes.setText("");
+                ultimaConsultaTipo = "";
                 ultimaConsultaIngredientes = "";
                 aplicarFiltrosCombinados();
-                barraBusqueda.setQuery("", false);
                 dialog.dismiss();
             });
         }
 
         if (btnAplicar != null) {
             btnAplicar.setOnClickListener(v -> {
-                String textoBusqueda = searchViewPopup != null ? 
-                    searchViewPopup.getQuery().toString().trim() : "";
-                String ingredientes = etIngredientes != null ? 
+                String tipoSeleccionado = spinnerTipo != null ?
+                    spinnerTipo.getSelectedItem().toString() : "";
+                String ingredientes = etIngredientes != null ?
                     etIngredientes.getText().toString().trim() : "";
-                
-                ultimaConsultaTexto = textoBusqueda;
+
+                // "Todos" equivale a sin filtro de tipo
+                ultimaConsultaTipo = tipoSeleccionado.equals(tiposComida[0]) ? "" : tipoSeleccionado;
                 ultimaConsultaIngredientes = ingredientes;
-                
-                // Sincronizar barra de búsqueda principal
-                barraBusqueda.setQuery(textoBusqueda, false);
-                
+
                 aplicarFiltrosCombinados();
                 dialog.dismiss();
             });
@@ -870,8 +913,7 @@ public class InicioFragment extends Fragment {
     }
 
     /**
-     * Muestra el layout de error de conexión.
-     * @param mensaje Mensaje personalizado de error (opcional)
+     * Muestra el panel de error con el mensaje y el botón de reintentar.
      */
     private void mostrarError(String mensaje) {
         if (errorContainer != null && rvRecetas != null) {
@@ -879,6 +921,26 @@ public class InicioFragment extends Fragment {
             errorContainer.setVisibility(View.VISIBLE);
             if (tvErrorMensaje != null && mensaje != null) {
                 tvErrorMensaje.setText(mensaje);
+            }
+            if (btnReintentar != null) {
+                btnReintentar.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    /**
+     * Muestra el panel de error con el mensaje pero sin el botón de reintentar.
+     * Usado durante los reintentos automáticos.
+     */
+    private void mostrarErrorSinBoton(String mensaje) {
+        if (errorContainer != null && rvRecetas != null) {
+            rvRecetas.setVisibility(View.GONE);
+            errorContainer.setVisibility(View.VISIBLE);
+            if (tvErrorMensaje != null && mensaje != null) {
+                tvErrorMensaje.setText(mensaje);
+            }
+            if (btnReintentar != null) {
+                btnReintentar.setVisibility(View.GONE);
             }
         }
     }
@@ -896,7 +958,6 @@ public class InicioFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Cancelar cualquier reintento pendiente
         handlerReintento.removeCallbacksAndMessages(null);
     }
 }

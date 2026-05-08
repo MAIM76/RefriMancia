@@ -1,4 +1,4 @@
-package com.example.refrimancia;
+package com.example.refrimancia.ui;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -23,6 +23,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.refrimancia.R;
+import com.example.refrimancia.api.ClienteRetrofit;
+import com.example.refrimancia.api.RecetaService;
+import com.example.refrimancia.modelo.response.RecetaCreada;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -210,12 +214,12 @@ public class CreateRecipeActivity extends AppCompatActivity {
         btnPublish.setEnabled(false);
         btnPublish.setText("Publicando...");
 
-        ApiService apiService = RetrofitClient.getApiService(this);
-        Call<CreateRecipeResponse> call = apiService.crearReceta(reqTitulo, reqIngr, reqDesc, reqTipo, reqTiempo, bodyImagen);
+        RecetaService recetaService = ClienteRetrofit.obtenerInstancia(this).create(RecetaService.class);
+        Call<RecetaCreada> call = recetaService.crearRecetaConRespuesta(reqTitulo, reqIngr, reqDesc, reqTipo, reqTiempo, bodyImagen);
 
-        call.enqueue(new Callback<CreateRecipeResponse>() {
+        call.enqueue(new Callback<RecetaCreada>() {
             @Override
-            public void onResponse(Call<CreateRecipeResponse> call, Response<CreateRecipeResponse> response) {
+            public void onResponse(Call<RecetaCreada> call, Response<RecetaCreada> response) {
                 btnPublish.setEnabled(true);
                 btnPublish.setText("Publicar");
                 if (response.isSuccessful()) {
@@ -230,7 +234,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<CreateRecipeResponse> call, Throwable t) {
+            public void onFailure(Call<RecetaCreada> call, Throwable t) {
                 btnPublish.setEnabled(true);
                 btnPublish.setText("Publicar");
                 Toast.makeText(CreateRecipeActivity.this, "Fallo de red: " + t.getMessage(), Toast.LENGTH_LONG).show();

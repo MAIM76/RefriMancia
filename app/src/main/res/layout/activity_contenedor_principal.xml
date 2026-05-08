@@ -27,6 +27,7 @@
         app:itemIconTint="@color/nav_icon_tint"
         app:itemTextColor="@color/nav_icon_tint"
         app:itemBackground="@drawable/nav_item_background"
+        app:itemActiveIndicatorStyle="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

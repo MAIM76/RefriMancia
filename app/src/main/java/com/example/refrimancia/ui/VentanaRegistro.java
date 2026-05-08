@@ -1,10 +1,13 @@
-package com.example.refrimancia;
+package com.example.refrimancia.ui;
+
+import com.example.refrimancia.R;
+import com.example.refrimancia.api.ClienteRetrofit;
+import com.example.refrimancia.api.UsuarioService;
+import com.example.refrimancia.modelo.response.Registro;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import com.yalantis.ucrop.UCrop;
 
@@ -38,9 +41,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 
 public class VentanaRegistro extends AppCompatActivity {
-    // Configuración de Retrofit
-    private Retrofit retrofit;
-    private ApiService apiService;
+    private UsuarioService usuarioService;
 
     // Para la imagen
     private static final int PICK_IMAGE_REQUEST = 1; //identificador que usa Android para saber:“esta respuesta viene de la galería”
@@ -96,13 +97,7 @@ public class VentanaRegistro extends AppCompatActivity {
         ivRegistro = findViewById(R.id.ivRegistro);
 
 
-        // Configurar Retrofit con tu URL de Render
-        retrofit = new Retrofit.Builder()
-                .baseUrl("https://refrimacia-backend.onrender.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        apiService = retrofit.create(ApiService.class);
+        usuarioService = ClienteRetrofit.obtenerInstancia(this).create(UsuarioService.class);
 
         //Asociar el boton con el metodo
         botonRegistro.setOnClickListener(v -> {
@@ -230,17 +225,17 @@ public class VentanaRegistro extends AppCompatActivity {
             );
         }
         // Realizamos la llamada asíncrona al servidor para registrar al usuario
-        Call<RegistroRespuesta> call = apiService.registro(
+        Call<Registro> call = usuarioService.registrarUsuario(
                 nombreUsuarioBody,
                 passwordBody,
-                correoBody,
                 nombreCompletoBody,
+                correoBody,
                 fechaBody,
                 imagenPart
         );
-        call.enqueue(new Callback<RegistroRespuesta>() {
+        call.enqueue(new Callback<Registro>() {
             @Override
-            public void onResponse(Call<RegistroRespuesta> call, Response<RegistroRespuesta> response) {
+            public void onResponse(Call<Registro> call, Response<Registro> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(VentanaRegistro.this,
                             "Usuario registrado correctamente",
@@ -253,7 +248,7 @@ public class VentanaRegistro extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<RegistroRespuesta> call, Throwable t) {
+            public void onFailure(Call<Registro> call, Throwable t) {
                 Toast.makeText(VentanaRegistro.this,
                         "Error: " + t.getMessage(),
                         Toast.LENGTH_LONG).show();

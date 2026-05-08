@@ -122,6 +122,10 @@
     <string name="rating_title_format">Valorar: %1$s</string>
     <string name="rating_title_default">Valorar receta</string>
     <string name="rating_score_format">Puntuación: %1$d/5</string>
+    <string name="logout_confirmation_title">Cerrar sesión</string>
+    <string name="logout_confirmation_message">¿Estás seguro de que deseas cerrar sesión?</string>
+    <string name="logout_confirm">Cerrar sesión</string>
+    <string name="logout_cancel">Cancelar</string>
     <string name="rating_score_empty">Puntuación: sin elegir</string>
 
     <!-- Logs y debug (opcional) -->

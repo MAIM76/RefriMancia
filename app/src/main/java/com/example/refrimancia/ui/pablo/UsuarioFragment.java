@@ -1,6 +1,7 @@
 package com.example.refrimancia.ui.pablo;
 
 import android.content.Intent;
+import androidx.appcompat.app.AlertDialog;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -129,7 +130,7 @@ public class UsuarioFragment extends Fragment {
         rvMisRecetas.setLayoutManager(new LinearLayoutManager(getContext()));
 
         btnEditarPerfil.setOnClickListener(v -> abrirEditarPerfil());
-        btnCerrarSesion.setOnClickListener(v -> cerrarSesion());
+        btnCerrarSesion.setOnClickListener(v -> mostrarConfirmacionCerrarSesion());
         if (swipeRecetas != null) {
             swipeRecetas.setOnRefreshListener(() -> refrescarRecetas(true));
         }
@@ -411,6 +412,18 @@ public class UsuarioFragment extends Fragment {
 
         Intent intent = new Intent(requireContext(), VentanaEditarPerfil.class);
         startActivity(intent);
+    }
+
+    /**
+     * Muestra un diálogo de confirmación antes de cerrar sesión.
+     */
+    private void mostrarConfirmacionCerrarSesion() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(R.string.logout_confirmation_title)
+                .setMessage(R.string.logout_confirmation_message)
+                .setPositiveButton(R.string.logout_confirm, (dialog, which) -> cerrarSesion())
+                .setNegativeButton(R.string.logout_cancel, null)
+                .show();
     }
 
     /**

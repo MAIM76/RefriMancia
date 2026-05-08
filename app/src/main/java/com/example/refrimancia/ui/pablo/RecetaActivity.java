@@ -69,7 +69,7 @@ public class RecetaActivity extends AppCompatActivity {
     private TextView tvSemaforoTexto;
     private Button btnVerComentarios;
 
-    // ======================== MÉTODO FÁBRICA ========================
+    // ======================== MÉTHODO FÁBRICA ========================
 
     /**
      * Crea el Intent necesario para abrir esta actividad con la receta indicada.

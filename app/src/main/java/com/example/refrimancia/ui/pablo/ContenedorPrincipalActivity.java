@@ -259,7 +259,7 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
     private void registrarReceptorSesion() {
         IntentFilter filter = new IntentFilter(ClienteRetrofit.ACTION_SESSION_EXPIRED);
         androidx.core.content.ContextCompat.registerReceiver(
-                this, sessionExpiredReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+                this, sessionExpiredReceiver, filter, androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED);
     }
     
     /**

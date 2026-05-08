@@ -2,32 +2,20 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/fondoPantallas"
     android:id="@+id/ventana_registro"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tvTituloRegistro"
-        android:layout_width="411dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="4dp"
-        android:text="CREAR CUENTA"
-        android:textAlignment="center"
-        android:textSize="48sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
         android:id="@+id/tvNombreUserRegistro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="44dp"
         android:text="Nombre de usuario:"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.069"
+        app:layout_constraintHorizontal_bias="0.113"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/botonSelecImagenRegistro" />
 
@@ -36,6 +24,7 @@
         android:layout_width="372dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input"
         android:ems="10"
         android:hint="Escriba su correo electrónico"
         android:inputType="text"
@@ -62,6 +51,7 @@
         android:layout_width="372dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input"
         android:ems="10"
         android:hint="Escriba su nombre de usuario"
         android:inputType="text"
@@ -88,6 +78,7 @@
         android:layout_width="372dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input"
         android:ems="10"
         android:hint="Introduzca su contraseña"
         android:inputType="textPassword"
@@ -138,6 +129,7 @@
         android:layout_width="372dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input"
         android:ems="10"
         android:hint="Escriba su nombre"
         android:inputType="text"
@@ -152,6 +144,7 @@
         android:layout_width="372dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input"
         android:ems="10"
         android:hint="Escriba sus apellidos"
         android:inputType="text"
@@ -166,6 +159,7 @@
         android:layout_width="372dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
+        android:background="@drawable/bg_input"
         android:ems="10"
         android:hint="Introduzca su fecha de nacimiento (yyyy-mm-dd)"
         android:inputType="text"
@@ -176,6 +170,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvFechaRegistro" />
 
     <Button
+        style="@style/estiloBotones"
         android:id="@+id/botonRegistro"
         android:layout_width="115dp"
         android:layout_height="48dp"
@@ -189,6 +184,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
+        style="@style/estiloBotones"
         android:id="@+id/botonCancelarRegistrar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -205,22 +201,24 @@
         android:id="@+id/ivRegistro"
         android:layout_width="112dp"
         android:layout_height="94dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/bg_input"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.412"
+        app:layout_constraintHorizontal_bias="0.393"
         app:layout_constraintStart_toEndOf="@+id/botonSelecImagenRegistro"
-        app:layout_constraintTop_toBottomOf="@+id/tvTituloRegistro"
+        app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
     <Button
         android:id="@+id/botonSelecImagenRegistro"
+        style="@style/estiloBotones"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="60dp"
         android:text="Seleccionar imagen"
         android:textSize="13sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTituloRegistro" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

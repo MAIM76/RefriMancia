@@ -78,7 +78,6 @@ public class VentanaRegistro extends AppCompatActivity {
             return insets;
         });
 
-        tvTituloRegistro = findViewById(R.id.tvTituloRegistro);
         tvNombreUserRegistro = findViewById(R.id.tvNombreUserRegistro);
         tvCorreoRegistro = findViewById(R.id.tvCorreoRegistro);
         tvContrasenaRegistro = findViewById(R.id.tvContrasenaRegistro);

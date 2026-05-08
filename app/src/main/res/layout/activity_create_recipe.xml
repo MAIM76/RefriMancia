@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/fondoPantallas"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -147,14 +148,13 @@
             app:layout_constraintTop_toBottomOf="@id/ingredientsList" />
 
         <Button
+            style="@style/estiloBotones"
             android:id="@+id/btnAddIngredient"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
-            android:backgroundTint="#BDBDBD"
             android:text="Añadir"
             android:textAllCaps="false"
-            android:textColor="#000000"
             app:layout_constraintBottom_toBottomOf="@id/etNewIngredient"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/etNewIngredient" />
@@ -213,16 +213,15 @@
 
         <!-- Botón Publicar -->
         <Button
+            style="@style/estiloBotones"
             android:id="@+id/btnPublish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
-            android:backgroundTint="#BDBDBD"
             android:paddingHorizontal="32dp"
             android:text="Publicar"
             android:textAllCaps="false"
-            android:textColor="#000000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etRecipeDescription" />
 

@@ -3,20 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/fondoPantallas"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="120dp">
 
-        <!-- Header Area (Rectangular, dark gray) -->
+        <!-- Header Area (Rectangular, dark brown) -->
         <View
             android:id="@+id/headerBackground"
             android:layout_width="match_parent"
             android:layout_height="140dp"
-            android:background="#555555"
+            android:background="@color/marron_oscuro"
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Container for the image (The gray border) -->
@@ -52,7 +51,7 @@
             android:layout_marginEnd="24dp"
             android:layout_marginTop="80dp"
             android:background="@drawable/bg_input"
-            android:backgroundTint="#444444"
+            android:backgroundTint="@color/gris_marron"
             android:orientation="vertical"
             android:padding="16dp"
             android:gravity="center"
@@ -211,14 +210,27 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/labelDescripcion" />
 
-        <!-- Botón Publicar -->
+        <!-- Botones de Acción -->
+        <Button
+            style="@style/estiloBotones"
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:paddingHorizontal="32dp"
+            android:text="Cancelar"
+            android:textAllCaps="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etRecipeDescription" />
+
         <Button
             style="@style/estiloBotones"
             android:id="@+id/btnPublish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
+            android:layout_marginTop="24dp"
             android:paddingHorizontal="32dp"
             android:text="Publicar"
             android:textAllCaps="false"

@@ -126,11 +126,11 @@ public interface RecetaService {
      * @param tipoReceta Nuevo tipo o categoría de la receta
      * @param tiempoPreparacion Nuevo tiempo de preparación
      * @param imagenReceta Nueva imagen de la receta (opcional)
-     * @return Receta actualizada
+     * @return Receta actualizada envuelta en RespuestaUnica
      */
     @Multipart
     @PUT("api/recetas/modificar/{id}")
-    Call<Receta> modificarReceta(
+    Call<RespuestaUnica<Receta>> modificarReceta(
             @Path("id") int id,
             @Part("titulo_receta") RequestBody tituloReceta,
             @Part("descripcion") RequestBody descripcion,

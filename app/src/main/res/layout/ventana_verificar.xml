@@ -18,7 +18,7 @@
             android:id="@+id/headerBackground"
             android:layout_width="match_parent"
             android:layout_height="140dp"
-            android:background="#555555"
+            android:background="@color/marron_oscuro"
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- TÍTULO -->
@@ -30,7 +30,7 @@
             android:layout_marginTop="40dp"
             android:text="ENVIAR CÓDIGO DE VERIFICACIÓN"
             android:textAlignment="center"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/amarillo"
             android:textSize="28sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -42,18 +42,23 @@
         <!-- INPUT -->
         <TextView
             android:id="@+id/tvCorreoVerificar"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="84dp"
             android:text="Correo electrónico:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTituloVerificar" />
 
+        <!-- BOTÓN ENVIAR -->
+
+        <!-- BOTÓN CANCELAR -->
+
         <EditText
             android:id="@+id/etCorreoVerificar"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -62,14 +67,9 @@
             android:hint="Escriba el correo asociado a su cuenta"
             android:inputType="textEmailAddress"
             android:padding="12dp"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/tvCorreoVerificar"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- BOTÓN ENVIAR -->
-
-        <!-- BOTÓN CANCELAR -->
+            app:layout_constraintTop_toBottomOf="@id/tvCorreoVerificar" />
 
         <Button
             android:id="@+id/botonEnviarCode"

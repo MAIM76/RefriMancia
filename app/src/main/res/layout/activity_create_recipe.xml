@@ -60,40 +60,39 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                style="@style/etiquetas"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tiempo de\npreparacion"
                 android:textColor="#FFFFFF"
-                android:textAlignment="center"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/tvPrepTimeValue"
+                style="@style/etiquetas"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="----"
-                android:textColor="#CCCCCC"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textColor="#CCCCCC" />
         </LinearLayout>
 
         <!-- 1. Nombre -->
         <TextView
             android:id="@+id/labelNombre"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:text="Nombre:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageContainer" />
 
         <EditText
             android:id="@+id/etRecipeName"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -107,13 +106,13 @@
         <!-- 2. Ingredientes -->
         <TextView
             android:id="@+id/labelIngredientes"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:text="Ingredientes:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etRecipeName" />
 
@@ -134,6 +133,7 @@
 
         <EditText
             android:id="@+id/etNewIngredient"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -161,18 +161,19 @@
         <!-- 3. Categoria -->
         <TextView
             android:id="@+id/labelCategoria"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:text="Categoria:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etNewIngredient" />
 
         <Spinner
             android:id="@+id/spinnerCategory"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -186,18 +187,19 @@
         <!-- 4. Descripcion -->
         <TextView
             android:id="@+id/labelDescripcion"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:text="Descripcion:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/spinnerCategory" />
 
         <EditText
             android:id="@+id/etRecipeDescription"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"

@@ -31,11 +31,24 @@
         <item name="android:background">@color/beige</item>
     </style>
 
-    <!-- Color para botones A ARREGLAR-->
+    <!-- Color para botones -->
     <style name="estiloBotones">
         <item name="android:textColor">@color/amarillo</item>
         <item name="backgroundTint">@color/marron_oscuro</item>
+        <item name="android:textSize">18sp</item>
     </style>
+
+    <!-- Etiquetas de EditText -->
+    <style name="etiquetas">
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/alexandria_semibold</item>
+    </style>
+
+    <style name="editTexts">
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/alexandria</item>
+    </style>
+
 </resources>
 
 

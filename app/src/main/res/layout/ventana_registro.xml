@@ -18,7 +18,7 @@
             android:id="@+id/headerBackground"
             android:layout_width="match_parent"
             android:layout_height="140dp"
-            android:background="#555555"
+            android:background="@color/marron_oscuro"
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- CONTENEDOR IMAGEN -->
@@ -45,35 +45,39 @@
         </FrameLayout>
 
         <!-- BOTÓN IMAGEN -->
+
+        <!-- NOMBRE USUARIO -->
+
         <Button
             android:id="@+id/botonSelecImagenRegistro"
             style="@style/estiloBotones"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="144dp"
             android:layout_marginEnd="24dp"
             android:text="Seleccionar imagen"
             android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@id/imageContainer"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- NOMBRE USUARIO -->
         <TextView
             android:id="@+id/tvNombreUserRegistro"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             android:text="Nombre de usuario:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imageContainer" />
 
         <EditText
             android:id="@+id/etNombreUserRegistro"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -81,7 +85,6 @@
             android:background="@drawable/bg_input"
             android:hint="Escriba su nombre de usuario"
             android:padding="12dp"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvNombreUserRegistro" />
@@ -89,18 +92,19 @@
         <!-- CORREO -->
         <TextView
             android:id="@+id/tvCorreoRegistro"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:text="Correo electrónico:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etNombreUserRegistro" />
 
         <EditText
             android:id="@+id/etCorreoRegistro"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -109,7 +113,6 @@
             android:hint="Escriba su correo electrónico"
             android:inputType="textEmailAddress"
             android:padding="12dp"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvCorreoRegistro" />
@@ -117,18 +120,19 @@
         <!-- CONTRASEÑA -->
         <TextView
             android:id="@+id/tvContrasenaRegistro"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:text="Contraseña:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etCorreoRegistro" />
 
         <EditText
             android:id="@+id/etpContrasenaRegistro"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -137,7 +141,6 @@
             android:hint="Introduzca su contraseña"
             android:inputType="textPassword"
             android:padding="12dp"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvContrasenaRegistro" />
@@ -145,18 +148,19 @@
         <!-- NOMBRE -->
         <TextView
             android:id="@+id/tvNombreRegistro"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:text="Nombre:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etpContrasenaRegistro" />
 
         <EditText
             android:id="@+id/etNombreRegistro"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -164,7 +168,6 @@
             android:background="@drawable/bg_input"
             android:hint="Escriba su nombre"
             android:padding="12dp"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvNombreRegistro" />
@@ -172,18 +175,19 @@
         <!-- APELLIDOS -->
         <TextView
             android:id="@+id/tvApellidosRegistro"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:text="Apellidos:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etNombreRegistro" />
 
         <EditText
             android:id="@+id/etApellidosRegistro"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -191,7 +195,6 @@
             android:background="@drawable/bg_input"
             android:hint="Escriba sus apellidos"
             android:padding="12dp"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvApellidosRegistro" />
@@ -199,18 +202,19 @@
         <!-- FECHA -->
         <TextView
             android:id="@+id/tvFechaRegistro"
+            style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
             android:text="Fecha de nacimiento:"
             android:textColor="#000000"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etApellidosRegistro" />
 
         <EditText
             android:id="@+id/etFechaRegistro"
+            style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -218,7 +222,6 @@
             android:background="@drawable/bg_input"
             android:hint="yyyy-MM-dd"
             android:padding="12dp"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvFechaRegistro" />

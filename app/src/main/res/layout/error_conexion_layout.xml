@@ -11,7 +11,7 @@
     android:gravity="center"
     android:padding="24dp"
     android:visibility="gone"
-    android:background="@android:color/white">
+    android:background="@color/beige">
 
     <ImageView
         android:layout_width="80dp"
@@ -41,6 +41,7 @@
 
     <Button
         android:id="@+id/btn_reintentar"
+        style="@style/estiloBotones"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"

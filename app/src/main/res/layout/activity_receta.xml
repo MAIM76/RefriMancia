@@ -68,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@android:color/white"
+                android:background="@color/beige"
                 android:paddingHorizontal="16dp"
                 android:paddingTop="14dp"
                 android:paddingBottom="14dp"
@@ -170,95 +170,95 @@
 
             <!-- ===== CONTENIDO ===== -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@android:color/white"
-                android:layout_marginTop="8dp"
-                android:paddingHorizontal="16dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="24dp">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@android:color/white"
+                    android:paddingHorizontal="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="24dp">
 
                 <!-- Ingredientes -->
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/recipe_ingredients_title"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="#1A1A1A" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/recipe_ingredients_title"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="#1A1A1A" />
 
                 <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/marron_oscuro"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="8dp" />
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/marron_oscuro"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="8dp" />
 
                 <TextView
-                    android:id="@+id/tv_detalle_ingredientes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:textColor="#424242"
-                    android:lineSpacingExtra="4dp" />
+                        android:id="@+id/tv_detalle_ingredientes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:textColor="#424242"
+                        android:lineSpacingExtra="4dp" />
 
                 <!-- Descripción -->
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/recipe_description_title"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="#1A1A1A"
-                    android:layout_marginTop="20dp" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/recipe_description_title"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="#1A1A1A"
+                        android:layout_marginTop="20dp" />
 
                 <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/marron_oscuro"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="8dp" />
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/marron_oscuro"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="8dp" />
 
                 <TextView
-                    android:id="@+id/tv_detalle_descripcion"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="15sp"
-                    android:textColor="#424242"
-                    android:lineSpacingExtra="4dp" />
+                        android:id="@+id/tv_detalle_descripcion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:textColor="#424242"
+                        android:lineSpacingExtra="4dp" />
 
                 <Button
-                    android:id="@+id/btn_ver_comentarios"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="@string/recipe_view_comments" />
+                        android:id="@+id/btn_ver_comentarios"
+                        style="@style/estiloBotones"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="@string/recipe_view_comments" />
 
                 <LinearLayout
-                    android:id="@+id/ll_botones_propietario"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="12dp"
-                    android:visibility="gone">
+                        android:id="@+id/ll_botones_propietario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp"
+                        android:visibility="gone">
 
                     <Button
-                        android:id="@+id/btn_modificar_receta"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:text="@string/recipe_edit" />
+                            android:id="@+id/btn_modificar_receta"
+                            style="@style/estiloBotones"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="@string/recipe_edit" />
 
                     <Button
-                        android:id="@+id/btn_eliminar_receta"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:text="@string/recipe_delete" />
+                            android:id="@+id/btn_eliminar_receta"
+                            style="@style/estiloBotones"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="@string/recipe_delete" />
 
                 </LinearLayout>
 

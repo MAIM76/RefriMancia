@@ -676,6 +676,8 @@ public class InicioFragment extends Fragment {
                 CheckBox cb = new CheckBox(requireContext());
                 cb.setText(tiposComida[i]);
                 cb.setTextSize(14f);
+                cb.setTextColor(requireContext().getColor(R.color.gris_marron));
+                cb.setButtonTintList(android.content.res.ColorStateList.valueOf(requireContext().getColor(R.color.gris_marron)));
                 cb.setPadding(8, 8, 8, 8);
                 cb.setChecked(ultimaConsultaTipos.contains(tiposComida[i]));
                 llTipos.addView(cb);

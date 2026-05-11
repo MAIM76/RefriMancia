@@ -23,10 +23,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.RecetaService;
+import com.example.refrimancia.model.entity.Receta;
 import com.example.refrimancia.model.response.RecetaCreada;
+import com.example.refrimancia.model.response.RespuestaUnica;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -48,7 +51,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
     private LinearLayout ingredientsList;
     private EditText etNewIngredient, etRecipeName, etRecipeDescription;
-    private Button btnAddIngredient, btnPublish;
+    private Button btnAddIngredient, btnPublish, btnCancel;
     private ImageView recipeImagePlaceholder;
     private LinearLayout timeContainer;
     private TextView tvPrepTimeValue;
@@ -58,6 +61,11 @@ public class CreateRecipeActivity extends AppCompatActivity {
     private File croppedImageFile = null;
     private int totalMinutes = 0;
     private static final String PERMANENT_IMAGE_NAME = "recipe_upload.jpg";
+
+    // Variables para el modo edición
+    private boolean isEditing = false;
+    private Receta recetaAEditar;
+    private RecetaService recetaService;
 
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -102,12 +110,16 @@ public class CreateRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_recipe);
 
+        // Inicializamos el servicio de API
+        recetaService = ClienteRetrofit.obtenerInstancia(this).create(RecetaService.class);
+
         ingredientsList = findViewById(R.id.ingredientsList);
         etNewIngredient = findViewById(R.id.etNewIngredient);
         etRecipeName = findViewById(R.id.etRecipeName);
         etRecipeDescription = findViewById(R.id.etRecipeDescription);
         btnAddIngredient = findViewById(R.id.btnAddIngredient);
         btnPublish = findViewById(R.id.btnPublish);
+        btnCancel = findViewById(R.id.btnCancel);
         recipeImagePlaceholder = findViewById(R.id.recipeImagePlaceholder);
         timeContainer = findViewById(R.id.timeContainer);
         tvPrepTimeValue = findViewById(R.id.tvPrepTimeValue);
@@ -136,19 +148,176 @@ public class CreateRecipeActivity extends AppCompatActivity {
             }
         });
 
-        btnPublish.setOnClickListener(v -> publicarReceta());
+        btnPublish.setOnClickListener(v -> guardarReceta());
+        btnCancel.setOnClickListener(v -> finish());
 
-        File savedImage = new File(getFilesDir(), PERMANENT_IMAGE_NAME);
-        if (savedImage.exists()) {
-            croppedImageFile = savedImage;
-            recipeImagePlaceholder.setImageURI(Uri.fromFile(croppedImageFile));
+        // Manejo de Edición: Si viene una receta, pedimos el detalle completo
+        recetaAEditar = (Receta) getIntent().getSerializableExtra("receta_editar");
+        if (recetaAEditar != null) {
+            isEditing = true;
+            btnPublish.setText("Cargando...");
+            btnPublish.setEnabled(false);
+            obtenerDetalleReceta(recetaAEditar.getIdReceta());
+        } else {
+            // Modo creación: limpiar rastro de imagen previa
+            File savedImage = new File(getFilesDir(), PERMANENT_IMAGE_NAME);
+            if (savedImage.exists()) {
+                savedImage.delete();
+            }
+            croppedImageFile = null;
         }
     }
 
-    private void copyFile(File sourceFile, File destFile) throws IOException {
-        if (!destFile.getParentFile().exists()) {
-            destFile.getParentFile().mkdirs();
+    private void obtenerDetalleReceta(int id) {
+        recetaService.obtenerReceta(id).enqueue(new Callback<RespuestaUnica<Receta>>() {
+            @Override
+            public void onResponse(Call<RespuestaUnica<Receta>> call, Response<RespuestaUnica<Receta>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    recetaAEditar = response.body().getData();
+                    cargarDatosParaEdicion();
+                } else {
+                    Toast.makeText(CreateRecipeActivity.this, "Error al cargar receta completa", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RespuestaUnica<Receta>> call, Throwable t) {
+                Toast.makeText(CreateRecipeActivity.this, "Error de red al cargar receta", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+    }
+
+    private void cargarDatosParaEdicion() {
+        etRecipeName.setText(recetaAEditar.getTitulo());
+        etRecipeDescription.setText(recetaAEditar.getDescripcion());
+        totalMinutes = recetaAEditar.getTiempoPreparacion();
+        tvPrepTimeValue.setText(formatTiempo(totalMinutes));
+        btnPublish.setText("Actualizar");
+        btnPublish.setEnabled(true);
+
+        // Categoría
+        String cat = recetaAEditar.getCategoria();
+        if (cat != null) {
+            ArrayAdapter adapter = (ArrayAdapter) spinnerCategory.getAdapter();
+            int pos = adapter.getPosition(cat);
+            if (pos >= 0) spinnerCategory.setSelection(pos);
         }
+
+        // Ingredientes (Separamos por coma y espacio opcional)
+        String ingStr = recetaAEditar.getIngredientes();
+        if (ingStr != null && !ingStr.isEmpty()) {
+            String[] split = ingStr.split(",\\s*");
+            for (String s : split) {
+                String limpio = s.trim();
+                if (!limpio.isEmpty() && !listaIngredientes.contains(limpio)) {
+                    listaIngredientes.add(limpio);
+                    agregarIngredienteAVista(limpio);
+                }
+            }
+        }
+
+        // Imagen con Glide
+        if (recetaAEditar.getImagenUrl() != null && !recetaAEditar.getImagenUrl().isEmpty()) {
+            Glide.with(this)
+                    .load(recetaAEditar.getImagenUrl())
+                    .placeholder(R.drawable.bg_input)
+                    .into(recipeImagePlaceholder);
+        }
+    }
+
+    private String formatTiempo(int min) {
+        int h = min / 60;
+        int m = min % 60;
+        return h + "h " + m + " min";
+    }
+
+    private void guardarReceta() {
+        String titulo = etRecipeName.getText().toString().trim();
+        String desc = etRecipeDescription.getText().toString().trim();
+        String tipo = spinnerCategory.getSelectedItem().toString();
+
+        if (titulo.isEmpty() || desc.isEmpty() || listaIngredientes.isEmpty() || totalMinutes == 0) {
+            Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (!isEditing && croppedImageFile == null) {
+            Toast.makeText(this, "Por favor, selecciona una imagen", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < listaIngredientes.size(); i++) {
+            sb.append(listaIngredientes.get(i));
+            if (i < listaIngredientes.size() - 1) sb.append(", ");
+        }
+
+        RequestBody reqTitulo = RequestBody.create(MediaType.parse("text/plain"), titulo);
+        RequestBody reqIngr = RequestBody.create(MediaType.parse("text/plain"), sb.toString());
+        RequestBody reqDesc = RequestBody.create(MediaType.parse("text/plain"), desc);
+        RequestBody reqTipo = RequestBody.create(MediaType.parse("text/plain"), tipo);
+        RequestBody reqTiempo = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(totalMinutes));
+
+        MultipartBody.Part bodyImagen = null;
+        if (croppedImageFile != null && croppedImageFile.exists()) {
+            RequestBody reqFile = RequestBody.create(MediaType.parse("image/jpeg"), croppedImageFile);
+            bodyImagen = MultipartBody.Part.createFormData("imagen_receta", croppedImageFile.getName(), reqFile);
+        }
+
+        btnPublish.setEnabled(false);
+        btnPublish.setText(isEditing ? "Actualizando..." : "Publicando...");
+
+        if (isEditing) {
+            // CORREGIDO: Se asegura de pasar reqDesc y luego reqIngr para coincidir con RecetaService
+            recetaService.modificarReceta(recetaAEditar.getIdReceta(), reqTitulo, reqDesc, reqIngr, reqTipo, reqTiempo, bodyImagen)
+                .enqueue(new Callback<RespuestaUnica<Receta>>() {
+                    @Override
+                    public void onResponse(Call<RespuestaUnica<Receta>> call, Response<RespuestaUnica<Receta>> response) {
+                        manejarRespuesta(response.isSuccessful(), response.code());
+                    }
+                    @Override
+                    public void onFailure(Call<RespuestaUnica<Receta>> call, Throwable t) {
+                        manejarFallo(t);
+                    }
+                });
+        } else {
+            // CORREGIDO: reqDesc antes que reqIngr para coincidir con el orden esperado en el servidor
+            recetaService.crearRecetaConRespuesta(reqTitulo, reqDesc, reqIngr, reqTipo, reqTiempo, bodyImagen)
+                .enqueue(new Callback<RecetaCreada>() {
+                    @Override
+                    public void onResponse(Call<RecetaCreada> call, Response<RecetaCreada> response) {
+                        manejarRespuesta(response.isSuccessful(), response.code());
+                    }
+                    @Override
+                    public void onFailure(Call<RecetaCreada> call, Throwable t) {
+                        manejarFallo(t);
+                    }
+                });
+        }
+    }
+
+    private void manejarRespuesta(boolean success, int code) {
+        btnPublish.setEnabled(true);
+        btnPublish.setText(isEditing ? "Actualizar" : "Publicar");
+        if (success) {
+            Toast.makeText(this, isEditing ? "¡Receta actualizada!" : "¡Receta publicada!", Toast.LENGTH_LONG).show();
+            if (croppedImageFile != null && croppedImageFile.exists()) croppedImageFile.delete();
+            finish();
+        } else {
+            Toast.makeText(this, "Error del servidor: " + code, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void manejarFallo(Throwable t) {
+        btnPublish.setEnabled(true);
+        btnPublish.setText(isEditing ? "Actualizar" : "Publicar");
+        Toast.makeText(this, "Fallo de red: " + t.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    private void copyFile(File sourceFile, File destFile) throws IOException {
+        if (!destFile.getParentFile().exists()) destFile.getParentFile().mkdirs();
         try (FileChannel source = new FileInputStream(sourceFile).getChannel();
              FileChannel destination = new FileOutputStream(destFile).getChannel()) {
             destination.transferFrom(source, 0, source.size());
@@ -179,67 +348,6 @@ public class CreateRecipeActivity extends AppCompatActivity {
 
         itemLayout.addView(btnDelete);
         ingredientsList.addView(itemLayout);
-    }
-
-    private void publicarReceta() {
-        String titulo = etRecipeName.getText().toString().trim();
-        String desc = etRecipeDescription.getText().toString().trim();
-        String tipo = spinnerCategory.getSelectedItem().toString();
-
-        if (titulo.isEmpty() || desc.isEmpty() || listaIngredientes.isEmpty() || croppedImageFile == null || totalMinutes == 0) {
-            Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if (!croppedImageFile.exists()) {
-            Toast.makeText(this, "Error con la imagen. Selecciónala de nuevo.", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < listaIngredientes.size(); i++) {
-            sb.append(listaIngredientes.get(i));
-            if (i < listaIngredientes.size() - 1) sb.append(", ");
-        }
-
-        RequestBody reqTitulo = RequestBody.create(MediaType.parse("text/plain"), titulo);
-        RequestBody reqIngr = RequestBody.create(MediaType.parse("text/plain"), sb.toString());
-        RequestBody reqDesc = RequestBody.create(MediaType.parse("text/plain"), desc);
-        RequestBody reqTipo = RequestBody.create(MediaType.parse("text/plain"), tipo);
-        RequestBody reqTiempo = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(totalMinutes));
-
-        RequestBody reqFile = RequestBody.create(MediaType.parse("image/jpeg"), croppedImageFile);
-        MultipartBody.Part bodyImagen = MultipartBody.Part.createFormData("imagen_receta", croppedImageFile.getName(), reqFile);
-
-        btnPublish.setEnabled(false);
-        btnPublish.setText("Publicando...");
-
-        RecetaService recetaService = ClienteRetrofit.obtenerInstancia(this).create(RecetaService.class);
-        Call<RecetaCreada> call = recetaService.crearRecetaConRespuesta(reqTitulo, reqIngr, reqDesc, reqTipo, reqTiempo, bodyImagen);
-
-        call.enqueue(new Callback<RecetaCreada>() {
-            @Override
-            public void onResponse(Call<RecetaCreada> call, Response<RecetaCreada> response) {
-                btnPublish.setEnabled(true);
-                btnPublish.setText("Publicar");
-                if (response.isSuccessful()) {
-                    Toast.makeText(CreateRecipeActivity.this, "¡Receta publicada!", Toast.LENGTH_LONG).show();
-                    if (croppedImageFile != null && croppedImageFile.exists()) {
-                        croppedImageFile.delete();
-                    }
-                    finish();
-                } else {
-                    Toast.makeText(CreateRecipeActivity.this, "Error del servidor: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<RecetaCreada> call, Throwable t) {
-                btnPublish.setEnabled(true);
-                btnPublish.setText("Publicar");
-                Toast.makeText(CreateRecipeActivity.this, "Fallo de red: " + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     private void mostrarSelectorTiempo() {

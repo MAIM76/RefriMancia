@@ -1,71 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/fondoPantallas"
-    android:id="@+id/ventana_verificar"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tvTituloVerificar"
-        android:layout_width="409dp"
-        android:layout_height="128dp"
-        android:layout_marginTop="60dp"
-        android:text="ENVIAR CÓDIGO DE VERIFICACIÓN"
-        android:textAlignment="center"
-        android:textSize="48sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/etCorreoVerificar"
-        android:layout_width="369dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_input"
-        android:ems="10"
-        android:hint="Escriba el correo electrónico asociado a su cuenta"
-        android:inputType="text"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCorreoVerificar" />
-
-    <TextView
-        android:id="@+id/tvCorreoVerificar"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="108dp"
-        android:text="Correo electrónico:"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.075"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTituloVerificar" />
+        android:paddingBottom="80dp">
 
-    <Button
-        android:id="@+id/botonEnviarCode"
-        style="@style/estiloBotones"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="32dp"
-        android:text="Enviar código"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etCorreoVerificar" />
+        <!-- HEADER -->
+        <View
+            android:id="@+id/headerBackground"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:background="@color/marron_oscuro"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/botonCancelarVerificar"
-        style="@style/estiloBotones"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Cancelar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.38"
-        app:layout_constraintStart_toEndOf="@+id/botonEnviarCode"
-        app:layout_constraintTop_toBottomOf="@+id/etCorreoVerificar" />
+        <!-- TÍTULO -->
+        <TextView
+            android:id="@+id/tvTituloVerificar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="40dp"
+            android:text="ENVIAR CÓDIGO DE VERIFICACIÓN"
+            android:textAlignment="center"
+            android:textColor="@color/amarillo"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- LABEL -->
+
+        <!-- INPUT -->
+        <TextView
+            android:id="@+id/tvCorreoVerificar"
+            style="@style/etiquetas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="84dp"
+            android:text="Correo electrónico:"
+            android:textColor="#000000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTituloVerificar" />
+
+        <!-- BOTÓN ENVIAR -->
+
+        <!-- BOTÓN CANCELAR -->
+
+        <EditText
+            android:id="@+id/etCorreoVerificar"
+            style="@style/editTexts"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input"
+            android:hint="Escriba el correo asociado a su cuenta"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCorreoVerificar" />
+
+        <Button
+            android:id="@+id/botonEnviarCode"
+            style="@style/estiloBotones"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="52dp"
+            android:text="Enviar código"
+            android:textAllCaps="false"
+            app:layout_constraintEnd_toStartOf="@id/botonCancelarVerificar"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etCorreoVerificar" />
+
+        <Button
+            android:id="@+id/botonCancelarVerificar"
+            style="@style/estiloBotones"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="52dp"
+            android:text="Cancelar"
+            android:textAllCaps="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/botonEnviarCode"
+            app:layout_constraintTop_toBottomOf="@id/etCorreoVerificar" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

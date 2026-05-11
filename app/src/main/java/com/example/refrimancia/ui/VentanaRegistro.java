@@ -70,13 +70,7 @@ public class VentanaRegistro extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.ventana_registro);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.ventana_registro), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         tvNombreUserRegistro = findViewById(R.id.tvNombreUserRegistro);
         tvCorreoRegistro = findViewById(R.id.tvCorreoRegistro);

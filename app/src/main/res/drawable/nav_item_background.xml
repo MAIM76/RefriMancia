@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_checked="true">
-        <shape android:shape="rectangle">
-            <solid android:color="#0D6750A4" />
-            <corners android:radius="16dp" />
-        </shape>
+        <inset android:insetLeft="24dp" android:insetRight="24dp" android:insetTop="7dp" android:insetBottom="7dp">
+            <shape android:shape="rectangle">
+                <solid android:color="@color/gris_marron" />
+                <corners android:radius="16dp" />
+            </shape>
+        </inset>
     </item>
     <item>
         <shape android:shape="rectangle">

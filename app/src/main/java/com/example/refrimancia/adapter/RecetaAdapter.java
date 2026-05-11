@@ -396,7 +396,7 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
      * @return Cadena formateada (ej: "1 h 30 min", "45 min")
      */
     private String formatTiempo(int minutos) {
-        if (minutos <= 0) return contexto.getString(R.string.time_zero_minutes);
+        if (minutos <= 0) return contexto.getString(R.string.recipe_time_not_available);
         int horas = minutos / 60;
         int minRestantes = minutos % 60;
         if (horas > 0) {

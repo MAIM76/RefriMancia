@@ -4,6 +4,7 @@
   Se muestra cuando hay problemas de conexión con el servidor.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/error_conexion_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,14 +12,14 @@
     android:gravity="center"
     android:padding="24dp"
     android:visibility="gone"
-    android:background="@android:color/white">
+    android:background="@color/beige">
 
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:src="@android:drawable/ic_dialog_alert"
         android:contentDescription="@string/error_icon"
-        android:tint="?attr/colorError" />
+        app:tint="?attr/colorError" />
 
     <TextView
         android:id="@+id/tv_error_mensaje"
@@ -41,6 +42,7 @@
 
     <Button
         android:id="@+id/btn_reintentar"
+        style="@style/estiloBotones"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"

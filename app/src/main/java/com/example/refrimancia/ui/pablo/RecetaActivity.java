@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,6 +30,8 @@ import com.example.refrimancia.adapter.ComentarioAdapter;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.ComentarioService;
 import com.example.refrimancia.api.RecetaService;
+import com.example.refrimancia.ui.CreateRecipeActivity;
+import com.example.refrimancia.util.SessionManager;
 import com.example.refrimancia.model.entity.Comentario;
 import com.example.refrimancia.model.entity.Receta;
 import com.example.refrimancia.model.request.ComentarioRequest;
@@ -61,13 +64,15 @@ public class RecetaActivity extends AppCompatActivity {
     private TextView tvTitulo;
     private TextView tvDescripcion;
     private TextView tvIngredientes;
-    private TextView tvPasos;
     private TextView tvAutor;
     private TextView tvTiempo;
     private TextView tvDificultad;
     private View semaforoDot;
     private TextView tvSemaforoTexto;
     private Button btnVerComentarios;
+    private View llBotonesPropietario;
+    private Button btnModificarReceta;
+    private Button btnEliminarReceta;
 
     // ======================== MÉTHODO FÁBRICA ========================
 
@@ -95,13 +100,15 @@ public class RecetaActivity extends AppCompatActivity {
         tvTitulo = findViewById(R.id.tv_detalle_titulo);
         tvDescripcion = findViewById(R.id.tv_detalle_descripcion);
         tvIngredientes = findViewById(R.id.tv_detalle_ingredientes);
-        tvPasos = findViewById(R.id.tv_detalle_pasos);
         tvAutor = findViewById(R.id.tv_detalle_autor);
         tvTiempo = findViewById(R.id.tv_detalle_tiempo);
         tvDificultad = findViewById(R.id.tv_detalle_dificultad);
         semaforoDot = findViewById(R.id.tv_detalle_semaforo_dot);
         tvSemaforoTexto = findViewById(R.id.tv_detalle_semaforo_texto);
         btnVerComentarios = findViewById(R.id.btn_ver_comentarios);
+        llBotonesPropietario = findViewById(R.id.ll_botones_propietario);
+        btnModificarReceta = findViewById(R.id.btn_modificar_receta);
+        btnEliminarReceta = findViewById(R.id.btn_eliminar_receta);
 
         ImageButton btnVolver = findViewById(R.id.btn_volver_detalle);
         btnVolver.setOnClickListener(v -> finish());
@@ -109,6 +116,7 @@ public class RecetaActivity extends AppCompatActivity {
         if (receta != null) {
             bindReceta(receta);
             btnVerComentarios.setOnClickListener(v -> mostrarPopupComentarios(this.receta));
+            configurarBotonesPropietario();
             cargarDetalleReceta(receta.getIdReceta());
         }
     }
@@ -121,7 +129,7 @@ public class RecetaActivity extends AppCompatActivity {
      * @return Cadena formateada
      */
     private String formatTiempo(int minutos) {
-        if (minutos <= 0) return getString(R.string.time_zero_minutes);
+        if (minutos <= 0) return getString(R.string.recipe_time_not_available);
         int horas = minutos / 60;
         int minRestantes = minutos % 60;
         if (horas > 0) {
@@ -249,9 +257,8 @@ public class RecetaActivity extends AppCompatActivity {
     private void bindReceta(Receta receta) {
         tvTitulo.setText(receta.getTitulo() != null ? receta.getTitulo() : getString(R.string.recipe_no_title));
 
-        setTextOrHide(tvDescripcion, receta.getDescripcion(), null);
         setTextOrHide(tvIngredientes, receta.getIngredientes(), getString(R.string.recipe_no_ingredients));
-        setTextOrHide(tvPasos, receta.getPasos(), getString(R.string.recipe_no_steps));
+        setTextOrHide(tvDescripcion, receta.getDescripcion(), null);
 
         String dificultad = receta.getDificultad();
         tvDificultad.setText(dificultad != null && !dificultad.isEmpty()
@@ -358,6 +365,56 @@ public class RecetaActivity extends AppCompatActivity {
     }
 
     /**
+     * Muestra u oculta los botones de modificar/eliminar según si el usuario logueado es el autor.
+     */
+    private void configurarBotonesPropietario() {
+        int idUsuarioSesion = new SessionManager(this).fetchUserId();
+        if (receta != null && receta.getIdUsuario() == idUsuarioSesion) {
+            llBotonesPropietario.setVisibility(View.VISIBLE);
+            btnModificarReceta.setOnClickListener(v -> {
+                Intent intent = new Intent(this, CreateRecipeActivity.class);
+                intent.putExtra("receta_editar", receta);
+                startActivity(intent);
+            });
+            btnEliminarReceta.setOnClickListener(v -> {
+                String titulo = receta.getTitulo() != null ? receta.getTitulo() : "";
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.recipe_delete_title)
+                        .setMessage(getString(R.string.recipe_delete_message, titulo))
+                        .setPositiveButton(R.string.recipe_delete_confirm, (dialog, which) -> eliminarReceta())
+                        .setNegativeButton(R.string.recipe_delete_cancel, null)
+                        .show();
+            });
+        } else {
+            llBotonesPropietario.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Llama a la API para eliminar la receta actual y cierra la actividad en caso de éxito.
+     */
+    private void eliminarReceta() {
+        RecetaService recetaService = ClienteRetrofit.obtenerInstancia(this).create(RecetaService.class);
+        recetaService.eliminarReceta(receta.getIdReceta()).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call,
+                    @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(RecetaActivity.this, R.string.recipe_delete_success, Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(RecetaActivity.this, R.string.recipe_delete_error, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Toast.makeText(RecetaActivity.this, R.string.recipe_delete_error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /**
      * Carga el detalle completo de la receta desde la API y actualiza las vistas.
      * Si falla, mantiene los datos parciales ya mostrados.
      * @param idReceta ID de la receta a cargar
@@ -375,6 +432,7 @@ public class RecetaActivity extends AppCompatActivity {
 
                 receta = combinarRecetas(receta, response.body().getData());
                 bindReceta(receta);
+                configurarBotonesPropietario();
             }
 
             @Override
@@ -397,14 +455,14 @@ public class RecetaActivity extends AppCompatActivity {
         }
 
         if (detalle.getTitulo() != null) base.setTitulo(detalle.getTitulo());
-        if (detalle.getDescripcion() != null) base.setDescripcion(detalle.getDescripcion());
         if (detalle.getIngredientes() != null) base.setIngredientes(detalle.getIngredientes());
-        if (detalle.getPasos() != null) base.setPasos(detalle.getPasos());
+        if (detalle.getDescripcion() != null) base.setDescripcion(detalle.getDescripcion());
         if (detalle.getDificultad() != null) base.setDificultad(detalle.getDificultad());
         if (detalle.getNombreUsuario() != null) base.setNombreUsuario(detalle.getNombreUsuario());
         if (detalle.getImagenUrl() != null) base.setImagenUrl(detalle.getImagenUrl());
         if (detalle.getTiempoPreparacion() > 0) base.setTiempoPreparacion(detalle.getTiempoPreparacion());
         if (detalle.getSemaforo() != null) base.setSemaforo(detalle.getSemaforo());
+        if (detalle.getIdUsuario() > 0) base.setIdUsuario(detalle.getIdUsuario());
 
         return base;
     }

@@ -8,18 +8,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@color/beige">
 
     <!-- Título de la sección de comentarios -->
     <TextView
         android:id="@+id/tv_comentarios_titulo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Comentarios"
+        android:text="@string/popup_comments_title"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="@android:color/white"
         android:padding="16dp"
-        android:background="@android:color/white"
+        android:background="@color/azul_oscuro"
         android:elevation="2dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +52,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:background="#F5F5F5"
+        android:background="@color/beige"
         android:elevation="2dp"
         android:gravity="center_vertical"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -62,8 +63,8 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:hint="Escribe un comentario..."
-            android:background="@android:color/white"
+            android:hint="@string/popup_comments_hint"
+            android:background="@drawable/bg_input"
             android:padding="12dp"
             android:layout_marginEnd="8dp"
             android:textSize="14sp"
@@ -73,13 +74,13 @@
 
         <!-- Botón para enviar comentario -->
         <ImageButton
-            android:id="@+id/btn_enviar_comentario"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?attr/colorPrimary"
-            android:src="@android:drawable/ic_menu_send"
-            android:contentDescription="Enviar comentario"
-            android:tint="@android:color/white" />
+                android:id="@+id/btn_enviar_comentario"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_boton_redondo"
+                android:src="@android:drawable/ic_menu_send"
+                android:contentDescription="@string/popup_comments_send_desc"
+                app:tint="@android:color/white" />
     </LinearLayout>
     
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/beige">
 
     <!-- ===== CABECERA DE PERFIL ===== -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="@string/recipe_user_placeholder"
+            android:text="@string/recipe_unknown_user"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"
@@ -67,12 +67,10 @@
                 android:layout_height="34dp"
                 android:text="@string/btn_editar_perfil"
                 android:textSize="13sp"
-                android:textColor="@android:color/white"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:paddingHorizontal="18dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                app:strokeColor="#80FFFFFF" />
+                style="@style/estiloBotones" />
 
             <View
                 android:layout_width="12dp"
@@ -84,11 +82,10 @@
                 android:layout_height="34dp"
                 android:text="@string/btn_cerrar_sesion"
                 android:textSize="13sp"
-                android:textColor="#CCffffff"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:paddingHorizontal="18dp"
-                style="?android:attr/borderlessButtonStyle" />
+                style="@style/estiloBotones" />
 
         </LinearLayout>
 
@@ -105,7 +102,7 @@
         android:text="@string/user_recipes_label"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="#212121"
+        android:textColor="@color/azul_oscuro"
         android:letterSpacing="0.04"
         app:layout_constraintTop_toBottomOf="@id/header_perfil"
         app:layout_constraintStart_toStartOf="parent"
@@ -115,7 +112,7 @@
         android:id="@+id/linea_mis_recetas"
         android:layout_width="0dp"
         android:layout_height="2dp"
-        android:background="#6750A4"
+        android:background="@color/marron_oscuro"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="4dp"
@@ -159,13 +156,13 @@
             android:layout_width="72dp"
             android:layout_height="72dp"
             android:src="@android:drawable/ic_menu_info_details"
-            app:tint="#CCCCCC" />
+            app:tint="@color/gris_marron" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/user_no_recipes"
-            android:textColor="#AAAAAA"
+            android:textColor="@color/gris_marron"
             android:textSize="15sp"
             android:layout_marginTop="12dp" />
 

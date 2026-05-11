@@ -1,9 +1,7 @@
 package com.example.refrimancia.ui.pablo;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -18,7 +16,6 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.refrimancia.ui.CreateRecipeActivity;
 import com.example.refrimancia.R;
 import com.example.refrimancia.util.SessionManager;
-import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.ui.LoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -49,22 +46,23 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
     /** Referencia a la barra de navegación inferior */
     private BottomNavigationView navInferior;
 
-    /** BroadcastReceiver para manejar sesiones expiradas */
-    private final BroadcastReceiver sessionExpiredReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (ClienteRetrofit.ACTION_SESSION_EXPIRED.equals(intent.getAction())) {
-                manejarSesionExpirada();
-            }
-        }
-    };
-
     // ======================== MÉTODOS DEL CICLO DE VIDA ========================
     
     /**
      * Inicializa la actividad y verifica la sesión del usuario.
      * Si no hay sesión válida, redirige al login.
      */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (navInferior == null) return;
+        if (usuarioFragment != null && usuarioFragment.isVisible()) {
+            navInferior.setSelectedItemId(R.id.nav_user);
+        } else {
+            navInferior.setSelectedItemId(R.id.nav_home);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,24 +79,6 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
         configurarNavegacionInferior();
     }
     
-    /**
-     * Registra el BroadcastReceiver para sesiones expiradas.
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-        registrarReceptorSesion();
-    }
-
-    /**
-     * Desregistra el BroadcastReceiver para evitar memory leaks.
-     */
-    @Override
-    protected void onStop() {
-        desregistrarReceptorSesion();
-        super.onStop();
-    }
-
     // ======================== MÉTODOS DE CONFIGURACIÓN ========================
     
     /**
@@ -109,7 +89,10 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
         SessionManager sessionManager = new SessionManager(this);
         if (!sessionManager.isSessionValid()) {
             sessionManager.clearSession();
-            redirigirALogin();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
             return false;
         }
         return true;
@@ -204,7 +187,7 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
             }
             if (id == R.id.nav_create) {
                 abrirCrearRecetaConSesion();
-                return true;
+                return false;
             }
             if (id == R.id.nav_user) {
                 mostrarFragmentoUsuario();
@@ -251,42 +234,4 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
         startActivity(new Intent(this, CreateRecipeActivity.class));
     }
     
-    // ======================== MÉTODOS DE SESIÓN ========================
-    
-    /**
-     * Registra el BroadcastReceiver para manejar sesiones expiradas.
-     */
-    private void registrarReceptorSesion() {
-        IntentFilter filter = new IntentFilter(ClienteRetrofit.ACTION_SESSION_EXPIRED);
-        androidx.core.content.ContextCompat.registerReceiver(
-                this, sessionExpiredReceiver, filter, androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED);
-    }
-    
-    /**
-     * Desregistra el BroadcastReceiver de forma segura.
-     */
-    private void desregistrarReceptorSesion() {
-        try {
-            unregisterReceiver(sessionExpiredReceiver);
-        } catch (IllegalArgumentException ignored) {
-            // Receiver ya estaba desregistrado, no es un error.
-        }
-    }
-    
-    /**
-     * Maneja el caso de sesión expirada redirigiendo al login.
-     */
-    private void manejarSesionExpirada() {
-        redirigirALogin();
-    }
-    
-    /**
-     * Redirige a la actividad de login limpiando el stack de actividades.
-     */
-    private void redirigirALogin() {
-        Intent loginIntent = new Intent(this, LoginActivity.class);
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(loginIntent);
-        finish();
-    }
 }

@@ -2,8 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="purple_500">#FF6200EE</color>
-
     <!-- Paleta de colores elegida -->
     <color name="beige">#ede5d6</color>
     <color name="amarillo">#fdc700</color>
@@ -12,4 +10,3 @@
     <color name="gris_marron">#39332b</color>
     <color name="negro">#000000</color>
 </resources>
-

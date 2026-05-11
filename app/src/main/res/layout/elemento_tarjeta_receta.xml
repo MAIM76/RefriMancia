@@ -4,33 +4,32 @@
   Muestra información completa de la receta: imagen, título, descripción,
   metadatos, valoración y botones de interacción.
 -->
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="0dp"
-    app:cardElevation="3dp"
-    app:cardBackgroundColor="@android:color/white">
-
-    <LinearLayout
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginBottom="12dp"
+        app:cardElevation="3dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="0dp">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
         <!-- Sección de imagen y superposición de usuario -->
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="200dp">
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
 
             <ImageView
-                android:id="@+id/iv_imagen_receta"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/recipe_image"
-                android:src="@drawable/ic_launcher_background" />
+                    android:id="@+id/iv_imagen_receta"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/recipe_image"
+                    android:src="@drawable/ic_launcher_background" />
 
             <!-- Superposición con nombre del usuario -->
             <TextView
@@ -39,10 +38,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|start"
                     android:layout_margin="8dp"
-                    android:background="#806750A4"
+                    android:background="#8021180D"
                     android:padding="4dp"
                     android:paddingHorizontal="8dp"
-                    android:text="@string/recipe_user_placeholder"
+                    android:text="@string/recipe_unknown_user"
                     android:textColor="@android:color/white"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -54,7 +53,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingLeft="12dp"
-                android:paddingTop="12dp">
+                android:paddingTop="12dp"
+                android:paddingRight="12dp">
 
             <!-- Título de la receta -->
 
@@ -62,7 +62,7 @@
                     android:id="@+id/recipe_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/placeholder_recipe_title"
+                    android:text="@string/recipe_no_title"
                     android:textSize="17sp"
                     android:textStyle="bold"
                     android:textColor="#1A1A1A"
@@ -76,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:gravity="center_vertical"
+                    android:gravity="top"
                     android:orientation="horizontal">
 
                 <!-- Indicador de semáforo nutricional -->
@@ -86,7 +86,7 @@
                         android:layout_height="8dp"
                         android:layout_marginEnd="6dp"
                         android:background="@drawable/semaforo_dot"
-                        android:layout_marginStart="2dp" />
+                        android:layout_marginTop="5dp" />
 
                 <!-- Tiempo de preparación -->
                 <TextView
@@ -105,7 +105,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
                     android:textColor="#9E9E9E"
-                    android:text="@string/recipe_time_default"
+                    android:text="@string/recipe_time_not_available"
                     android:layout_marginTop="4dp" />
 
         </LinearLayout>
@@ -129,8 +129,10 @@
                     android:stepSize="0.1"
                     android:isIndicator="true"
                     android:rating="0"
-                    app:tint="?attr/colorPrimary"
-                    android:paddingBottom="4dp" />
+                    app:tint="@color/amarillo"
+                    android:paddingBottom="4dp"
+                    android:progressTint="@color/amarillo"
+                    android:secondaryProgressTint="@color/amarillo" />
 
             <TextView
                     android:id="@+id/tv_media_puntuacion"
@@ -157,7 +159,7 @@
                     android:padding="4dp"
                     android:src="@android:drawable/btn_star_big_off"
                     android:contentDescription="@string/recipe_review"
-                    app:tint="?attr/colorPrimary" />
+                    app:tint="@color/amarillo" />
 
             <!-- Botón de comentarios -->
             <ImageView
@@ -167,7 +169,7 @@
                     android:padding="4dp"
                     android:src="@android:drawable/sym_action_chat"
                     android:contentDescription="@string/recipe_comment"
-                    app:tint="?attr/colorPrimary" />
+                    app:tint="@color/gris_marron" />
         </LinearLayout>
 
     </LinearLayout>

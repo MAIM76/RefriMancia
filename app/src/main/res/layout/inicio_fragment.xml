@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@color/beige"
     android:fitsSystemWindows="true">
 
     <!-- Barra superior con búsqueda -->
@@ -28,7 +28,7 @@
             android:src="@android:drawable/ic_menu_sort_by_size"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/filter_by_ingredients"
-            app:tint="@color/purple_500"
+            app:tint="@color/marron_oscuro"
             android:layout_marginEnd="8dp" />
 
         <!-- Búsqueda principal -->

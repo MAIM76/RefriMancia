@@ -1,11 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.RefriMancia" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Los colores se definirán cuando el equipo los decida -->
+        <item name="colorPrimary">@color/marron_oscuro</item>
+        <item name="colorSecondary">@color/amarillo</item>
         <!-- Barra de notificaciones con color primario -->
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:statusBarColor">@color/marron_oscuro</item>
         <item name="android:windowLightStatusBar">false</item>
-        <!-- Customize your light theme here. -->
     </style>
 
     <style name="Theme.RefriMancia" parent="Base.Theme.RefriMancia" />
@@ -20,7 +20,7 @@
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
-    <!-- NUEVO: Estilo para que la foto interna sea redondeada -->
+    <!-- Estilo para que la foto interna sea redondeada -->
     <style name="RoundedShape" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">15dp</item>
@@ -37,8 +37,3 @@
         <item name="backgroundTint">@color/marron_oscuro</item>
     </style>
 </resources>
-
-
-
-
-

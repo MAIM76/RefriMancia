@@ -53,6 +53,17 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
      * Si no hay sesión válida, redirige al login.
      */
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (navInferior == null) return;
+        if (usuarioFragment != null && usuarioFragment.isVisible()) {
+            navInferior.setSelectedItemId(R.id.nav_user);
+        } else {
+            navInferior.setSelectedItemId(R.id.nav_home);
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -176,7 +187,7 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
             }
             if (id == R.id.nav_create) {
                 abrirCrearRecetaConSesion();
-                return true;
+                return false;
             }
             if (id == R.id.nav_user) {
                 mostrarFragmentoUsuario();

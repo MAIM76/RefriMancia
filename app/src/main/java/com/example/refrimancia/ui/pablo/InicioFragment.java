@@ -133,7 +133,7 @@ public class InicioFragment extends Fragment {
             loadingIndicator = vista.findViewById(R.id.loading_indicator);
             swipeRecetas = vista.findViewById(R.id.swipe_recetas);
             if (swipeRecetas != null) {
-                swipeRecetas.setColorSchemeResources(R.color.purple_500);
+                swipeRecetas.setColorSchemeResources(R.color.marron_oscuro);
                 swipeRecetas.setOnRefreshListener(() -> {
                     contadorReintentos = 0;
                     ocultarError();

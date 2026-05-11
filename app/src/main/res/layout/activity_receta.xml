@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/beige">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -81,7 +81,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/recipe_unknown_user"
                     android:textSize="14sp"
-                    android:textColor="#6750A4"
+                    android:textColor="@color/marron_oscuro"
                     android:layout_marginBottom="10dp" />
 
                 <!-- Fila: Tiempo · Dificultad -->
@@ -191,7 +191,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-                    android:background="#6750A4"
+                    android:background="@color/marron_oscuro"
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="8dp" />
 
@@ -216,7 +216,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2dp"
-                    android:background="#6750A4"
+                    android:background="@color/marron_oscuro"
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="8dp" />
 

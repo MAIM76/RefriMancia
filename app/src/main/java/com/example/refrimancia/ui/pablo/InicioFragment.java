@@ -418,7 +418,8 @@ public class InicioFragment extends Fragment {
                     int total = layoutManager.getItemCount();
                     int firstVisible = layoutManager.findFirstVisibleItemPosition();
                     if (modoBusqueda) {
-                        if (!cargando && !esUltimaPaginaBusqueda
+                        boolean necesitaAPI = !ultimaConsultaIngredientes.isEmpty() || !ultimaConsultaTipos.isEmpty();
+                        if (necesitaAPI && !cargando && !esUltimaPaginaBusqueda
                                 && total > 0 && visible + firstVisible >= total - 3) {
                             buscarPorIngredientesAPI(ultimaConsultaIngredientes,
                                     ultimaConsultaTipos, ultimaConsultaTexto, paginaBusquedaActual);
@@ -561,9 +562,8 @@ public class InicioFragment extends Fragment {
         }
 
         cargando = false;
-        if (loadingIndicator != null) {
-            loadingIndicator.setVisibility(View.GONE);
-        }
+        if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
+        if (swipeRecetas != null) swipeRecetas.setRefreshing(false);
 
         adaptador.actualizarDatos(recetasFiltradas);
 
@@ -592,17 +592,19 @@ public class InicioFragment extends Fragment {
                     @NonNull Response<RespuestaPaginada<Receta>> response) {
                 cargando = false;
                 if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
+                if (swipeRecetas != null) swipeRecetas.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null) {
                     RespuestaPaginada<Receta> cuerpo = response.body();
-                    List<Receta> recetas = cuerpo.getData();
-                    if (recetas == null) recetas = new ArrayList<>();
-                    Log.d(TAG, "Búsqueda pág " + page + ": " + recetas.size() + " recetas");
+                    List<Receta> recetasAPI = cuerpo.getData();
+                    if (recetasAPI == null) recetasAPI = new ArrayList<>();
+                    Log.d(TAG, "Búsqueda pág " + page + ": " + recetasAPI.size() + " recetas");
 
                     // Refinar localmente solo por texto (tipo ya lo filtra la API)
+                    List<Receta> recetas = recetasAPI;
                     String textoLower = filtroTexto != null ? filtroTexto.toLowerCase().trim() : "";
                     if (!textoLower.isEmpty()) {
                         List<Receta> refinadas = new ArrayList<>();
-                        for (Receta r : recetas) {
+                        for (Receta r : recetasAPI) {
                             boolean pasaTexto =
                                 (r.getTitulo() != null && r.getTitulo().toLowerCase().contains(textoLower)) ||
                                 (r.getDescripcion() != null && r.getDescripcion().toLowerCase().contains(textoLower));
@@ -618,10 +620,9 @@ public class InicioFragment extends Fragment {
                         adaptador.agregarDatos(recetas);
                     }
 
+                    // La paginación se basa en la respuesta de la API, no en el filtrado local
                     Integer totalPaginas = cuerpo.getTotalPages();
-                    if (totalPaginas != null && page >= totalPaginas) {
-                        esUltimaPaginaBusqueda = true;
-                    } else if (recetas.isEmpty()) {
+                    if ((totalPaginas != null && page >= totalPaginas) || recetasAPI.isEmpty()) {
                         esUltimaPaginaBusqueda = true;
                     } else {
                         paginaBusquedaActual = page + 1;
@@ -641,6 +642,7 @@ public class InicioFragment extends Fragment {
                     @NonNull Throwable error) {
                 cargando = false;
                 if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
+                if (swipeRecetas != null) swipeRecetas.setRefreshing(false);
                 Log.e(TAG, "Fallo conexión búsqueda: " + error.getMessage());
                 mostrarMensajeError(getString(R.string.error_search_recipes_connection));
             }
@@ -775,7 +777,6 @@ public class InicioFragment extends Fragment {
                                     1, 0));
                             Toast.makeText(requireContext(), R.string.comment_published, 
                                     Toast.LENGTH_SHORT).show();
-                            refrescarListadoRecetas();
                         } else {
                             Toast.makeText(requireContext(), R.string.error_publish_comment, 
                                     Toast.LENGTH_SHORT).show();
@@ -895,7 +896,6 @@ public class InicioFragment extends Fragment {
                             adaptador.refrescarValoracionReceta(receta.getIdReceta());
                             dialog.dismiss();
                             Toast.makeText(requireContext(), R.string.review_saved, Toast.LENGTH_SHORT).show();
-                            refrescarListadoRecetas();
                         } else {
                             Toast.makeText(requireContext(), R.string.error_save_review,
                                     Toast.LENGTH_SHORT).show();
@@ -916,20 +916,27 @@ public class InicioFragment extends Fragment {
     }
 
     private void refrescarListadoRecetas() {
+        boolean hayFiltrosActivos = !ultimaConsultaTexto.isEmpty()
+                || !ultimaConsultaIngredientes.isEmpty()
+                || !ultimaConsultaTipos.isEmpty();
+
         paginaActual = 1;
         esUltimaPagina = false;
-        modoBusqueda = false;
-        ultimaConsultaTexto = "";
-        ultimaConsultaIngredientes = "";
-        ultimaConsultaTipos = new ArrayList<>();
         paginaBusquedaActual = 1;
         esUltimaPaginaBusqueda = false;
         recetasPrecargadas = false;
         if (adaptador != null) {
             adaptador.actualizarDatos(new ArrayList<>());
         }
-        cargarRecetasDesdeAPI();
-        cargarTodasLasRecetasParaBusqueda();
+
+        if (hayFiltrosActivos) {
+            cargarTodasLasRecetasParaBusqueda();
+            aplicarFiltrosCombinados();
+        } else {
+            modoBusqueda = false;
+            cargarRecetasDesdeAPI();
+            cargarTodasLasRecetasParaBusqueda();
+        }
     }
 
     /**

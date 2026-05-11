@@ -23,6 +23,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -89,6 +90,10 @@ public class VentanaRegistro extends AppCompatActivity {
         botonSelecImagenRegistro = findViewById(R.id.botonSelecImagenRegistro);
         ivRegistro = findViewById(R.id.ivRegistro);
 
+        //Filtro para los EditText de Nombre y Apellidos: Acepta solo letras, espacios y guion simple
+        FiltroSoloLetras filtroSoloLetras = new FiltroSoloLetras();
+        etNombreRegistro.setFilters(new InputFilter[]{filtroSoloLetras});
+        etApellidosRegistro.setFilters(new InputFilter[]{filtroSoloLetras});
 
         usuarioService = ClienteRetrofit.obtenerInstancia(this).create(UsuarioService.class);
 

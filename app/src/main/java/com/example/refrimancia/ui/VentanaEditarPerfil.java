@@ -3,6 +3,7 @@ package com.example.refrimancia.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -46,8 +47,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
     private String imagenActualUrl;
 
     EditText etNombreUserEditar;
-    EditText etNombreEditar;
-    EditText etApellidosEditar;
+    EditText etNombreCompEditar;
     EditText etFechaEditar;
     ImageView ivImagenEditar;
     Button botonActualizarEditar;
@@ -68,10 +68,13 @@ public class VentanaEditarPerfil extends AppCompatActivity {
 
 
         etNombreUserEditar = findViewById(R.id.etNombreUserEditar);
-        etNombreEditar = findViewById(R.id.etNombreEditar);
-        etApellidosEditar = findViewById(R.id.etApellidosEditar);
+        etNombreCompEditar = findViewById(R.id.etNombreCompEditar);
         etFechaEditar = findViewById(R.id.etFechaEditar);
         ivImagenEditar = findViewById(R.id.ivImagenEditar);
+
+        //Filtro para el EditText de Nombre Completo: Acepta solo letras, espacios y guion simple
+        FiltroSoloLetras filtroSoloLetras = new FiltroSoloLetras();
+        etNombreCompEditar.setFilters(new InputFilter[]{filtroSoloLetras});
 
         botonActualizarEditar = findViewById(R.id.botonActualizarEditar);
         botonCancelarEditar = findViewById(R.id.botonCancelarEditar);
@@ -81,7 +84,6 @@ public class VentanaEditarPerfil extends AppCompatActivity {
 
         //Cargar los datos del usuario
         cargarPerfil();
-
 
         botonCancelarEditar.setOnClickListener(v -> finish());
         botonEditarImagen.setOnClickListener(v -> abrirSelectorImagen());
@@ -106,16 +108,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
                     idUsuario = data.getIdUsuario();
 
                     etNombreUserEditar.setText(data.getNombreUsuario());
-
-                    // Separar nombre completo
-                    String nombreCompleto = data.getNombreCompleto();
-                    if (nombreCompleto != null && nombreCompleto.contains(" ")) {
-                        String[] partes = nombreCompleto.split(" ", 2);
-                        etNombreEditar.setText(partes[0]);
-                        etApellidosEditar.setText(partes[1]);
-                    } else {
-                        etNombreEditar.setText(nombreCompleto);
-                    }
+                    etNombreCompEditar.setText(data.getNombreCompleto());
 
                     // Formatear fecha
                     if (data.getFechaNac() != null) {
@@ -151,6 +144,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
         intent.setType("image/*");
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
+
     // Recibe la imagen seleccionada por el usuario y la muestra en el ImageView
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -195,11 +189,8 @@ public class VentanaEditarPerfil extends AppCompatActivity {
     private void actualizarUsuario() {
 
         String nombreUser = etNombreUserEditar.getText().toString().trim();
-        String nombre = etNombreEditar.getText().toString().trim();
-        String apellidos = etApellidosEditar.getText().toString().trim();
+        String nombreCompleto = etNombreCompEditar.getText().toString().trim();
         String fecha = etFechaEditar.getText().toString().trim();
-
-        String nombreCompleto = nombre + " " + apellidos;
 
         //Validar la fecha
         try {

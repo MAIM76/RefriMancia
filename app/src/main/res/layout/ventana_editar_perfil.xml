@@ -89,59 +89,33 @@
 
         <!-- NOMBRE -->
         <TextView
-            android:id="@+id/tvNombreEditar"
+            android:id="@+id/tvNombreCompEditar"
             style="@style/etiquetas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
-            android:text="Nombre:"
+            android:text="Nombre completo:"
             android:textColor="#000000"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etNombreUserEditar" />
 
         <EditText
-            android:id="@+id/etNombreEditar"
+            android:id="@+id/etNombreCompEditar"
             style="@style/editTexts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_input"
-            android:hint="Escriba su nombre"
+            android:hint="Escriba su nombre completo"
             android:padding="12dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvNombreEditar" />
-
-        <!-- APELLIDOS -->
-        <TextView
-            android:id="@+id/tvApellidosEditar"
-            style="@style/etiquetas"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:text="Apellidos:"
-            android:textColor="#000000"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etNombreEditar" />
-
-        <EditText
-            android:id="@+id/etApellidosEditar"
-            style="@style/editTexts"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_input"
-            android:hint="Escriba sus apellidos"
-            android:padding="12dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvApellidosEditar" />
+            app:layout_constraintTop_toBottomOf="@id/tvNombreCompEditar" />
 
         <!-- FECHA -->
+
         <TextView
             android:id="@+id/tvFechaEditar"
             style="@style/etiquetas"
@@ -152,7 +126,7 @@
             android:text="Fecha de nacimiento:"
             android:textColor="#000000"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etApellidosEditar" />
+            app:layout_constraintTop_toBottomOf="@+id/etNombreCompEditar" />
 
         <EditText
             android:id="@+id/etFechaEditar"
@@ -162,10 +136,12 @@
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_input"
-            android:hint="yyyy-MM-dd"
+            android:hint="Formato Año-Mes-Dia (yyyy-MM-dd)"
+            android:inputType="number"
+            android:digits="0123456789-"
             android:padding="12dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvFechaEditar" />
 
         <!-- BOTONES -->

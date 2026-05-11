@@ -1,5 +1,7 @@
 package com.example.refrimancia.api;
 
+import java.util.List;
+
 import com.example.refrimancia.model.entity.Receta;
 import com.example.refrimancia.model.response.RecetaCreada;
 import com.example.refrimancia.model.response.RespuestaPaginada;
@@ -58,12 +60,17 @@ public interface RecetaService {
     Call<RespuestaUnica<Receta>> recomendacionDiaria();
 
     /**
-     * Busca recetas por ingredientes.
-     * @param ingredientes Cadena de texto con los ingredientes a buscar
-     * @return Respuesta paginada con las recetas que contienen los ingredientes
+     * Busca recetas por ingredientes, tipos de receta y página (todos opcionales).
+     * @param ingredientes Ingredientes separados por coma (OR lógico), puede ser null
+     * @param tiposReceta Lista de tipos de receta a filtrar (OR lógico), puede ser null o vacía
+     * @param page Número de página para paginación, puede ser null
+     * @return Respuesta paginada con las recetas que coinciden
      */
     @GET("api/recetas/buscar/ingredientes")
-    Call<RespuestaPaginada<Receta>> buscarPorIngredientes(@Query("ingredientes") String ingredientes);
+    Call<RespuestaPaginada<Receta>> buscarPorIngredientes(
+            @Query("ingredientes") String ingredientes,
+            @Query("tipo_receta") List<String> tiposReceta,
+            @Query("page") Integer page);
 
     /**
      * Obtiene URL para compartir una receta.

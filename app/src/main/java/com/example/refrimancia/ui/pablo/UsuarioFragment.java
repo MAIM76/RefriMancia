@@ -331,8 +331,6 @@ public class UsuarioFragment extends Fragment {
         if (misRecetas == null || misRecetas.isEmpty()) {
             if (adaptadorMisRecetas == null || adaptadorMisRecetas.getItemCount() == 0) {
                 mostrarEstadoVacio();
-            } else {
-                contenidoVacio.setVisibility(View.GONE);
             }
             return;
         }
@@ -442,7 +440,7 @@ public class UsuarioFragment extends Fragment {
      * Adaptador interno para el RecyclerView de recetas del usuario.
      */
     private class AdaptadorMisRecetas extends RecyclerView.Adapter<AdaptadorMisRecetas.MiRecetaViewHolder> {
-        private final List<Receta> recetas;
+        final List<Receta> recetas;
 
         public AdaptadorMisRecetas(List<Receta> recetas) {
             this.recetas = new ArrayList<>(recetas);
@@ -467,7 +465,11 @@ public class UsuarioFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull MiRecetaViewHolder holder, int position) {
             Receta r = recetas.get(position);
-            holder.tvTitulo.setText(r.getTitulo());
+
+            holder.itemView.setOnClickListener(v ->
+                    startActivity(RecetaActivity.crearIntent(requireContext(), r)));
+
+            holder.tvTitulo.setText(r.getTitulo() != null ? r.getTitulo() : getString(R.string.recipe_no_title));
             holder.tvFecha.setText(r.getFechaCreacion() != null ? formatFecha(r.getFechaCreacion()) : getString(R.string.recipe_recent));
             
             // Configurar el círculo del semáforo
@@ -568,7 +570,7 @@ public class UsuarioFragment extends Fragment {
     }
 
     private String formatTiempo(int minutos) {
-        if (minutos <= 0) return getString(R.string.time_zero_minutes);
+        if (minutos <= 0) return getString(R.string.recipe_time_not_available);
         int horas = minutos / 60;
         int minRestantes = minutos % 60;
         if (horas > 0) {

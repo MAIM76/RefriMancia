@@ -61,7 +61,7 @@
                     android:id="@+id/tv_meta_receta_usuario"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/recipe_meta_placeholder"
+                    android:text="@string/recipe_no_category"
                     android:textSize="13sp"
                     android:textColor="#757575" />
 

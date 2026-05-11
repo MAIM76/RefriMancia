@@ -3,12 +3,14 @@ package com.example.refrimancia.api;
 import android.content.Context;
 import android.content.Intent;
 
+import com.example.refrimancia.ui.LoginActivity;
 import com.example.refrimancia.util.SessionManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Interceptor;
@@ -35,11 +37,14 @@ public class ClienteRetrofit {
     
     /** Acción broadcast para notificar sesión expirada */
     public static final String ACTION_SESSION_EXPIRED = "com.example.refrimancia.SESSION_EXPIRED";
-    
+
     // ======================== VARIABLES DE INSTANCIA ========================
-    
+
     /** Instancia singleton de Retrofit */
     private static Retrofit instancia;
+
+    /** Evita múltiples redirects simultáneos al login cuando la sesión expira */
+    private static final AtomicBoolean sessionExpiredHandled = new AtomicBoolean(false);
 
     // ======================== MÉTODOS PÚBLICOS ========================
     
@@ -59,6 +64,7 @@ public class ClienteRetrofit {
 
     public static void resetInstancia() {
         instancia = null;
+        sessionExpiredHandled.set(false);
     }
     
     // ======================== MÉTODOS PRIVADOS ========================
@@ -140,20 +146,22 @@ public class ClienteRetrofit {
     }
     
     /**
-     * Maneja el caso de sesión expirada limpiando la sesión y notificando a la aplicación.
-     * 
+     * Maneja el caso de sesión expirada limpiando la sesión y redirigiendo al login.
+     * Usa AtomicBoolean para garantizar que solo se ejecuta una vez ante peticiones simultáneas.
+     *
      * @param context Contexto de la aplicación
      * @param sessionManager Gestor de sesiones
      * @param token Token que causó el error (no usado, mantenido por compatibilidad)
      * @param response Respuesta HTTP con error 401
      */
-    private static void manejarSesionExpirada(Context context, SessionManager sessionManager, 
+    private static void manejarSesionExpirada(Context context, SessionManager sessionManager,
             String token, Response response) {
-        // Limpiar sesión local
+        if (!sessionExpiredHandled.compareAndSet(false, true)) {
+            return;
+        }
         sessionManager.clearSession();
-        
-        // Notificar a la aplicación mediante broadcast
-        Intent intent = new Intent(ACTION_SESSION_EXPIRED);
-        context.getApplicationContext().sendBroadcast(intent);
+        Intent intent = new Intent(context.getApplicationContext(), LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.getApplicationContext().startActivity(intent);
     }
 }

@@ -127,6 +127,14 @@
     <string name="logout_confirm">Cerrar sesión</string>
     <string name="logout_cancel">Cancelar</string>
     <string name="rating_score_empty">Puntuación: sin elegir</string>
+    <string name="recipe_delete_title">Eliminar receta</string>
+    <string name="recipe_delete_message">¿Estás seguro de que deseas eliminar «%1$s»?</string>
+    <string name="recipe_delete_confirm">Eliminar</string>
+    <string name="recipe_delete_cancel">Cancelar</string>
+    <string name="recipe_delete_success">Receta eliminada</string>
+    <string name="recipe_delete_error">No se pudo eliminar la receta</string>
+    <string name="recipe_edit">Modificar</string>
+    <string name="recipe_delete">Eliminar</string>
 
     <!-- Logs y debug (opcional) -->
     <string name="log_user_retry">Usuario presionó reintentar</string>
@@ -149,4 +157,9 @@
         <item>Postre</item>
         <item>Snack</item>
     </string-array>
+
+    <!-- Popup comentarios -->
+    <string name="popup_comments_title">Comentarios</string>
+    <string name="popup_comments_hint">Escribe un comentario...</string>
+    <string name="popup_comments_send_desc">Enviar comentario</string>
 </resources>

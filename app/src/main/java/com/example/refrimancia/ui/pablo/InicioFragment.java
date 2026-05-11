@@ -20,7 +20,8 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
-import android.widget.Spinner;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -93,12 +94,14 @@ public class InicioFragment extends Fragment {
     private boolean cargando = false;
     private boolean esUltimaPagina = false;
 
-    // ======================== ESTADO DE BÚSQL ========================
+    // ======================== ESTADO DE BÚSQUEDA ========================
 
     private boolean modoBusqueda = false;
     private String ultimaConsultaTexto = "";
     private String ultimaConsultaIngredientes = "";
-    private String ultimaConsultaTipo = "";
+    private int paginaBusquedaActual = 1;
+    private boolean esUltimaPaginaBusqueda = false;
+    private List<String> ultimaConsultaTipos = new ArrayList<>();
     /** Caché de todas las recetas para permitir búsqueda local sin nueva paginación. */
     private List<Receta> todasLasRecetas = new ArrayList<>();
     private boolean recetasPrecargadas = false;
@@ -270,14 +273,6 @@ public class InicioFragment extends Fragment {
                     List<Receta> recetas = cuerpo.getData();
                     Log.d(TAG, getString(R.string.log_recipes_loaded, recetas != null ? recetas.size() : 0));
                     
-                    // Logging de depuración para la primera receta
-                    if (recetas != null && !recetas.isEmpty()) {
-                        Receta primera = recetas.get(0);
-                        Log.d(TAG, getString(R.string.log_first_recipe_title, primera.getTitulo()));
-                        Log.d(TAG, getString(R.string.log_first_recipe_desc, primera.getDescripcion() != null ? primera.getDescripcion().substring(0, Math.min(primera.getDescripcion().length(), 50)) : "null"));
-                        Log.d(TAG, getString(R.string.log_first_recipe_ingredients, primera.getIngredientes() != null ? primera.getIngredientes().substring(0, Math.min(primera.getIngredientes().length(), 50)) : "null"));
-                    }
-                    
                     if (recetas != null && !recetas.isEmpty()) {
                         if (paginaActual == 1) {
                             adaptador.actualizarDatos(recetas);
@@ -296,7 +291,7 @@ public class InicioFragment extends Fragment {
                     }
                 } else {
                     Log.e(TAG, getString(R.string.log_error_response, response.code()));
-                    mostrarError(getString(R.string.error_load_recipes));
+                    mostrarError(getString(R.string.error_load_recipes), true);
                 }
             }
 
@@ -311,7 +306,7 @@ public class InicioFragment extends Fragment {
                 if (contadorReintentos < MAX_REINTENTOS) {
                     contadorReintentos++;
                     int delaySeg = contadorReintentos;
-                    mostrarErrorSinBoton(getString(R.string.error_connection_retrying, delaySeg));
+                    mostrarError(getString(R.string.error_connection_retrying, delaySeg), false);
                     handlerReintento.postDelayed(() -> {
                         if (isAdded() && !isRemoving()) {
                             cargarRecetasDesdeAPI();
@@ -319,7 +314,7 @@ public class InicioFragment extends Fragment {
                     }, delaySeg * 1000L);
                 } else {
                     contadorReintentos = 0;
-                    mostrarError(getString(R.string.error_conexion_mensaje));
+                    mostrarError(getString(R.string.error_conexion_mensaje), true);
                 }
             }
         });
@@ -419,11 +414,19 @@ public class InicioFragment extends Fragment {
             rvRecetas.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                    if (modoBusqueda || dy <= 0 || cargando || esUltimaPagina) return;
                     int visible = layoutManager.getChildCount();
                     int total = layoutManager.getItemCount();
                     int firstVisible = layoutManager.findFirstVisibleItemPosition();
-                    if (visible + firstVisible >= total) {
+                    if (modoBusqueda) {
+                        if (!cargando && !esUltimaPaginaBusqueda
+                                && total > 0 && visible + firstVisible >= total - 3) {
+                            buscarPorIngredientesAPI(ultimaConsultaIngredientes,
+                                    ultimaConsultaTipos, ultimaConsultaTexto, paginaBusquedaActual);
+                        }
+                        return;
+                    }
+                    if (cargando || esUltimaPagina) return;
+                    if (total > 0 && visible + firstVisible >= total - 3) {
                         cargarRecetasDesdeAPI();
                     }
                 }
@@ -443,7 +446,7 @@ public class InicioFragment extends Fragment {
     private void aplicarFiltrosCombinados() {
         boolean tieneFiltroTexto = !ultimaConsultaTexto.isEmpty();
         boolean tieneFiltroIngredientes = !ultimaConsultaIngredientes.isEmpty();
-        boolean tieneFiltroTipo = !ultimaConsultaTipo.isEmpty();
+        boolean tieneFiltroTipo = !ultimaConsultaTipos.isEmpty();
 
         // Si no hay filtros, volver a modo normal
         if (!tieneFiltroTexto && !tieneFiltroIngredientes && !tieneFiltroTipo) {
@@ -453,20 +456,21 @@ public class InicioFragment extends Fragment {
         }
 
         modoBusqueda = true;
+        paginaBusquedaActual = 1;
+        esUltimaPaginaBusqueda = false;
         cargando = true;
-        esUltimaPagina = true;
-        paginaActual = 1;
         if (loadingIndicator != null) {
             loadingIndicator.setVisibility(View.VISIBLE);
         }
 
-        // Si hay filtro de ingredientes, usar SIEMPRE la API (devuelve todas las coincidencias)
-        if (tieneFiltroIngredientes) {
-            buscarPorIngredientesAPI(ultimaConsultaIngredientes, ultimaConsultaTexto);
+        // Si hay filtro de ingredientes o tipo, usar la API
+        if (tieneFiltroIngredientes || tieneFiltroTipo) {
+            buscarPorIngredientesAPI(ultimaConsultaIngredientes,
+                    ultimaConsultaTipos, ultimaConsultaTexto, 1);
             return;
         }
 
-        // Solo filtro de texto y/o tipo: filtrar localmente sobre las recetas precargadas
+        // Solo filtro de texto: filtrar localmente sobre las recetas precargadas
         if (recetasPrecargadas && !todasLasRecetas.isEmpty()) {
             filtrarRecetasLocalmenteCombinado(ultimaConsultaTexto, "");
         } else if (!reintentandoBusqueda) {
@@ -494,7 +498,8 @@ public class InicioFragment extends Fragment {
      */
     private void filtrarRecetasLocalmenteCombinado(String consultaTexto, String consultaIngredientes) {
         String textoLower = consultaTexto.toLowerCase().trim();
-        String tipoLower = ultimaConsultaTipo.toLowerCase().trim();
+        List<String> tiposLower = new ArrayList<>();
+        for (String t : ultimaConsultaTipos) tiposLower.add(t.toLowerCase().trim());
         String[] ingredientesArray = consultaIngredientes.toLowerCase().trim().split(",");
         List<String> ingredientesList = new ArrayList<>();
         for (String ingrediente : ingredientesArray) {
@@ -524,11 +529,17 @@ public class InicioFragment extends Fragment {
                 }
             }
 
-            // Filtro por tipo de comida (consumo_habitual)
-            if (!tipoLower.isEmpty()) {
-                String consumo = receta.getConsumoHabitual() != null ?
-                    receta.getConsumoHabitual().toLowerCase().trim() : "";
-                coincideTipo = consumo.equals(tipoLower);
+            // Filtro por tipo de comida (OR lógico entre todos los tipos seleccionados)
+            if (!tiposLower.isEmpty()) {
+                String categoria = receta.getCategoria() != null ?
+                    receta.getCategoria().toLowerCase().trim() : "";
+                coincideTipo = false;
+                for (String t : tiposLower) {
+                    if (categoria.equals(t)) {
+                        coincideTipo = true;
+                        break;
+                    }
+                }
             }
 
             // Filtro por ingredientes (OR lógico)
@@ -562,68 +573,75 @@ public class InicioFragment extends Fragment {
     }
 
     /**
-     * Busca recetas por ingredientes usando la API /api/recetas/buscar/ingredientes.
-     * Si filtroTexto no está vacío, refina los resultados localmente por título/descripción.
-     * Según Postman: el endpoint acepta ingredientes separados por coma y devuelve recetas
-     * que contienen CUALQUIERA de los ingredientes (OR).
+     * Busca recetas usando la API /api/recetas/buscar/ingredientes con soporte de paginación.
+     * La API filtra por ingredientes (OR) y/o tipo_receta. Si filtroTexto no está vacío,
+     * refina los resultados localmente por título/descripción.
      */
-    private void buscarPorIngredientesAPI(String ingredientes, String filtroTexto) {
-        RecetaService servicio = 
+    private void buscarPorIngredientesAPI(String ingredientes, List<String> tipos, String filtroTexto, int page) {
+        cargando = true;
+        if (loadingIndicator != null) loadingIndicator.setVisibility(View.VISIBLE);
+        RecetaService servicio =
                 ClienteRetrofit.obtenerInstancia(requireContext()).create(RecetaService.class);
-        Log.d(TAG, "Buscando por ingredientes: '" + ingredientes + "' con filtro texto: '" + filtroTexto + "'");
-        servicio.buscarPorIngredientes(ingredientes).enqueue(new Callback<>() {
+        String ingParam = (ingredientes != null && !ingredientes.isEmpty()) ? ingredientes : null;
+        List<String> tiposParam = (tipos != null && !tipos.isEmpty()) ? tipos : null;
+        Log.d(TAG, "Buscando: ingredientes='" + ingParam + "' tipos='" + tiposParam
+                + "' filtroTexto='" + filtroTexto + "' page=" + page);
+        servicio.buscarPorIngredientes(ingParam, tiposParam, page).enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<RespuestaPaginada<Receta>> call, 
+            public void onResponse(@NonNull Call<RespuestaPaginada<Receta>> call,
                     @NonNull Response<RespuestaPaginada<Receta>> response) {
                 cargando = false;
-                if (loadingIndicator != null) {
-                    loadingIndicator.setVisibility(View.GONE);
-                }
+                if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Receta> recetas = response.body().getData();
-                    if (recetas == null) {
-                        recetas = new ArrayList<>();
-                    }
-                    Log.d(TAG, "API devolvió " + recetas.size() + " recetas con esos ingredientes");
+                    RespuestaPaginada<Receta> cuerpo = response.body();
+                    List<Receta> recetas = cuerpo.getData();
+                    if (recetas == null) recetas = new ArrayList<>();
+                    Log.d(TAG, "Búsqueda pág " + page + ": " + recetas.size() + " recetas");
 
-                    // Refinar localmente por texto y/o tipo de comida
+                    // Refinar localmente solo por texto (tipo ya lo filtra la API)
                     String textoLower = filtroTexto != null ? filtroTexto.toLowerCase().trim() : "";
-                    String tipoLower = ultimaConsultaTipo.toLowerCase().trim();
-                    if (!textoLower.isEmpty() || !tipoLower.isEmpty()) {
+                    if (!textoLower.isEmpty()) {
                         List<Receta> refinadas = new ArrayList<>();
                         for (Receta r : recetas) {
-                            boolean pasaTexto = textoLower.isEmpty() ||
+                            boolean pasaTexto =
                                 (r.getTitulo() != null && r.getTitulo().toLowerCase().contains(textoLower)) ||
                                 (r.getDescripcion() != null && r.getDescripcion().toLowerCase().contains(textoLower));
-                            boolean pasaTipo = tipoLower.isEmpty() ||
-                                (r.getConsumoHabitual() != null &&
-                                 r.getConsumoHabitual().toLowerCase().trim().equals(tipoLower));
-                            if (pasaTexto && pasaTipo) {
-                                refinadas.add(r);
-                            }
+                            if (pasaTexto) refinadas.add(r);
                         }
                         recetas = refinadas;
-                        Log.d(TAG, "Tras refinar por texto/tipo: " + recetas.size() + " recetas");
+                        Log.d(TAG, "Tras refinar por texto: " + recetas.size() + " recetas");
                     }
 
-                    adaptador.actualizarDatos(recetas);
-                    if (recetas.isEmpty()) {
+                    if (page == 1) {
+                        adaptador.actualizarDatos(recetas);
+                    } else {
+                        adaptador.agregarDatos(recetas);
+                    }
+
+                    Integer totalPaginas = cuerpo.getTotalPages();
+                    if (totalPaginas != null && page >= totalPaginas) {
+                        esUltimaPaginaBusqueda = true;
+                    } else if (recetas.isEmpty()) {
+                        esUltimaPaginaBusqueda = true;
+                    } else {
+                        paginaBusquedaActual = page + 1;
+                    }
+
+                    if (page == 1 && adaptador.getItemCount() == 0) {
                         mostrarMensajeError(getString(R.string.error_no_recipes_found));
                     }
                 } else {
-                    Log.e(TAG, "Error en respuesta API ingredientes: " + response.code());
+                    Log.e(TAG, "Error en respuesta API búsqueda: " + response.code());
                     mostrarMensajeError(getString(R.string.error_no_recipes_found));
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<RespuestaPaginada<Receta>> call, 
+            public void onFailure(@NonNull Call<RespuestaPaginada<Receta>> call,
                     @NonNull Throwable error) {
                 cargando = false;
-                if (loadingIndicator != null) {
-                    loadingIndicator.setVisibility(View.GONE);
-                }
-                Log.e(TAG, "Fallo conexión búsqueda ingredientes: " + error.getMessage());
+                if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
+                Log.e(TAG, "Fallo conexión búsqueda: " + error.getMessage());
                 mostrarMensajeError(getString(R.string.error_search_recipes_connection));
             }
         });
@@ -637,7 +655,7 @@ public class InicioFragment extends Fragment {
         Window window = dialog.getWindow();
         if (window != null) {
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            window.setGravity(Gravity.CENTER);
+            window.setGravity(Gravity.TOP);
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             window.setDimAmount(0.5f);
@@ -645,26 +663,23 @@ public class InicioFragment extends Fragment {
 
         dialog.setCanceledOnTouchOutside(true);
 
-        Spinner spinnerTipo = dialog.findViewById(R.id.spinner_tipo_comida);
+        LinearLayout llTipos = dialog.findViewById(R.id.ll_tipos_comida);
         EditText etIngredientes = dialog.findViewById(R.id.et_ingredientes_filtro);
         Button btnLimpiar = dialog.findViewById(R.id.btn_limpiar_filtros);
         Button btnAplicar = dialog.findViewById(R.id.btn_aplicar_filtros);
 
-        // Configurar spinner de tipo de comida
+        // Generar checkboxes dinámicamente para cada tipo (saltando "Todos")
         String[] tiposComida = getResources().getStringArray(R.array.tipos_comida);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(
-                requireContext(), android.R.layout.simple_spinner_item, tiposComida);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        if (spinnerTipo != null) {
-            spinnerTipo.setAdapter(spinnerAdapter);
-            // Pre-seleccionar el tipo actual
-            if (!ultimaConsultaTipo.isEmpty()) {
-                for (int i = 0; i < tiposComida.length; i++) {
-                    if (tiposComida[i].equalsIgnoreCase(ultimaConsultaTipo)) {
-                        spinnerTipo.setSelection(i);
-                        break;
-                    }
-                }
+        List<CheckBox> checkboxes = new ArrayList<>();
+        if (llTipos != null) {
+            for (int i = 1; i < tiposComida.length; i++) {
+                CheckBox cb = new CheckBox(requireContext());
+                cb.setText(tiposComida[i]);
+                cb.setTextSize(14f);
+                cb.setPadding(8, 8, 8, 8);
+                cb.setChecked(ultimaConsultaTipos.contains(tiposComida[i]));
+                llTipos.addView(cb);
+                checkboxes.add(cb);
             }
         }
 
@@ -675,9 +690,9 @@ public class InicioFragment extends Fragment {
 
         if (btnLimpiar != null) {
             btnLimpiar.setOnClickListener(v -> {
-                if (spinnerTipo != null) spinnerTipo.setSelection(0);
+                for (CheckBox cb : checkboxes) cb.setChecked(false);
                 if (etIngredientes != null) etIngredientes.setText("");
-                ultimaConsultaTipo = "";
+                ultimaConsultaTipos = new ArrayList<>();
                 ultimaConsultaIngredientes = "";
                 aplicarFiltrosCombinados();
                 dialog.dismiss();
@@ -686,15 +701,15 @@ public class InicioFragment extends Fragment {
 
         if (btnAplicar != null) {
             btnAplicar.setOnClickListener(v -> {
-                String tipoSeleccionado = spinnerTipo != null ?
-                    spinnerTipo.getSelectedItem().toString() : "";
-                String ingredientes = etIngredientes != null ?
-                    etIngredientes.getText().toString().trim() : "";
-
-                // "Todos" equivale a sin filtro de tipo
-                ultimaConsultaTipo = tipoSeleccionado.equals(tiposComida[0]) ? "" : tipoSeleccionado;
-                ultimaConsultaIngredientes = ingredientes;
-
+                List<String> tiposSeleccionados = new ArrayList<>();
+                for (CheckBox cb : checkboxes) {
+                    if (cb.isChecked()) {
+                        tiposSeleccionados.add(cb.getText().toString());
+                    }
+                }
+                ultimaConsultaTipos = tiposSeleccionados;
+                ultimaConsultaIngredientes = etIngredientes != null ?
+                        etIngredientes.getText().toString().trim() : "";
                 aplicarFiltrosCombinados();
                 dialog.dismiss();
             });
@@ -904,6 +919,9 @@ public class InicioFragment extends Fragment {
         modoBusqueda = false;
         ultimaConsultaTexto = "";
         ultimaConsultaIngredientes = "";
+        ultimaConsultaTipos = new ArrayList<>();
+        paginaBusquedaActual = 1;
+        esUltimaPaginaBusqueda = false;
         recetasPrecargadas = false;
         if (adaptador != null) {
             adaptador.actualizarDatos(new ArrayList<>());
@@ -913,9 +931,11 @@ public class InicioFragment extends Fragment {
     }
 
     /**
-     * Muestra el panel de error con el mensaje y el botón de reintentar.
+     * Muestra el panel de error con el mensaje.
+     * @param mensaje Texto a mostrar en el panel de error
+     * @param conBoton Si es {@code true}, muestra el botón de reintentar; si no, lo oculta
      */
-    private void mostrarError(String mensaje) {
+    private void mostrarError(String mensaje, boolean conBoton) {
         if (errorContainer != null && rvRecetas != null) {
             rvRecetas.setVisibility(View.GONE);
             errorContainer.setVisibility(View.VISIBLE);
@@ -923,24 +943,7 @@ public class InicioFragment extends Fragment {
                 tvErrorMensaje.setText(mensaje);
             }
             if (btnReintentar != null) {
-                btnReintentar.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    /**
-     * Muestra el panel de error con el mensaje pero sin el botón de reintentar.
-     * Usado durante los reintentos automáticos.
-     */
-    private void mostrarErrorSinBoton(String mensaje) {
-        if (errorContainer != null && rvRecetas != null) {
-            rvRecetas.setVisibility(View.GONE);
-            errorContainer.setVisibility(View.VISIBLE);
-            if (tvErrorMensaje != null && mensaje != null) {
-                tvErrorMensaje.setText(mensaje);
-            }
-            if (btnReintentar != null) {
-                btnReintentar.setVisibility(View.GONE);
+                btnReintentar.setVisibility(conBoton ? View.VISIBLE : View.GONE);
             }
         }
     }

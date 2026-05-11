@@ -15,7 +15,7 @@
         android:id="@+id/tv_comentarios_titulo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Comentarios"
+        android:text="@string/popup_comments_title"
         android:textSize="20sp"
         android:textStyle="bold"
         android:padding="16dp"
@@ -62,7 +62,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:hint="Escribe un comentario..."
+            android:hint="@string/popup_comments_hint"
             android:background="@android:color/white"
             android:padding="12dp"
             android:layout_marginEnd="8dp"
@@ -78,7 +78,7 @@
             android:layout_height="48dp"
             android:background="?attr/colorPrimary"
             android:src="@android:drawable/ic_menu_send"
-            android:contentDescription="Enviar comentario"
+            android:contentDescription="@string/popup_comments_send_desc"
             android:tint="@android:color/white" />
     </LinearLayout>
     

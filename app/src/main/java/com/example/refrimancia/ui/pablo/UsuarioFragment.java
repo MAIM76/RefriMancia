@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
-import com.example.refrimancia.ui.CreateRecipeActivity; // Corregido el import
 import com.example.refrimancia.R;
 import com.example.refrimancia.util.SessionManager;
 import com.example.refrimancia.api.ClienteRetrofit;
@@ -495,11 +494,6 @@ public class UsuarioFragment extends Fragment {
                 holder.ivImagen.setImageResource(R.drawable.bg_placeholder_circular);
             }
 
-            holder.itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(requireContext(), CreateRecipeActivity.class);
-                intent.putExtra("receta_editar", r);
-                startActivity(intent);
-            });
         }
 
         private String construirMetaReceta(Receta receta) {

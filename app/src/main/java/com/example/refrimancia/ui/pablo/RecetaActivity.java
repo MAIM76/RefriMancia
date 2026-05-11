@@ -373,7 +373,7 @@ public class RecetaActivity extends AppCompatActivity {
             llBotonesPropietario.setVisibility(View.VISIBLE);
             btnModificarReceta.setOnClickListener(v -> {
                 Intent intent = new Intent(this, CreateRecipeActivity.class);
-                intent.putExtra("extra_receta", receta);
+                intent.putExtra("receta_editar", receta);
                 startActivity(intent);
             });
             btnEliminarReceta.setOnClickListener(v -> {

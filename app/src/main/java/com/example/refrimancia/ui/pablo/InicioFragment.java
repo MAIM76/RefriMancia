@@ -81,6 +81,7 @@ public class InicioFragment extends Fragment {
     private ArrayAdapter<String> suggestionsAdapter;
     private List<String> currentSuggestions;
     private ProgressBar loadingIndicator;
+    private ProgressBar loadingInicial;
     private SwipeRefreshLayout swipeRecetas;
 
     /** Panel de error de conexión (contiene el mensaje y el botón de reintentar). */
@@ -131,6 +132,7 @@ public class InicioFragment extends Fragment {
             searchOverlay = vista.findViewById(R.id.search_overlay);
             ListView searchSuggestionsList = vista.findViewById(R.id.search_suggestions_list);
             loadingIndicator = vista.findViewById(R.id.loading_indicator);
+            loadingInicial = vista.findViewById(R.id.loading_inicial);
             swipeRecetas = vista.findViewById(R.id.swipe_recetas);
             if (swipeRecetas != null) {
                 swipeRecetas.setColorSchemeResources(R.color.marron_oscuro);
@@ -249,8 +251,11 @@ public class InicioFragment extends Fragment {
     private void cargarRecetasDesdeAPI() {
         if (cargando || esUltimaPagina || modoBusqueda) return;
         cargando = true;
-        if (loadingIndicator != null) {
-            loadingIndicator.setVisibility(View.VISIBLE);
+        if (paginaActual == 1) {
+            if (loadingInicial != null) loadingInicial.setVisibility(View.VISIBLE);
+            if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
+        } else {
+            if (loadingIndicator != null) loadingIndicator.setVisibility(View.VISIBLE);
         }
 
         RecetaService servicio = 
@@ -262,9 +267,8 @@ public class InicioFragment extends Fragment {
             public void onResponse(@NonNull Call<RespuestaPaginada<Receta>> call, 
                     @NonNull Response<RespuestaPaginada<Receta>> response) {
                 cargando = false;
-                if (loadingIndicator != null) {
-                    loadingIndicator.setVisibility(View.GONE);
-                }
+                if (loadingInicial != null) loadingInicial.setVisibility(View.GONE);
+                if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
                 if (swipeRecetas != null) swipeRecetas.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null) {
                     // Éxito: ocultar mensaje de error si estaba visible
@@ -299,6 +303,7 @@ public class InicioFragment extends Fragment {
             public void onFailure(@NonNull Call<RespuestaPaginada<Receta>> call,
                     @NonNull Throwable error) {
                 cargando = false;
+                if (loadingInicial != null) loadingInicial.setVisibility(View.GONE);
                 if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
                 if (swipeRecetas != null) swipeRecetas.setRefreshing(false);
                 Log.e(TAG, getString(R.string.log_error_api_call, error.getMessage()));
@@ -460,9 +465,8 @@ public class InicioFragment extends Fragment {
         paginaBusquedaActual = 1;
         esUltimaPaginaBusqueda = false;
         cargando = true;
-        if (loadingIndicator != null) {
-            loadingIndicator.setVisibility(View.VISIBLE);
-        }
+        if (loadingInicial != null) loadingInicial.setVisibility(View.VISIBLE);
+        if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
 
         // Si hay filtro de ingredientes o tipo, usar la API
         if (tieneFiltroIngredientes || tieneFiltroTipo) {
@@ -562,6 +566,7 @@ public class InicioFragment extends Fragment {
         }
 
         cargando = false;
+        if (loadingInicial != null) loadingInicial.setVisibility(View.GONE);
         if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
         if (swipeRecetas != null) swipeRecetas.setRefreshing(false);
 
@@ -579,7 +584,12 @@ public class InicioFragment extends Fragment {
      */
     private void buscarPorIngredientesAPI(String ingredientes, List<String> tipos, String filtroTexto, int page) {
         cargando = true;
-        if (loadingIndicator != null) loadingIndicator.setVisibility(View.VISIBLE);
+        if (page == 1) {
+            if (loadingInicial != null) loadingInicial.setVisibility(View.VISIBLE);
+            if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
+        } else {
+            if (loadingIndicator != null) loadingIndicator.setVisibility(View.VISIBLE);
+        }
         RecetaService servicio =
                 ClienteRetrofit.obtenerInstancia(requireContext()).create(RecetaService.class);
         String ingParam = (ingredientes != null && !ingredientes.isEmpty()) ? ingredientes : null;
@@ -591,6 +601,7 @@ public class InicioFragment extends Fragment {
             public void onResponse(@NonNull Call<RespuestaPaginada<Receta>> call,
                     @NonNull Response<RespuestaPaginada<Receta>> response) {
                 cargando = false;
+                if (loadingInicial != null) loadingInicial.setVisibility(View.GONE);
                 if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
                 if (swipeRecetas != null) swipeRecetas.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null) {
@@ -641,6 +652,7 @@ public class InicioFragment extends Fragment {
             public void onFailure(@NonNull Call<RespuestaPaginada<Receta>> call,
                     @NonNull Throwable error) {
                 cargando = false;
+                if (loadingInicial != null) loadingInicial.setVisibility(View.GONE);
                 if (loadingIndicator != null) loadingIndicator.setVisibility(View.GONE);
                 if (swipeRecetas != null) swipeRecetas.setRefreshing(false);
                 Log.e(TAG, "Fallo conexión búsqueda: " + error.getMessage());

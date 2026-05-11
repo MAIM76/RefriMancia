@@ -80,7 +80,7 @@
                 android:background="@drawable/bg_boton_redondo"
                 android:src="@android:drawable/ic_menu_send"
                 android:contentDescription="@string/popup_comments_send_desc"
-                android:tint="@android:color/white" />
+                app:tint="@android:color/white" />
     </LinearLayout>
     
 </androidx.constraintlayout.widget.ConstraintLayout>

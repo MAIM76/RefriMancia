@@ -7,85 +7,85 @@
 
     <!-- ===== CABECERA DE PERFIL ===== -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/header_perfil"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_perfil_header"
-        android:paddingBottom="24dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Borde blanco detrás de la foto -->
-        <View
-            android:id="@+id/foto_border"
-            android:layout_width="112dp"
-            android:layout_height="112dp"
-            android:layout_marginTop="28dp"
-            android:background="@drawable/bg_foto_perfil_border"
+            android:id="@+id/header_perfil"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_perfil_header"
+            android:paddingBottom="24dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <ImageView
-            android:id="@+id/profile_image"
-            android:layout_width="104dp"
-            android:layout_height="104dp"
-            android:src="@drawable/bg_placeholder_circular"
-            app:layout_constraintTop_toTopOf="@id/foto_border"
-            app:layout_constraintBottom_toBottomOf="@id/foto_border"
-            app:layout_constraintStart_toStartOf="@id/foto_border"
-            app:layout_constraintEnd_toEndOf="@id/foto_border" />
-
-        <TextView
-            android:id="@+id/nombre_usuario"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/recipe_unknown_user"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            app:layout_constraintTop_toBottomOf="@id/profile_image"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <LinearLayout
-            android:id="@+id/ll_botones_perfil"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
-            app:layout_constraintTop_toBottomOf="@id/nombre_usuario"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <Button
-                android:id="@+id/btn_editar_perfil"
+        <!-- Borde blanco detrás de la foto -->
+        <View
+                android:id="@+id/foto_border"
+                android:layout_width="112dp"
+                android:layout_height="112dp"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/bg_foto_perfil_border"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="104dp"
+                android:layout_height="104dp"
+                android:src="@drawable/bg_placeholder_circular"
+                app:layout_constraintTop_toTopOf="@id/foto_border"
+                app:layout_constraintBottom_toBottomOf="@id/foto_border"
+                app:layout_constraintStart_toStartOf="@id/foto_border"
+                app:layout_constraintEnd_toEndOf="@id/foto_border" />
+
+        <TextView
+                android:id="@+id/nombre_usuario"
                 android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:text="@string/btn_editar_perfil"
-                android:textSize="13sp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:paddingHorizontal="18dp"
-                style="@style/estiloBotones" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/recipe_unknown_user"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/profile_image"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        <LinearLayout
+                android:id="@+id/ll_botones_perfil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toBottomOf="@id/nombre_usuario"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <Button
+                    android:id="@+id/btn_editar_perfil"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:text="@string/btn_editar_perfil"
+                    android:textSize="16sp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingHorizontal="18dp"
+                    style="@style/estiloBotones" />
 
             <View
-                android:layout_width="12dp"
-                android:layout_height="0dp" />
+                    android:layout_width="12dp"
+                    android:layout_height="0dp" />
 
             <Button
-                android:id="@+id/btn_cerrar_sesion"
-                android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:text="@string/btn_cerrar_sesion"
-                android:textSize="13sp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:paddingHorizontal="18dp"
-                style="@style/estiloBotones" />
+                    android:id="@+id/btn_cerrar_sesion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="34dp"
+                    android:text="@string/btn_cerrar_sesion"
+                    android:textSize="16sp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingHorizontal="18dp"
+                    style="@style/estiloBotones" />
 
         </LinearLayout>
 

@@ -87,6 +87,26 @@ public class Receta implements Serializable {
     @SerializedName("semaforo")
     private String semaforo;
 
+    /** Calorías de la receta */
+    @SerializedName("kcal")
+    private float kcal;
+
+    /** Proteínas en gramos */
+    @SerializedName("proteinas")
+    private float proteinas;
+
+    /** Carbohidratos en gramos */
+    @SerializedName("carbohidratos")
+    private float carbohidratos;
+
+    /** Fibra en gramos */
+    @SerializedName("fibra")
+    private float fibra;
+
+    /** Grasas en gramos */
+    @SerializedName("grasas")
+    private float grasas;
+
     /** Lista de comentarios asociados a la receta */
     @SerializedName("comentarios")
     private java.util.List<Comentario> comentarios;
@@ -212,6 +232,21 @@ public class Receta implements Serializable {
     /** @return Clasificación de semáforo nutricional */
     public String getSemaforo() { return semaforo; }
     
+    /** @return Calorías */
+    public float getKcal() { return kcal; }
+
+    /** @return Proteínas en gramos */
+    public float getProteinas() { return proteinas; }
+
+    /** @return Carbohidratos en gramos */
+    public float getCarbohidratos() { return carbohidratos; }
+
+    /** @return Fibra en gramos */
+    public float getFibra() { return fibra; }
+
+    /** @return Grasas en gramos */
+    public float getGrasas() { return grasas; }
+
     /** @return Lista de comentarios */
     public java.util.List<Comentario> getComentarios() { return comentarios; }
     
@@ -284,6 +319,21 @@ public class Receta implements Serializable {
     /** @param semaforo Nueva clasificación de semáforo nutricional */
     public void setSemaforo(String semaforo) { this.semaforo = semaforo; }
     
+    /** @param kcal Nuevas calorías */
+    public void setKcal(float kcal) { this.kcal = kcal; }
+
+    /** @param proteinas Nuevas proteínas en gramos */
+    public void setProteinas(float proteinas) { this.proteinas = proteinas; }
+
+    /** @param carbohidratos Nuevos carbohidratos en gramos */
+    public void setCarbohidratos(float carbohidratos) { this.carbohidratos = carbohidratos; }
+
+    /** @param fibra Nueva fibra en gramos */
+    public void setFibra(float fibra) { this.fibra = fibra; }
+
+    /** @param grasas Nuevas grasas en gramos */
+    public void setGrasas(float grasas) { this.grasas = grasas; }
+
     /** @param comentarios Nueva lista de comentarios */
     public void setComentarios(java.util.List<Comentario> comentarios) { this.comentarios = comentarios; }
 }

@@ -25,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Proporciona una instancia singleton de Retrofit configurada con:
  * - Autenticación mediante tokens Bearer
  * - Logging de peticiones HTTP
- * - Manejo automático de sesiones expiradas
+ * - Manejo automático de sesiones inválidas (401)
  * - Configuración Gson para parsing JSON
  */
 public class ClienteRetrofit {
@@ -35,16 +35,13 @@ public class ClienteRetrofit {
     /** URL base del servidor backend */
     private static final String URL_BASE = "https://refrimacia-backend.onrender.com/";
     
-    /** Acción broadcast para notificar sesión expirada */
-    public static final String ACTION_SESSION_EXPIRED = "com.example.refrimancia.SESSION_EXPIRED";
-
     // ======================== VARIABLES DE INSTANCIA ========================
 
     /** Instancia singleton de Retrofit */
     private static Retrofit instancia;
 
-    /** Evita múltiples redirects simultáneos al login cuando la sesión expira */
-    private static final AtomicBoolean sessionExpiredHandled = new AtomicBoolean(false);
+    /** Evita múltiples redirects simultáneos al login cuando el token es invalidado */
+    private static final AtomicBoolean sesionInvalidadaHandled = new AtomicBoolean(false);
 
     // ======================== MÉTODOS PÚBLICOS ========================
     
@@ -64,7 +61,7 @@ public class ClienteRetrofit {
 
     public static void resetInstancia() {
         instancia = null;
-        sessionExpiredHandled.set(false);
+        sesionInvalidadaHandled.set(false);
     }
     
     // ======================== MÉTODOS PRIVADOS ========================
@@ -112,9 +109,8 @@ public class ClienteRetrofit {
     }
     
     /**
-     * Crea el interceptor de autenticación que añade tokens Bearer
-     * y maneja sesiones expiradas.
-     * 
+     * Crea el interceptor de autenticación que añade el token Bearer a cada petición.
+     *
      * @param context Contexto de la aplicación
      * @param sessionManager Gestor de sesiones
      * @return Interceptor de autenticación configurado
@@ -132,31 +128,24 @@ public class ClienteRetrofit {
                     requestBuilder.addHeader("Authorization", "Bearer " + token);
                 }
 
-                // Ejecutar petición
                 Response response = chain.proceed(requestBuilder.build());
-                
-                // Manejar sesión expirada (código 401)
+
                 if (response.code() == 401) {
-                    manejarSesionExpirada(context, sessionManager, token, response);
+                    manejarTokenInvalidado(context, sessionManager);
                 }
 
                 return response;
             }
         };
     }
-    
+
     /**
-     * Maneja el caso de sesión expirada limpiando la sesión y redirigiendo al login.
-     * Usa AtomicBoolean para garantizar que solo se ejecuta una vez ante peticiones simultáneas.
-     *
-     * @param context Contexto de la aplicación
-     * @param sessionManager Gestor de sesiones
-     * @param token Token que causó el error (no usado, mantenido por compatibilidad)
-     * @param response Respuesta HTTP con error 401
+     * Limpia la sesión y redirige al login cuando el servidor rechaza el token (401).
+     * Ocurre cuando el token es invalidado por un login desde otro dispositivo.
+     * Usa AtomicBoolean para ejecutarse una sola vez ante peticiones simultáneas.
      */
-    private static void manejarSesionExpirada(Context context, SessionManager sessionManager,
-            String token, Response response) {
-        if (!sessionExpiredHandled.compareAndSet(false, true)) {
+    private static void manejarTokenInvalidado(Context context, SessionManager sessionManager) {
+        if (!sesionInvalidadaHandled.compareAndSet(false, true)) {
             return;
         }
         sessionManager.clearSession();

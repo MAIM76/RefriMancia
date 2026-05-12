@@ -26,26 +26,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
     
-    <!-- Divisor debajo del título -->
-    <View
-        android:id="@+id/comentarios_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#DDDDDD"
-        app:layout_constraintTop_toBottomOf="@id/tv_comentarios_titulo"/>
-    
-    <!-- RecyclerView para lista de comentarios -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_comentarios"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:padding="8dp"
-        android:clipToPadding="false"
-        android:scrollbars="vertical"
-        app:layout_constraintTop_toBottomOf="@id/comentarios_divider"
-        app:layout_constraintBottom_toTopOf="@id/layout_escribir_comentario"/>
-    
-    <!-- Área para escribir nuevos comentarios -->
+    <!-- Área para escribir nuevos comentarios (parte superior) -->
     <LinearLayout
         android:id="@+id/layout_escribir_comentario"
         android:layout_width="match_parent"
@@ -55,7 +36,7 @@
         android:background="@color/beige"
         android:elevation="2dp"
         android:gravity="center_vertical"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/tv_comentarios_titulo">
 
         <!-- Campo de texto para nuevo comentario -->
         <EditText
@@ -82,5 +63,24 @@
                 android:contentDescription="@string/popup_comments_send_desc"
                 app:tint="@android:color/white" />
     </LinearLayout>
-    
+
+    <!-- Divisor -->
+    <View
+        android:id="@+id/comentarios_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DDDDDD"
+        app:layout_constraintTop_toBottomOf="@id/layout_escribir_comentario"/>
+
+    <!-- RecyclerView para lista de comentarios -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_comentarios"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@id/comentarios_divider"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

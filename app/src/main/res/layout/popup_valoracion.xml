@@ -43,7 +43,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:text="@string/review_dialog_hint"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,36 +82,37 @@
 
     <!-- Contenedor de botones de acción -->
     <LinearLayout
-        android:id="@+id/layout_botones_valoracion"
-        style="?android:attr/buttonBarStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:orientation="horizontal"
-        android:gravity="end"
-        android:elevation="2dp"
-        android:background="@color/beige"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+            android:id="@+id/layout_botones_valoracion"
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:background="@color/beige"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
         <!-- Botón cancelar -->
         <Button
-            android:id="@+id/btn_cancelar_valoracion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/review_dialog_cancel"
-            style="?attr/borderlessButtonStyle"
-            android:textColor="@color/gris_marron"
-            android:layout_marginEnd="8dp" />
+                android:id="@+id/btn_cancelar_valoracion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/review_dialog_cancel"
+                style="?attr/borderlessButtonStyle"
+                android:textColor="@color/gris_marron"
+                android:layout_marginEnd="8dp" />
 
         <!-- Botón enviar valoración -->
         <Button
-            android:id="@+id/btn_enviar_valoracion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/review_dialog_send"
-            style="@style/estiloBotones" />
+                android:id="@+id/btn_enviar_valoracion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/review_dialog_send"
+                style="@style/estiloBotones"
+                android:layout_marginEnd="4dp"
+                android:textSize="14sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

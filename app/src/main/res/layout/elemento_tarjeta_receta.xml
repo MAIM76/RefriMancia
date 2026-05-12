@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         app:cardElevation="3dp"
-        app:cardBackgroundColor="@android:color/white"
+        app:cardBackgroundColor="@color/beige"
         app:cardCornerRadius="0dp">
 
     <LinearLayout
@@ -63,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/recipe_no_title"
-                    android:textSize="17sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#1A1A1A"
                     android:maxLines="1"
@@ -86,16 +86,17 @@
                         android:layout_height="8dp"
                         android:layout_marginEnd="6dp"
                         android:background="@drawable/semaforo_dot"
-                        android:layout_marginTop="5dp" />
+                        android:layout_marginTop="6dp" />
 
                 <!-- Tiempo de preparación -->
                 <TextView
                         android:id="@+id/recipe_dificultad_categoria"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="12sp"
-                        android:textColor="#757575"
-                        android:text="@string/recipe_no_category" />
+                        android:textSize="13sp"
+                        android:textColor="@color/marron_oscuro"
+                        android:text="@string/recipe_no_category"
+                        android:layout_marginRight="4dp" />
 
             </LinearLayout>
 
@@ -103,8 +104,8 @@
                     android:id="@+id/recipe_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="#9E9E9E"
+                    android:textSize="14sp"
+                    android:textColor="@color/gris_marron"
                     android:text="@string/recipe_time_not_available"
                     android:layout_marginTop="4dp" />
 
@@ -140,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:textSize="12sp"
-                    android:textColor="#9E9E9E"
+                    android:textColor="@color/gris_marron"
                     android:paddingBottom="4dp"
                     android:textStyle="bold" />
 

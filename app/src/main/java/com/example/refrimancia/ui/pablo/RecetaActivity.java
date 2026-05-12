@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -74,6 +75,16 @@ public class RecetaActivity extends AppCompatActivity {
     private Button btnModificarReceta;
     private Button btnEliminarReceta;
 
+    private TextView tvNutricionKcal;
+    private TextView tvNutricionProteinas;
+    private TextView tvNutricionCarbohidratos;
+    private TextView tvNutricionGrasas;
+    private TextView tvNutricionFibra;
+    private View barProteinas;
+    private View barCarbohidratos;
+    private View barGrasas;
+    private View barFibra;
+
     // ======================== MÉTHODO FÁBRICA ========================
 
     /**
@@ -94,7 +105,11 @@ public class RecetaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receta);
-        receta = (Receta) getIntent().getSerializableExtra(EXTRA_RECETA);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            receta = getIntent().getSerializableExtra(EXTRA_RECETA, Receta.class);
+        } else {
+            receta = (Receta) getIntent().getSerializableExtra(EXTRA_RECETA);
+        }
 
         ivImagen = findViewById(R.id.iv_detalle_imagen);
         tvTitulo = findViewById(R.id.tv_detalle_titulo);
@@ -109,6 +124,15 @@ public class RecetaActivity extends AppCompatActivity {
         llBotonesPropietario = findViewById(R.id.ll_botones_propietario);
         btnModificarReceta = findViewById(R.id.btn_modificar_receta);
         btnEliminarReceta = findViewById(R.id.btn_eliminar_receta);
+        tvNutricionKcal = findViewById(R.id.tv_nutricion_kcal);
+        tvNutricionProteinas = findViewById(R.id.tv_nutricion_proteinas);
+        tvNutricionCarbohidratos = findViewById(R.id.tv_nutricion_carbohidratos);
+        tvNutricionGrasas = findViewById(R.id.tv_nutricion_grasas);
+        tvNutricionFibra = findViewById(R.id.tv_nutricion_fibra);
+        barProteinas = findViewById(R.id.bar_proteinas);
+        barCarbohidratos = findViewById(R.id.bar_carbohidratos);
+        barGrasas = findViewById(R.id.bar_grasas);
+        barFibra = findViewById(R.id.bar_fibra);
 
         ImageButton btnVolver = findViewById(R.id.btn_volver_detalle);
         btnVolver.setOnClickListener(v -> finish());
@@ -159,6 +183,7 @@ public class RecetaActivity extends AppCompatActivity {
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             window.setDimAmount(0.5f);
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         }
 
         dialog.setCanceledOnTouchOutside(true);
@@ -285,6 +310,8 @@ public class RecetaActivity extends AppCompatActivity {
             tvSemaforoTexto.setText(obtenerTextoSemaforo(valorSemaforo));
         }
 
+        bindNutricion(receta);
+
         if (receta.getImagenUrl() != null && !receta.getImagenUrl().isEmpty()) {
             Glide.with(this)
                     .load(receta.getImagenUrl())
@@ -295,6 +322,44 @@ public class RecetaActivity extends AppCompatActivity {
         } else {
             ivImagen.setImageResource(R.drawable.ic_launcher_background);
         }
+    }
+
+    /**
+     * Rellena la sección nutricional con los valores de la receta.
+     * Las barras se dibujan proporcionales al máximo de los cuatro macronutrientes.
+     */
+    private void bindNutricion(Receta receta) {
+        if (tvNutricionKcal == null) return;
+
+        tvNutricionKcal.setText(getString(R.string.recipe_kcal_format, receta.getKcal()));
+        tvNutricionProteinas.setText(getString(R.string.recipe_nutrient_format, receta.getProteinas()));
+        tvNutricionCarbohidratos.setText(getString(R.string.recipe_nutrient_format, receta.getCarbohidratos()));
+        tvNutricionGrasas.setText(getString(R.string.recipe_nutrient_format, receta.getGrasas()));
+        tvNutricionFibra.setText(getString(R.string.recipe_nutrient_format, receta.getFibra()));
+
+        float max = Math.max(1f, Math.max(
+                Math.max(receta.getProteinas(), receta.getCarbohidratos()),
+                Math.max(receta.getGrasas(), receta.getFibra())));
+
+        ajustarBarra(barProteinas, receta.getProteinas(), max);
+        ajustarBarra(barCarbohidratos, receta.getCarbohidratos(), max);
+        ajustarBarra(barGrasas, receta.getGrasas(), max);
+        ajustarBarra(barFibra, receta.getFibra(), max);
+    }
+
+    private void ajustarBarra(View bar, float valor, float max) {
+        if (bar == null) return;
+        bar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                bar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int totalAncho = ((android.view.View) bar.getParent()).getWidth();
+                int ancho = (int) (totalAncho * (valor / max));
+                android.view.ViewGroup.LayoutParams lp = bar.getLayoutParams();
+                lp.width = ancho;
+                bar.setLayoutParams(lp);
+            }
+        });
     }
 
     /**
@@ -463,6 +528,11 @@ public class RecetaActivity extends AppCompatActivity {
         if (detalle.getTiempoPreparacion() > 0) base.setTiempoPreparacion(detalle.getTiempoPreparacion());
         if (detalle.getSemaforo() != null) base.setSemaforo(detalle.getSemaforo());
         if (detalle.getIdUsuario() > 0) base.setIdUsuario(detalle.getIdUsuario());
+        if (detalle.getKcal() != 0) base.setKcal(detalle.getKcal());
+        if (detalle.getProteinas() != 0) base.setProteinas(detalle.getProteinas());
+        if (detalle.getCarbohidratos() != 0) base.setCarbohidratos(detalle.getCarbohidratos());
+        if (detalle.getGrasas() != 0) base.setGrasas(detalle.getGrasas());
+        if (detalle.getFibra() != 0) base.setFibra(detalle.getFibra());
 
         return base;
     }

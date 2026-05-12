@@ -158,6 +158,16 @@
         <item>Snack</item>
     </string-array>
 
+    <!-- Información nutricional -->
+    <string name="recipe_nutrition_title">Información nutricional</string>
+    <string name="recipe_kcal_label">Calorías</string>
+    <string name="recipe_kcal_format">%1$.0f kcal</string>
+    <string name="recipe_protein_label">Proteínas</string>
+    <string name="recipe_carbs_label">Carbohidratos</string>
+    <string name="recipe_fat_label">Grasas</string>
+    <string name="recipe_fiber_label">Fibra</string>
+    <string name="recipe_nutrient_format">%1$.1f g</string>
+
     <!-- Popup comentarios -->
     <string name="popup_comments_title">Comentarios</string>
     <string name="popup_comments_hint">Escribe un comentario...</string>

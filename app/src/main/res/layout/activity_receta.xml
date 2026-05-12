@@ -8,7 +8,9 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="48dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -92,11 +94,11 @@
                     android:gravity="center_vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/recipe_time_label"
-                        android:textSize="13sp"
-                        android:textColor="#9E9E9E" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/recipe_time_label"
+                            android:textSize="13sp"
+                            android:textColor="@color/black" />
 
                     <TextView
                         android:id="@+id/tv_detalle_tiempo"
@@ -115,11 +117,11 @@
                         android:layout_marginHorizontal="12dp" />
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/recipe_difficulty"
-                        android:textSize="13sp"
-                        android:textColor="#9E9E9E" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/recipe_difficulty"
+                            android:textSize="13sp"
+                            android:textColor="@color/black" />
 
                     <TextView
                         android:id="@+id/tv_detalle_dificultad"
@@ -142,11 +144,11 @@
                     android:layout_marginTop="8dp">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/recipe_health_prefix"
-                        android:textSize="13sp"
-                        android:textColor="#9E9E9E" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/recipe_health_prefix"
+                            android:textSize="13sp"
+                            android:textColor="@color/black" />
 
                     <View
                         android:id="@+id/tv_detalle_semaforo_dot"
@@ -173,10 +175,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@android:color/white"
+                    android:background="@color/beige"
                     android:paddingHorizontal="16dp"
                     android:paddingTop="16dp"
-                    android:paddingBottom="24dp">
+                    android:paddingBottom="24dp"
+                    android:layout_marginTop="8dp">
 
                 <!-- Ingredientes -->
                 <TextView
@@ -226,6 +229,214 @@
                         android:textSize="15sp"
                         android:textColor="#424242"
                         android:lineSpacingExtra="4dp" />
+
+                <!-- Información Nutricional -->
+                <TextView
+                        android:id="@+id/tv_nutricion_titulo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/recipe_nutrition_title"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="#1A1A1A"
+                        android:layout_marginTop="20dp" />
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/marron_oscuro"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="12dp" />
+
+                <!-- Kcal (valor único, no barra) -->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                    <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/recipe_kcal_label"
+                            android:textSize="13sp"
+                            android:textColor="@color/azul_oscuro" />
+
+                    <TextView
+                            android:id="@+id/tv_nutricion_kcal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="13sp"
+                            android:textColor="#1A1A1A"
+                            android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <!-- Barra: Proteínas -->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/recipe_protein_label"
+                                android:textSize="13sp"
+                                android:textColor="@color/azul_oscuro" />
+                        <TextView
+                                android:id="@+id/tv_nutricion_proteinas"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#1A1A1A" />
+                    </LinearLayout>
+
+                    <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:background="#E0E0E0"
+                            android:layout_marginTop="4dp">
+                        <View
+                                android:id="@+id/bar_proteinas"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:background="#EF5350" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!-- Barra: Carbohidratos -->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/recipe_carbs_label"
+                                android:textSize="13sp"
+                                android:textColor="@color/azul_oscuro" />
+                        <TextView
+                                android:id="@+id/tv_nutricion_carbohidratos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#1A1A1A" />
+                    </LinearLayout>
+
+                    <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:background="#E0E0E0"
+                            android:layout_marginTop="4dp">
+                        <View
+                                android:id="@+id/bar_carbohidratos"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:background="#FFA726" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!-- Barra: Grasas -->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/recipe_fat_label"
+                                android:textSize="13sp"
+                                android:textColor="@color/azul_oscuro" />
+                        <TextView
+                                android:id="@+id/tv_nutricion_grasas"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#1A1A1A" />
+                    </LinearLayout>
+
+                    <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:background="#E0E0E0"
+                            android:layout_marginTop="4dp">
+                        <View
+                                android:id="@+id/bar_grasas"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:background="#FFCA28" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!-- Barra: Fibra -->
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/recipe_fiber_label"
+                                android:textSize="13sp"
+                                android:textColor="@color/azul_oscuro" />
+                        <TextView
+                                android:id="@+id/tv_nutricion_fibra"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="13sp"
+                                android:textColor="#1A1A1A" />
+                    </LinearLayout>
+
+                    <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="8dp"
+                            android:background="#E0E0E0"
+                            android:layout_marginTop="4dp">
+                        <View
+                                android:id="@+id/bar_fibra"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:background="#66BB6A" />
+                    </FrameLayout>
+
+                </LinearLayout>
 
                 <Button
                         android:id="@+id/btn_ver_comentarios"

@@ -44,7 +44,6 @@ public class SessionManager {
         return sharedPreferences.getString(KEY_USER_PHOTO, null);
     }
 
-    // NUEVOS MÉTODOS PARA RECUPERAR DATOS
     public int fetchUserId() {
         return sharedPreferences.getInt(KEY_USER_ID, -1);
     }

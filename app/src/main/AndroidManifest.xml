@@ -32,7 +32,10 @@
 
         <activity android:name=".ui.VentanaEditarPerfil" />
 
-        <activity android:name=".ui.pablo.ContenedorPrincipalActivity" />
+        <activity
+            android:name=".ui.pablo.ContenedorPrincipalActivity"
+            android:theme="@style/Theme.RefriMancia.Contenedor"
+            android:windowSoftInputMode="adjustNothing" />
         <activity android:name=".ui.pablo.RecetaActivity" />
 
 

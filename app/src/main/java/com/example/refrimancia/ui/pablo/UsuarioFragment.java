@@ -227,6 +227,7 @@ public class UsuarioFragment extends Fragment {
         }
         lastRefreshAt = ahora;
         refrescandoRecetas = true;
+        obtenerPerfilUsuario();
         cargarRecetasUsuarioLogueado(idUsuario, nombre);
     }
 
@@ -408,6 +409,7 @@ public class UsuarioFragment extends Fragment {
             return;
         }
 
+        lastRefreshAt = 0L;
         Intent intent = new Intent(requireContext(), VentanaEditarPerfil.class);
         startActivity(intent);
     }

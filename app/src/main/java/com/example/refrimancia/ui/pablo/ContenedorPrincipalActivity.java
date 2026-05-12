@@ -88,7 +88,6 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
     private boolean verificarSesion() {
         SessionManager sessionManager = new SessionManager(this);
         if (!sessionManager.isSessionValid()) {
-            sessionManager.clearSession();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

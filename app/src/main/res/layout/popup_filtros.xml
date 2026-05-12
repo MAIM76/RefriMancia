@@ -90,13 +90,14 @@
             android:layout_marginEnd="8dp" />
 
         <Button
-            android:id="@+id/btn_aplicar_filtros"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/apply_filters"
-            style="?attr/materialButtonStyle"
-            android:backgroundTint="@color/marron_oscuro"
-            android:textColor="@android:color/white" />
+                android:id="@+id/btn_aplicar_filtros"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/apply_filters"
+                style="?attr/materialButtonStyle"
+                android:backgroundTint="@color/marron_oscuro"
+                android:textColor="@color/amarillo"
+                android:textSize="14sp" />
 
     </LinearLayout>
 

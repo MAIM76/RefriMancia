@@ -10,6 +10,11 @@
 
     <style name="Theme.RefriMancia" parent="Base.Theme.RefriMancia" />
 
+    <!-- Tema para ContenedorPrincipalActivity: status bar azul_oscuro -->
+    <style name="Theme.RefriMancia.Contenedor" parent="Theme.RefriMancia">
+        <item name="android:statusBarColor">@color/azul_oscuro</item>
+    </style>
+
     <!-- Estilo para uCrop corregido -->
     <style name="Theme.UCrop" parent="Theme.AppCompat.Light">
         <item name="windowActionBar">false</item>

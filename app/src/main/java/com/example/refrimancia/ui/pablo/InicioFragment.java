@@ -47,7 +47,6 @@ import com.example.refrimancia.model.entity.Valoracion;
 import com.example.refrimancia.model.request.ComentarioRequest;
 import com.example.refrimancia.model.request.ValoracionRequest;
 import com.example.refrimancia.model.response.RespuestaPaginada;
-import com.example.refrimancia.ui.LoginActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -231,15 +230,6 @@ public class InicioFragment extends Fragment {
                 btnFiltros.setOnClickListener(v -> mostrarPopupFiltros());
             }
 
-            SessionManager sessionManager = new SessionManager(requireContext());
-            if (!sessionManager.isSessionValid()) {
-                sessionManager.clearSession();
-                Intent loginIntent = new Intent(requireContext(), LoginActivity.class);
-                loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(loginIntent);
-                requireActivity().finish();
-                return;
-            }
             cargarRecetasDesdeAPI();
             cargarTodasLasRecetasParaBusqueda();
         } catch (Exception e) {

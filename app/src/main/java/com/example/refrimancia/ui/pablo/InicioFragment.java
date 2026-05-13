@@ -25,6 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
@@ -36,16 +38,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.refrimancia.R;
 import com.example.refrimancia.adapter.RecetaAdapter;
 import com.example.refrimancia.util.SessionManager;
-import com.example.refrimancia.adapter.ComentarioAdapter;
 import com.example.refrimancia.api.ClienteRetrofit;
-import com.example.refrimancia.api.ComentarioService;
 import com.example.refrimancia.api.RecetaService;
+import com.example.refrimancia.util.ComentariosPopupHelper;
 import com.example.refrimancia.api.ValoracionService;
-import com.example.refrimancia.model.entity.Comentario;
 import com.example.refrimancia.model.entity.Receta;
-import com.example.refrimancia.model.entity.Valoracion;
-import com.example.refrimancia.model.request.ComentarioRequest;
 import com.example.refrimancia.model.request.ValoracionRequest;
+import com.example.refrimancia.model.response.ValoracionUsuario;
 import com.example.refrimancia.model.response.RespuestaPaginada;
 
 import java.util.ArrayList;
@@ -112,6 +111,15 @@ public class InicioFragment extends Fragment {
     private final android.os.Handler handlerReintento = new android.os.Handler(android.os.Looper.getMainLooper());
     private int contadorReintentos = 0;
 
+    private final ActivityResultLauncher<Intent> recetaLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == android.app.Activity.RESULT_OK) {
+                    recargarRecetas();
+                }
+            }
+    );
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -127,6 +135,11 @@ public class InicioFragment extends Fragment {
         try {
             rvRecetas = vista.findViewById(R.id.recipes_recycler_view);
             barraBusqueda = vista.findViewById(R.id.search_view);
+            android.widget.EditText searchEditText = barraBusqueda.findViewById(
+                    androidx.appcompat.R.id.search_src_text);
+            if (searchEditText != null) {
+                searchEditText.setTextColor(android.graphics.Color.BLACK);
+            }
             ImageButton btnFiltros = vista.findViewById(R.id.btn_filtros);
             searchOverlay = vista.findViewById(R.id.search_overlay);
             ListView searchSuggestionsList = vista.findViewById(R.id.search_suggestions_list);
@@ -397,7 +410,7 @@ public class InicioFragment extends Fragment {
         try {
             List<Receta> listaRecetas = new ArrayList<>();
             adaptador = new RecetaAdapter(listaRecetas, requireContext(),
-                    receta -> startActivity(RecetaActivity.crearIntent(requireContext(), receta)));
+                    receta -> recetaLauncher.launch(RecetaActivity.crearIntent(requireContext(), receta)));
 
             adaptador.setOnComentarioClickListener(this::mostrarPopupComentarios);
             adaptador.setOnValoracionClickListener(this::mostrarPopupValoracion);
@@ -725,105 +738,7 @@ public class InicioFragment extends Fragment {
     }
 
     private void mostrarPopupComentarios(Receta receta) {
-        Dialog dialog = new Dialog(requireContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.popup_comentarios);
-
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, 
-                    (int) (getResources().getDisplayMetrics().heightPixels * 0.8));
-            window.setGravity(Gravity.BOTTOM);
-            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            window.setDimAmount(0.5f);
-        }
-
-        dialog.setCanceledOnTouchOutside(true);
-
-        RecyclerView rvComentarios = dialog.findViewById(R.id.rv_comentarios);
-        rvComentarios.setLayoutManager(new LinearLayoutManager(requireContext()));
-        ComentarioAdapter adaptadorComentario = new ComentarioAdapter(new ArrayList<>());
-        rvComentarios.setAdapter(adaptadorComentario);
-
-        EditText etNuevoComentario = dialog.findViewById(R.id.et_nuevo_comentario);
-        ImageButton btnEnviarComentario = dialog.findViewById(R.id.btn_enviar_comentario);
-
-        ComentarioService comentarioService = 
-                ClienteRetrofit.obtenerInstancia(requireContext()).create(ComentarioService.class);
-        cargarComentariosReceta(comentarioService, receta.getIdReceta(), adaptadorComentario);
-
-        if (btnEnviarComentario != null && etNuevoComentario != null) {
-            btnEnviarComentario.setOnClickListener(v -> {
-                String mensaje = etNuevoComentario.getText().toString().trim();
-                if (mensaje.isEmpty()) {
-                    Toast.makeText(requireContext(), R.string.error_comment_empty, 
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                btnEnviarComentario.setEnabled(false);
-
-                ComentarioRequest nuevoComentario = new ComentarioRequest(receta.getIdReceta(), mensaje);
-
-                comentarioService.crearComentario(nuevoComentario).enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ResponseBody> call, 
-                            @NonNull Response<ResponseBody> response) {
-                        btnEnviarComentario.setEnabled(true);
-                        if (response.isSuccessful()) {
-                            etNuevoComentario.setText("");
-                            cargarComentariosReceta(comentarioService, receta.getIdReceta(), 
-                                    adaptadorComentario);
-                            rvComentarios.scrollToPosition(Math.max(adaptadorComentario.getItemCount() - 
-                                    1, 0));
-                            Toast.makeText(requireContext(), R.string.comment_published, 
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(requireContext(), R.string.error_publish_comment, 
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                        btnEnviarComentario.setEnabled(true);
-                        Toast.makeText(requireContext(), R.string.error_publish_comment_network, 
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-            });
-        }
-
-        dialog.show();
-    }
-
-    private void cargarComentariosReceta(ComentarioService comentarioService, int idReceta,
-            ComentarioAdapter adaptadorComentario) {
-        Call<RespuestaPaginada<Comentario>> call = comentarioService.obtenerComentariosPorReceta(idReceta);
-
-        call.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(@NonNull Call<RespuestaPaginada<Comentario>> call,
-                    @NonNull Response<RespuestaPaginada<Comentario>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Comentario> comentariosInfo = response.body().getData();
-                    if (comentariosInfo != null) {
-                        adaptadorComentario.setComentarios(comentariosInfo);
-                    }
-                } else {
-                    Toast.makeText(requireContext(), R.string.error_load_comments,
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<RespuestaPaginada<Comentario>> call,
-                    @NonNull Throwable t) {
-                Toast.makeText(requireContext(), R.string.error_load_comments_network,
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+        ComentariosPopupHelper.mostrar(requireContext(), receta);
     }
 
     private void mostrarPopupValoracion(Receta receta) {
@@ -875,6 +790,26 @@ public class InicioFragment extends Fragment {
             btnCancelar.setOnClickListener(v -> dialog.dismiss());
         }
 
+        ValoracionService valoracionService =
+                ClienteRetrofit.obtenerInstancia(requireContext()).create(ValoracionService.class);
+
+        valoracionService.obtenerValoracionUsuario(receta.getIdReceta()).enqueue(new Callback<ValoracionUsuario>() {
+            @Override
+            public void onResponse(@NonNull Call<ValoracionUsuario> call,
+                    @NonNull Response<ValoracionUsuario> response) {
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getData() != null
+                        && response.body().getData().isHaValorado()
+                        && ratingBar != null && tvSeleccionada != null) {
+                    int puntuacionPrevia = response.body().getData().getPuntuacion();
+                    ratingBar.setRating(puntuacionPrevia);
+                    tvSeleccionada.setText(getString(R.string.rating_score_format, puntuacionPrevia));
+                }
+            }
+            @Override
+            public void onFailure(@NonNull Call<ValoracionUsuario> call, @NonNull Throwable t) {}
+        });
+
         if (btnEnviar != null && ratingBar != null) {
             btnEnviar.setOnClickListener(v -> {
                 int puntuacion = Math.round(ratingBar.getRating());
@@ -886,13 +821,11 @@ public class InicioFragment extends Fragment {
 
                 btnEnviar.setEnabled(false);
 
-                ValoracionService valoracionService =
-                        ClienteRetrofit.obtenerInstancia(requireContext()).create(ValoracionService.class);
                 ValoracionRequest request = new ValoracionRequest(receta.getIdReceta(), puntuacion);
-                valoracionService.crearValoracion(request).enqueue(new Callback<Valoracion>() {
+                valoracionService.crearValoracion(request).enqueue(new Callback<ResponseBody>() {
                     @Override
-                    public void onResponse(@NonNull Call<Valoracion> call,
-                            @NonNull Response<Valoracion> response) {
+                    public void onResponse(@NonNull Call<ResponseBody> call,
+                            @NonNull Response<ResponseBody> response) {
                         btnEnviar.setEnabled(true);
                         if (response.isSuccessful()) {
                             adaptador.refrescarValoracionReceta(receta.getIdReceta());
@@ -905,7 +838,7 @@ public class InicioFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<Valoracion> call, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                         btnEnviar.setEnabled(true);
                         Toast.makeText(requireContext(), R.string.error_save_review_network,
                                 Toast.LENGTH_SHORT).show();
@@ -915,6 +848,12 @@ public class InicioFragment extends Fragment {
         }
 
         dialog.show();
+    }
+
+    public void recargarRecetas() {
+        contadorReintentos = 0;
+        ocultarError();
+        refrescarListadoRecetas();
     }
 
     private void refrescarListadoRecetas() {

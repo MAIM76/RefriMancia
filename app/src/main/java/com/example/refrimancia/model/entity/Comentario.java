@@ -23,13 +23,9 @@ public class Comentario {
     
     // ======================== ATRIBUTOS DE CONTENIDO ========================
     
-    /** Contenido del comentario (campo principal) */
-    @SerializedName("contenido")
-    private String contenido;
-
-    /** Mensaje del comentario (campo alternativo/deprecated) */
+    /** Texto del comentario */
     @SerializedName("mensaje")
-    private String mensaje;
+    private String texto;
     
     // ======================== ATRIBUTOS DE METADATOS ========================
     
@@ -62,15 +58,15 @@ public class Comentario {
      * @param idComentario ID del comentario
      * @param idReceta ID de la receta
      * @param idUsuario ID del usuario autor
-     * @param contenido Contenido del comentario
+     * @param texto Contenido del comentario
      * @param fechaCreacion Fecha de creación
      */
-    public Comentario(int idComentario, int idReceta, int idUsuario, String contenido, 
+    public Comentario(int idComentario, int idReceta, int idUsuario, String texto,
             String fechaCreacion) {
         this.idComentario = idComentario;
         this.idReceta = idReceta;
         this.idUsuario = idUsuario;
-        this.contenido = contenido;
+        this.texto = texto;
         this.fechaCreacion = fechaCreacion;
     }
 
@@ -107,18 +103,12 @@ public class Comentario {
     public void setUrlFotoPerfil(String urlFotoPerfil) { this.urlFotoPerfil = urlFotoPerfil; }
     
     // ======================== GETTERS Y SETTERS DE CONTENIDO ========================
-    
-    /** @return Mensaje del comentario (deprecated) */
-    public String getMensaje() { return mensaje; }
-    
-    /** @param mensaje Nuevo mensaje */
-    public void setMensaje(String mensaje) { this.mensaje = mensaje; }
 
-    /** @return Contenido del comentario */
-    public String getContenido() { return contenido; }
-    
-    /** @param contenido Nuevo contenido */
-    public void setContenido(String contenido) { this.contenido = contenido; }
+    /** @return Texto del comentario */
+    public String getTexto() { return texto != null ? texto : ""; }
+
+    /** @param texto Nuevo texto del comentario */
+    public void setTexto(String texto) { this.texto = texto; }
 
     /** @return Fecha del comentario (alternativa) */
     public String getFechaComentario() { return fechaComentario; }
@@ -134,18 +124,6 @@ public class Comentario {
 
     // ======================== MÉTODOS UTILITARIOS ========================
     
-    /**
-     * Obtiene el texto del comentario con fallback entre campos.
-     * Prioriza 'contenido' sobre 'mensaje'.
-     * @return Texto del comentario o cadena vacía si ambos son nulos
-     */
-    public String getTexto() {
-        if (contenido != null && !contenido.trim().isEmpty()) {
-            return contenido;
-        }
-        return mensaje != null ? mensaje : "";
-    }
-
     /**
      * Obtiene la fecha normalizada con fallback entre campos.
      * Prioriza 'fechaCreacion' sobre 'fechaComentario'.

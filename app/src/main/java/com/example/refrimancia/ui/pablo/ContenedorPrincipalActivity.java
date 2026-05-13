@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -45,6 +47,17 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
     
     /** Referencia a la barra de navegación inferior */
     private BottomNavigationView navInferior;
+
+    /** Launcher para crear/editar receta y recargar listas al volver con éxito */
+    private final ActivityResultLauncher<Intent> crearRecetaLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    if (inicioFragment != null) inicioFragment.recargarRecetas();
+                    if (usuarioFragment != null) usuarioFragment.recargarRecetas();
+                }
+            }
+    );
 
     // ======================== MÉTODOS DEL CICLO DE VIDA ========================
     
@@ -230,7 +243,7 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
             Toast.makeText(this, R.string.error_session_not_available, Toast.LENGTH_SHORT).show();
             return;
         }
-        startActivity(new Intent(this, CreateRecipeActivity.class));
+        crearRecetaLauncher.launch(new Intent(this, CreateRecipeActivity.class));
     }
     
 }

@@ -315,6 +315,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
         if (success) {
             Toast.makeText(this, isEditing ? "¡Receta actualizada!" : "¡Receta publicada!", Toast.LENGTH_LONG).show();
             if (croppedImageFile != null && croppedImageFile.exists()) croppedImageFile.delete();
+            setResult(RESULT_OK);
             finish();
         } else {
             Toast.makeText(this, "Error del servidor: " + code, Toast.LENGTH_SHORT).show();

@@ -12,15 +12,23 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
 import com.example.refrimancia.R;
+import com.example.refrimancia.api.ClienteRetrofit;
+import com.example.refrimancia.api.ValoracionService;
 import com.example.refrimancia.model.entity.Receta;
+import com.example.refrimancia.model.response.ValoracionReceta;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Adaptador para mostrar una lista de recetas en un RecyclerView.
@@ -120,11 +128,28 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
      * @param nuevasRecetas Nueva lista de recetas
      */
     public void actualizarDatos(List<Receta> nuevasRecetas) {
+        final List<Receta> listaAnterior = new ArrayList<>(this.listaRecetas);
+        final List<Receta> listaNueva = nuevasRecetas != null ? nuevasRecetas : new ArrayList<>();
         this.listaRecetas.clear();
-        this.listaRecetas.addAll(nuevasRecetas);
+        this.listaRecetas.addAll(listaNueva);
         this.listaRecetasCompleta.clear();
-        this.listaRecetasCompleta.addAll(nuevasRecetas);
-        notifyDataSetChanged();
+        this.listaRecetasCompleta.addAll(listaNueva);
+        DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override public int getOldListSize() { return listaAnterior.size(); }
+            @Override public int getNewListSize() { return listaNueva.size(); }
+            @Override
+            public boolean areItemsTheSame(int oldPos, int newPos) {
+                return listaAnterior.get(oldPos).getIdReceta() == listaNueva.get(newPos).getIdReceta();
+            }
+            @Override
+            public boolean areContentsTheSame(int oldPos, int newPos) {
+                Receta a = listaAnterior.get(oldPos);
+                Receta b = listaNueva.get(newPos);
+                return java.util.Objects.equals(a.getTitulo(), b.getTitulo())
+                        && java.util.Objects.equals(a.getMediaPuntuacion(), b.getMediaPuntuacion())
+                        && java.util.Objects.equals(a.getImagenUrl(), b.getImagenUrl());
+            }
+        }).dispatchUpdatesTo(this);
     }
 
     /**
@@ -224,10 +249,42 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
      * @param idReceta ID de la receta a refrescar
      */
     public void refrescarValoracionReceta(int idReceta) {
-        int posicion = obtenerPosicionReceta(idReceta);
-        if (posicion != -1) {
-            notifyItemChanged(posicion);
-        }
+        ValoracionService valoracionService =
+                ClienteRetrofit.obtenerInstancia(contexto).create(ValoracionService.class);
+        valoracionService.obtenerValoracionesPorReceta(idReceta).enqueue(new Callback<ValoracionReceta>() {
+            @Override
+            public void onResponse(@NonNull Call<ValoracionReceta> call,
+                    @NonNull Response<ValoracionReceta> response) {
+                int posicion = obtenerPosicionReceta(idReceta);
+                if (posicion == -1) return;
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getData() != null) {
+                    float nuevaMedia = response.body().getData().getNotaMedia();
+                    listaRecetas.get(posicion).setMediaPuntuacion(
+                            String.valueOf(nuevaMedia));
+                    if (posicion < listaRecetasCompleta.size()) {
+                        int posCompleta = -1;
+                        for (int i = 0; i < listaRecetasCompleta.size(); i++) {
+                            if (listaRecetasCompleta.get(i).getIdReceta() == idReceta) {
+                                posCompleta = i;
+                                break;
+                            }
+                        }
+                        if (posCompleta != -1) {
+                            listaRecetasCompleta.get(posCompleta).setMediaPuntuacion(
+                                    String.valueOf(nuevaMedia));
+                        }
+                    }
+                }
+                notifyItemChanged(posicion);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ValoracionReceta> call, @NonNull Throwable t) {
+                int posicion = obtenerPosicionReceta(idReceta);
+                if (posicion != -1) notifyItemChanged(posicion);
+            }
+        });
     }
 
     /**

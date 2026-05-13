@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,8 +26,19 @@ import java.util.Locale;
  */
 public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.ComentarioViewHolder> {
 
+    public interface OnEditarListener {
+        void onEditar(Comentario comentario);
+    }
+
+    public interface OnEliminarListener {
+        void onEliminar(Comentario comentario);
+    }
+
     // Lista de comentarios a mostrar
     private List<Comentario> comentarios;
+    private int idUsuarioLogueado = -1;
+    private OnEditarListener editarListener;
+    private OnEliminarListener eliminarListener;
 
     /**
      * Constructor del adaptador.
@@ -34,6 +46,18 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Co
      */
     public ComentarioAdapter(List<Comentario> comentarios) {
         this.comentarios = comentarios;
+    }
+
+    public void setIdUsuarioLogueado(int id) {
+        this.idUsuarioLogueado = id;
+    }
+
+    public void setOnEditarListener(OnEditarListener listener) {
+        this.editarListener = listener;
+    }
+
+    public void setOnEliminarListener(OnEliminarListener listener) {
+        this.eliminarListener = listener;
     }
 
     /**
@@ -84,6 +108,18 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Co
         // Configurar fecha formateada
         String fecha = formatFecha(comentario.getFechaNormalizada());
         holder.tvFecha.setText(fecha);
+
+        // Mostrar botones solo si el comentario pertenece al usuario logueado
+        boolean esPropietario = idUsuarioLogueado > 0 && comentario.getIdUsuario() == idUsuarioLogueado;
+        holder.llAcciones.setVisibility(esPropietario ? View.VISIBLE : View.GONE);
+        if (esPropietario) {
+            holder.btnEditar.setOnClickListener(v -> {
+                if (editarListener != null) editarListener.onEditar(comentario);
+            });
+            holder.btnEliminar.setOnClickListener(v -> {
+                if (eliminarListener != null) eliminarListener.onEliminar(comentario);
+            });
+        }
 
         // Cargar foto de perfil con Glide y manejo de errores
         if (comentario.getUrlFotoPerfil() != null && !comentario.getUrlFotoPerfil().isEmpty()) {
@@ -148,21 +184,20 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Co
      * ViewHolder que contiene las vistas para un comentario individual.
      */
     public static class ComentarioViewHolder extends RecyclerView.ViewHolder {
-        // Vistas del comentario
         public TextView tvUsuario, tvFecha, tvContenido;
         public ImageView ivUsuario;
+        public LinearLayout llAcciones;
+        public TextView btnEditar, btnEliminar;
 
-        /**
-         * Constructor del ViewHolder.
-         * @param itemView Vista del item del comentario
-         */
         public ComentarioViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Inicializar vistas
             tvUsuario = itemView.findViewById(R.id.tv_usuario_comentario);
             tvFecha = itemView.findViewById(R.id.tv_fecha_comentario);
             tvContenido = itemView.findViewById(R.id.tv_contenido_comentario);
             ivUsuario = itemView.findViewById(R.id.iv_usuario_comentario);
+            llAcciones = itemView.findViewById(R.id.ll_acciones_comentario);
+            btnEditar = itemView.findViewById(R.id.btn_editar_comentario);
+            btnEliminar = itemView.findViewById(R.id.btn_eliminar_comentario);
         }
     }
 }

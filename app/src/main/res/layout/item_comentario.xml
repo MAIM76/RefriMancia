@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="top">
 
         <!-- Foto de perfil del usuario -->
         <ImageView
@@ -29,8 +29,9 @@
 
         <!-- Información de usuario y fecha -->
         <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
             <!-- Nombre de usuario -->
@@ -54,6 +55,41 @@
                     android:layout_marginTop="2dp"
                     android:layout_marginBottom="2dp" />
         </LinearLayout>
+
+        <!-- Botones de acción (solo visibles para el autor) -->
+        <LinearLayout
+                android:id="@+id/ll_acciones_comentario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="top"
+                android:visibility="gone">
+
+            <TextView
+                    android:id="@+id/btn_editar_comentario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/comment_edit"
+                    android:textSize="12sp"
+                    android:textColor="@color/azul_oscuro"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+            <TextView
+                    android:id="@+id/btn_eliminar_comentario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/comment_delete"
+                    android:textSize="12sp"
+                    android:textColor="#D32F2F"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Contenido del comentario -->
@@ -66,5 +102,6 @@
             android:textColor="@color/azul_oscuro"
             android:layout_marginTop="2dp"
             android:lineSpacingExtra="2dp" />
+
 
 </LinearLayout>

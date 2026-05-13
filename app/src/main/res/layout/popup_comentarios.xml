@@ -26,6 +26,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
     
+    <!-- Banner modo edición (visible solo al editar) -->
+    <LinearLayout
+        android:id="@+id/layout_modo_edicion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
+        android:background="#FFF3CD"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tv_comentarios_titulo">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/comment_editing_mode"
+            android:textSize="12sp"
+            android:textColor="#856404" />
+
+        <TextView
+            android:id="@+id/btn_cancelar_edicion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/comment_cancel_edit"
+            android:textSize="12sp"
+            android:textColor="#856404"
+            android:textStyle="bold"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+    </LinearLayout>
+
     <!-- Área para escribir nuevos comentarios (parte superior) -->
     <LinearLayout
         android:id="@+id/layout_escribir_comentario"
@@ -36,22 +71,23 @@
         android:background="@color/beige"
         android:elevation="2dp"
         android:gravity="center_vertical"
-        app:layout_constraintTop_toBottomOf="@id/tv_comentarios_titulo">
+        app:layout_constraintTop_toBottomOf="@id/layout_modo_edicion">
 
         <!-- Campo de texto para nuevo comentario -->
         <EditText
-            android:id="@+id/et_nuevo_comentario"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:hint="@string/popup_comments_hint"
-            android:background="@drawable/bg_input"
-            android:padding="12dp"
-            android:layout_marginEnd="8dp"
-            android:textSize="14sp"
-            android:maxLines="3"
-            android:inputType="textMultiLine|textCapSentences"
-            android:scrollbars="vertical" />
+                android:id="@+id/et_nuevo_comentario"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="@string/popup_comments_hint"
+                android:background="@drawable/bg_input"
+                android:padding="12dp"
+                android:layout_marginEnd="8dp"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:maxLines="3"
+                android:inputType="textMultiLine|textCapSentences"
+                android:scrollbars="vertical" />
 
         <!-- Botón para enviar comentario -->
         <ImageButton

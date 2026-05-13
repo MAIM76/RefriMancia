@@ -3,9 +3,11 @@ package com.example.refrimancia.api;
 import com.example.refrimancia.model.entity.Valoracion;
 import com.example.refrimancia.model.request.ValoracionRequest;
 import com.example.refrimancia.model.response.ValoracionReceta;
+import com.example.refrimancia.model.response.ValoracionUsuario;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -45,6 +47,14 @@ public interface ValoracionService {
      * @param valoracion Objeto con los datos de la valoración
      * @return Valoración creada o actualizada
      */
-    @POST("api/valoraciones/")
-    Call<Valoracion> crearValoracion(@Body ValoracionRequest valoracion);
+    @POST("api/valoraciones")
+    Call<ResponseBody> crearValoracion(@Body ValoracionRequest valoracion);
+
+    /**
+     * Obtiene la valoración del usuario autenticado para una receta.
+     * @param idReceta ID de la receta
+     * @return Objeto con ha_valorado y puntuacion
+     */
+    @GET("api/valoraciones/mi-valoracion/{id}")
+    Call<ValoracionUsuario> obtenerValoracionUsuario(@Path("id") int idReceta);
 }

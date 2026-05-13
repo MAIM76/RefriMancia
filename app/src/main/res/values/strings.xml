@@ -172,4 +172,19 @@
     <string name="popup_comments_title">Comentarios</string>
     <string name="popup_comments_hint">Escribe un comentario...</string>
     <string name="popup_comments_send_desc">Enviar comentario</string>
+
+    <!-- Editar / eliminar comentarios -->
+    <string name="comment_editing_mode">Editando comentario…</string>
+    <string name="comment_cancel_edit">Cancelar</string>
+    <string name="comment_edit">Editar</string>
+    <string name="comment_delete">Eliminar</string>
+    <string name="comment_edit_title">Editar comentario</string>
+    <string name="comment_delete_title">Eliminar comentario</string>
+    <string name="comment_delete_message">¿Seguro que quieres eliminar este comentario?</string>
+    <string name="comment_delete_confirm">Eliminar</string>
+    <string name="comment_delete_cancel">Cancelar</string>
+    <string name="comment_updated">Comentario actualizado</string>
+    <string name="comment_deleted">Comentario eliminado</string>
+    <string name="error_update_comment">No se pudo actualizar el comentario</string>
+    <string name="error_delete_comment">No se pudo eliminar el comentario</string>
 </resources>

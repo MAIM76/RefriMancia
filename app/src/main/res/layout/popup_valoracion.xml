@@ -52,19 +52,20 @@
 
     <!-- Barra de valoración interactiva -->
     <RatingBar
-        android:id="@+id/rb_valoracion"
-        style="@style/Widget.AppCompat.RatingBar.Indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:numStars="5"
-        android:stepSize="1"
-        android:rating="0"
-        android:isIndicator="false"
-        android:progressTint="@color/amarillo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_valoracion_receta" />
+            android:id="@+id/rb_valoracion"
+            style="@style/Widget.AppCompat.RatingBar.Indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:numStars="5"
+            android:stepSize="1"
+            android:rating="0"
+            android:isIndicator="false"
+            android:progressTint="@color/amarillo"
+            android:progressBackgroundTint="#AAAAAA"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_valoracion_receta" />
 
     <!-- Texto que muestra la valoración seleccionada -->
     <TextView

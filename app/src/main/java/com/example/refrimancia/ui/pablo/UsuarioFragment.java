@@ -1,6 +1,8 @@
 package com.example.refrimancia.ui.pablo;
 
 import android.content.Intent;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -59,6 +61,15 @@ public class UsuarioFragment extends Fragment {
     private static final int MAX_PAGES = 50;
     /** Intervalo mínimo entre recargas automáticas de recetas al hacer onResume. */
     private static final long REFRESH_INTERVAL_MS = 60_000L;
+
+    private final ActivityResultLauncher<Intent> recetaLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == android.app.Activity.RESULT_OK) {
+                    recargarRecetas();
+                }
+            }
+    );
 
     // ======================== VARIABLES DE INSTANCIA ========================
 
@@ -203,6 +214,10 @@ public class UsuarioFragment extends Fragment {
         } else {
             mostrarEstadoVacio();
         }
+    }
+
+    public void recargarRecetas() {
+        refrescarRecetas(true);
     }
 
     /**
@@ -430,6 +445,23 @@ public class UsuarioFragment extends Fragment {
      * Cierra la sesión del usuario y redirige al login.
      */
     private void cerrarSesion() {
+        UsuarioService usuarioService = ClienteRetrofit.obtenerInstancia(requireContext())
+                .create(UsuarioService.class);
+        usuarioService.logout().enqueue(new retrofit2.Callback<okhttp3.ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull retrofit2.Call<okhttp3.ResponseBody> call,
+                    @NonNull retrofit2.Response<okhttp3.ResponseBody> response) {
+                limpiarSesionYRedirigir();
+            }
+            @Override
+            public void onFailure(@NonNull retrofit2.Call<okhttp3.ResponseBody> call,
+                    @NonNull Throwable t) {
+                limpiarSesionYRedirigir();
+            }
+        });
+    }
+
+    private void limpiarSesionYRedirigir() {
         sessionManager.clearSession();
         Intent intent = new Intent(requireContext(), LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -469,7 +501,7 @@ public class UsuarioFragment extends Fragment {
             Receta r = recetas.get(position);
 
             holder.itemView.setOnClickListener(v ->
-                    startActivity(RecetaActivity.crearIntent(requireContext(), r)));
+                    recetaLauncher.launch(RecetaActivity.crearIntent(requireContext(), r)));
 
             holder.tvTitulo.setText(r.getTitulo() != null ? r.getTitulo() : getString(R.string.recipe_no_title));
             holder.tvFecha.setText(r.getFechaCreacion() != null ? formatFecha(r.getFechaCreacion()) : getString(R.string.recipe_recent));

@@ -21,24 +21,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
-import com.example.refrimancia.adapter.ComentarioAdapter;
 import com.example.refrimancia.api.ClienteRetrofit;
-import com.example.refrimancia.api.ComentarioService;
 import com.example.refrimancia.api.RecetaService;
 import com.example.refrimancia.ui.CreateRecipeActivity;
+import com.example.refrimancia.util.ComentariosPopupHelper;
 import com.example.refrimancia.util.SessionManager;
-import com.example.refrimancia.model.entity.Comentario;
 import com.example.refrimancia.model.entity.Receta;
-import com.example.refrimancia.model.request.ComentarioRequest;
-import com.example.refrimancia.model.response.RespuestaPaginada;
 import com.example.refrimancia.model.response.RespuestaUnica;
-import java.util.ArrayList;
 import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -60,6 +57,17 @@ public class RecetaActivity extends AppCompatActivity {
     // ======================== VARIABLES DE INSTANCIA ========================
 
     private Receta receta;
+    private RecetaService recetaService;
+
+    private final ActivityResultLauncher<Intent> editarRecetaLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    setResult(RESULT_OK);
+                    cargarDetalleReceta(receta.getIdReceta());
+                }
+            }
+    );
 
     private ImageView ivImagen;
     private TextView tvTitulo;
@@ -171,106 +179,7 @@ public class RecetaActivity extends AppCompatActivity {
      * @param receta Receta cuyos comentarios se van a mostrar
      */
     private void mostrarPopupComentarios(Receta receta) {
-        Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.popup_comentarios);
-
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, 
-                    (int) (getResources().getDisplayMetrics().heightPixels * 0.8));
-            window.setGravity(Gravity.BOTTOM);
-            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            window.setDimAmount(0.5f);
-            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
-        }
-
-        dialog.setCanceledOnTouchOutside(true);
-
-        RecyclerView rvComentarios = dialog.findViewById(R.id.rv_comentarios);
-        rvComentarios.setLayoutManager(new LinearLayoutManager(this));
-        ComentarioAdapter adaptadorComentario = new ComentarioAdapter(new ArrayList<>());
-        rvComentarios.setAdapter(adaptadorComentario);
-
-        EditText etNuevoComentario = dialog.findViewById(R.id.et_nuevo_comentario);
-        ImageButton btnEnviarComentario = dialog.findViewById(R.id.btn_enviar_comentario);
-
-        ComentarioService comentarioService = 
-                ClienteRetrofit.obtenerInstancia(this).create(ComentarioService.class);
-        cargarComentariosReceta(comentarioService, receta.getIdReceta(), adaptadorComentario);
-
-        if (btnEnviarComentario != null && etNuevoComentario != null) {
-            btnEnviarComentario.setOnClickListener(v -> {
-                String mensaje = etNuevoComentario.getText().toString().trim();
-                if (mensaje.isEmpty()) {
-                    Toast.makeText(this, R.string.error_comment_empty, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                btnEnviarComentario.setEnabled(false);
-
-                ComentarioRequest comentarioRequest = new ComentarioRequest(receta.getIdReceta(), mensaje);
-                comentarioService.crearComentario(comentarioRequest).enqueue(new Callback<>() {
-                    @Override
-                    public void onResponse(@NonNull Call<ResponseBody> call, 
-                            @NonNull Response<ResponseBody> response) {
-                        btnEnviarComentario.setEnabled(true);
-                        if (response.isSuccessful()) {
-                            etNuevoComentario.setText("");
-                            cargarComentariosReceta(comentarioService, receta.getIdReceta(), 
-                                    adaptadorComentario);
-                            Toast.makeText(RecetaActivity.this, R.string.comment_published, 
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(RecetaActivity.this, R.string.error_publish_comment, 
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                        btnEnviarComentario.setEnabled(true);
-                        Toast.makeText(RecetaActivity.this, R.string.error_publish_comment_network, 
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-            });
-        }
-
-        dialog.show();
-    }
-
-    /**
-     * Obtiene los comentarios de la receta desde la API y los carga en el adaptador.
-     * @param comentarioService Servicio Retrofit de comentarios
-     * @param recetaId          ID de la receta
-     * @param adaptadorComentario Adaptador del RecyclerView de comentarios
-     */
-    private void cargarComentariosReceta(ComentarioService comentarioService, int recetaId,
-            ComentarioAdapter adaptadorComentario) {
-        Call<RespuestaPaginada<Comentario>> call = comentarioService.obtenerComentariosPorReceta(recetaId);
-        call.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(@NonNull Call<RespuestaPaginada<Comentario>> call, 
-                    @NonNull Response<RespuestaPaginada<Comentario>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Comentario> comentarios = response.body().getData();
-                    if (comentarios != null) {
-                        adaptadorComentario.setComentarios(comentarios);
-                    }
-                } else {
-                    Toast.makeText(RecetaActivity.this, R.string.error_load_comments, 
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-            @Override
-            public void onFailure(@NonNull Call<RespuestaPaginada<Comentario>> call, 
-                    @NonNull Throwable t) {
-                Toast.makeText(RecetaActivity.this, R.string.error_load_comments_network, 
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+        ComentariosPopupHelper.mostrar(this, receta);
     }
 
     // ======================== MÉTODOS DE DATOS ========================
@@ -439,7 +348,7 @@ public class RecetaActivity extends AppCompatActivity {
             btnModificarReceta.setOnClickListener(v -> {
                 Intent intent = new Intent(this, CreateRecipeActivity.class);
                 intent.putExtra("receta_editar", receta);
-                startActivity(intent);
+                editarRecetaLauncher.launch(intent);
             });
             btnEliminarReceta.setOnClickListener(v -> {
                 String titulo = receta.getTitulo() != null ? receta.getTitulo() : "";

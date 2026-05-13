@@ -10,12 +10,6 @@ public class Registro {
     @SerializedName("message")
     private String message;
 
-    @SerializedName("exito")
-    private boolean exito;
-
-    @SerializedName("mensaje")
-    private String mensaje;
-
     @SerializedName("id")
     private int id;
 
@@ -27,12 +21,6 @@ public class Registro {
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
-
-    public boolean isExito() { return exito; }
-    public void setExito(boolean exito) { this.exito = exito; }
-
-    public String getMensaje() { return mensaje; }
-    public void setMensaje(String mensaje) { this.mensaje = mensaje; }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }

@@ -40,7 +40,7 @@ public interface ComentarioService {
      * @return Comentario actualizado
      */
     @PUT("api/comentarios/modificar/{id}")
-    Call<Comentario> modificarComentario(@Path("id") int id, @Body Comentario comentario);
+    Call<ResponseBody> modificarComentario(@Path("id") int id, @Body ComentarioRequest comentario);
     
     // ======================== ENDPOINTS DE CONSULTA ========================
     

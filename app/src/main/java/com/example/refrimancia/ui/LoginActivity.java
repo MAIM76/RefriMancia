@@ -9,6 +9,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import android.text.InputType;
+import androidx.core.content.res.ResourcesCompat;
+import android.widget.ImageView;
 
 import com.example.refrimancia.R;
 import com.example.refrimancia.util.SessionManager;
@@ -55,6 +58,24 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
         tvCreateAccount = findViewById(R.id.tvCreateAccount);
+        
+        // Lógica para el botón de mostrar/ocultar contraseña
+        ImageView ivShowPassword = findViewById(R.id.ivShowPassword);
+        ivShowPassword.setOnClickListener(v -> {
+            int cursorPosition = etPassword.getSelectionStart();
+            if (etPassword.getInputType() == (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+                // Mostrar contraseña
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                ivShowPassword.setImageResource(R.drawable.ic_visibility);
+            } else {
+                // Ocultar contraseña
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                ivShowPassword.setImageResource(R.drawable.ic_visibility_off);
+            }
+            // Importante: Al cambiar el inputType, Android resetea la fuente. Forzamos Alexandria.
+            etPassword.setTypeface(ResourcesCompat.getFont(this, R.font.alexandria));
+            etPassword.setSelection(cursorPosition);
+        });
 
         // Estética: subrayado
         tvForgotPassword.setPaintFlags(tvForgotPassword.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);

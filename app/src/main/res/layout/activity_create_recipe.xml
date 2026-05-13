@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/fondoPantallas"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -43,19 +44,23 @@
         </FrameLayout>
 
         <!-- Time Section Container (Right side) -->
+
+        <!-- 1. Nombre -->
+
         <LinearLayout
             android:id="@+id/timeContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="24dp"
             android:layout_marginTop="80dp"
+            android:layout_marginEnd="24dp"
             android:background="@drawable/bg_input"
             android:backgroundTint="@color/gris_marron"
+            android:gravity="center"
             android:orientation="vertical"
             android:padding="16dp"
-            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/imageContainer"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -64,20 +69,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tiempo de\npreparacion"
+                android:textAlignment="center"
                 android:textColor="#FFFFFF"
-                android:textAlignment="center" />
+                tools:layout_editor_absoluteX="238dp"
+                tools:layout_editor_absoluteY="100dp" />
 
             <TextView
                 android:id="@+id/tvPrepTimeValue"
                 style="@style/etiquetas"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:text="----"
-                android:textColor="#CCCCCC" />
+                android:textColor="#CCCCCC"
+                tools:layout_editor_absoluteX="281dp"
+                tools:layout_editor_absoluteY="162dp" />
         </LinearLayout>
 
-        <!-- 1. Nombre -->
         <TextView
             android:id="@+id/labelNombre"
             style="@style/etiquetas"
@@ -140,7 +147,7 @@
             android:layout_marginTop="12dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/bg_input"
-            android:hint="Escribe tu ingrediente aqui"
+            android:hint="Ingrediente"
             android:padding="12dp"
             app:layout_constraintEnd_toStartOf="@id/btnAddIngredient"
             app:layout_constraintStart_toStartOf="parent"

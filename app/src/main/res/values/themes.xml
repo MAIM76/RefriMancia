@@ -46,11 +46,19 @@
     <!-- Etiquetas de EditText -->
     <style name="etiquetas">
         <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/black</item>
         <item name="android:fontFamily">@font/alexandria_semibold</item>
     </style>
 
     <style name="editTexts">
         <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@font/alexandria</item>
+    </style>
+
+    <style name="EstiloNumberPicker">
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:editTextColor">@color/black</item>
         <item name="android:fontFamily">@font/alexandria</item>
     </style>
 

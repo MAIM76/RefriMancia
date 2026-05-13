@@ -1,6 +1,7 @@
 package com.example.refrimancia.ui;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,6 +23,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
@@ -125,13 +127,17 @@ public class CreateRecipeActivity extends AppCompatActivity {
         tvPrepTimeValue = findViewById(R.id.tvPrepTimeValue);
         spinnerCategory = findViewById(R.id.spinnerCategory);
 
-        String[] categorias = {"Desayuno", "Almuerzo", "Cena", "Postre", "Snack"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categorias);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        String[] categorias = {"Desayuno", "Almuerzo", "Comida", "Cena", "Postre", "Snack"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_theme, categorias);
+        adapter.setDropDownViewResource(R.layout.spinner_theme_dropdown);
         spinnerCategory.setAdapter(adapter);
 
         recipeImagePlaceholder.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            //imagePickerLauncher.launch(intent);
+
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
             imagePickerLauncher.launch(intent);
         });
 
@@ -243,6 +249,11 @@ public class CreateRecipeActivity extends AppCompatActivity {
             return;
         }
 
+        if (titulo.length() < 5) {
+            Toast.makeText(this, "El título debe tener minimo 5 caracteres", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if (!isEditing && croppedImageFile == null) {
             Toast.makeText(this, "Por favor, selecciona una imagen", Toast.LENGTH_LONG).show();
             return;
@@ -333,7 +344,11 @@ public class CreateRecipeActivity extends AppCompatActivity {
         TextView tv = new TextView(this);
         tv.setText("• " + texto);
         tv.setTextColor(ContextCompat.getColor(this, android.R.color.black));
-        tv.setTextSize(16);
+        tv.setTextSize(18);
+
+        Typeface typeface = ResourcesCompat.getFont(this, R.font.alexandria);
+        tv.setTypeface(typeface);
+
         itemLayout.addView(tv, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
 
         TextView btnDelete = new TextView(this);
@@ -363,7 +378,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
             int h = npH.getValue();
             int m = npM.getValue();
             totalMinutes = (h * 60) + m;
-            tvPrepTimeValue.setText(h + "h " + m + " min");
+            tvPrepTimeValue.setText(h + "h " + m + "min");
             dialog.dismiss();
         });
         dialog.show();

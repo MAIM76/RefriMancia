@@ -104,7 +104,7 @@ public class ClienteRetrofit {
      */
     private static HttpLoggingInterceptor crearInterceptorLogging() {
         HttpLoggingInterceptor interceptorLog = new HttpLoggingInterceptor();
-        interceptorLog.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        interceptorLog.setLevel(HttpLoggingInterceptor.Level.BODY);
         return interceptorLog;
     }
     

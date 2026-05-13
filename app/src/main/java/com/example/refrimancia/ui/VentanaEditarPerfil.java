@@ -11,6 +11,7 @@ import android.widget.Toast;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
 
 import com.bumptech.glide.Glide;
 import com.example.refrimancia.R;
@@ -53,6 +54,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
     Button botonActualizarEditar;
     Button botonCancelarEditar;
     Button botonEditarImagen;
+    Button botonEliminarCuenta;
 
     private int idUsuario;
 
@@ -79,6 +81,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
         botonActualizarEditar = findViewById(R.id.botonActualizarEditar);
         botonCancelarEditar = findViewById(R.id.botonCancelarEditar);
         botonEditarImagen = findViewById(R.id.botonEditarImagen);
+        botonEliminarCuenta = findViewById(R.id.botonEliminarCuenta);
 
         usuarioService = ClienteRetrofit.obtenerInstancia(this).create(UsuarioService.class);
 
@@ -88,6 +91,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
         botonCancelarEditar.setOnClickListener(v -> finish());
         botonEditarImagen.setOnClickListener(v -> abrirSelectorImagen());
         botonActualizarEditar.setOnClickListener(v -> actualizarUsuario());
+        botonEliminarCuenta.setOnClickListener(v -> mostrarDialogoEliminarCuenta());
     }
 
 
@@ -280,6 +284,97 @@ public class VentanaEditarPerfil extends AppCompatActivity {
             }
         });
     }
+
+    //Metodo para mostrar confirmacion antes de eliminar la cuenta
+    private void mostrarDialogoEliminarCuenta() {
+
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(VentanaEditarPerfil.this);
+
+        builder.setTitle("Eliminar cuenta");
+
+        builder.setMessage(
+                "¿Está seguro de eliminar su cuenta?\n\n" +
+                        "Esta acción es permanente y no se podrá recuperar."
+        );
+
+        //Botón SI
+        builder.setPositiveButton("Sí", (dialog, which) -> {
+
+            //Llamar al metodo que elimina la cuenta
+            eliminarCuenta();
+        });
+
+        //Botón NO
+        builder.setNegativeButton("No, cancelar", (dialog, which) -> {
+
+            //Cerrar simplemente el dialogo
+            dialog.dismiss();
+        });
+
+        //Mostrar el dialogo
+        builder.show();
+    }
+
+    //Metodo para eliminar la cuenta del usuario
+    private void eliminarCuenta() {
+
+        usuarioService.eliminarCuenta().enqueue(new Callback<ResponseBody>() {
+
+            @Override
+            public void onResponse(Call<ResponseBody> call,
+                                   Response<ResponseBody> response) {
+
+                if (response.isSuccessful()) {
+
+                    Toast.makeText(VentanaEditarPerfil.this,
+                            "Cuenta eliminada correctamente",
+                            Toast.LENGTH_LONG).show();
+
+                    //Cerrar sesión guardada
+                    sessionManager.clearSession();
+
+                    //Volver al login y borrar historial de pantallas
+                    Intent intent = new Intent(
+                            VentanaEditarPerfil.this,
+                            LoginActivity.class
+                    );
+
+                    intent.setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK |
+                                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    );
+
+                    startActivity(intent);
+                    finish();
+
+                } else {
+
+                    Toast.makeText(VentanaEditarPerfil.this,
+                            "No se pudo eliminar la cuenta",
+                            Toast.LENGTH_SHORT).show();
+
+                    try {
+                        Log.e("ELIMINAR_CUENTA",
+                                response.errorBody().string());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                Toast.makeText(VentanaEditarPerfil.this,
+                        "Error de conexión",
+                        Toast.LENGTH_SHORT).show();
+
+                Log.e("ELIMINAR_CUENTA", t.getMessage());
+            }
+        });
+    }
+
     //Metodo auxiliar para convertir URI a FILE
     private File crearArchivoDesdeUri(Uri uri) {
 

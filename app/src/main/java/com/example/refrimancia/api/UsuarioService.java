@@ -15,6 +15,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -64,6 +65,13 @@ public interface UsuarioService {
             @Part("fecha_nac") RequestBody fechaNacimiento,
             @Part MultipartBody.Part imagenPerfil
     );
+
+    /**
+     * Elimina la cuenta del usuario.
+     * Requiere estar autenticado con un token válido.
+     */
+    @DELETE("api/usuarios/eliminar")
+    Call<ResponseBody> eliminarCuenta();
 
     /**
      * Obtiene los datos del perfil del usuario autenticado.

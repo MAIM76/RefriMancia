@@ -162,12 +162,24 @@
             style="@style/estiloBotones"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
             android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
             android:text="Cancelar"
             android:textAllCaps="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etFechaEditar" />
+
+        <Button
+            android:id="@+id/botonEliminarCuenta"
+            style="@style/EliminarUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:text="Eliminar mi cuenta"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/botonActualizarEditar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

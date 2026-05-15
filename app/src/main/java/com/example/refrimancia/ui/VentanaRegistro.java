@@ -24,6 +24,7 @@ import okhttp3.RequestBody;
 
 import android.os.Bundle;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +37,7 @@ import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -59,6 +61,7 @@ public class VentanaRegistro extends AppCompatActivity {
     EditText etNombreUserRegistro;
     EditText etCorreoRegistro;
     EditText etpContrasenaRegistro;
+    ImageView ivMostrarPasswordRegistro;
     EditText etNombreRegistro;
     EditText etApellidosRegistro;
     EditText etFechaRegistro;
@@ -66,7 +69,6 @@ public class VentanaRegistro extends AppCompatActivity {
     Button botonCancelarRegistrar;
     ImageView ivRegistro;
     Button botonSelecImagenRegistro;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +84,7 @@ public class VentanaRegistro extends AppCompatActivity {
         etNombreUserRegistro = findViewById(R.id.etNombreUserRegistro);
         etCorreoRegistro = findViewById(R.id.etCorreoRegistro);
         etpContrasenaRegistro = findViewById(R.id.etpContrasenaRegistro);
+        ivMostrarPasswordRegistro = findViewById(R.id.ivMostrarPasswordRegistro);
         etNombreRegistro = findViewById(R.id.etNombreRegistro);
         etApellidosRegistro = findViewById(R.id.etApellidosRegistro);
         etFechaRegistro = findViewById(R.id.etFechaRegistro);
@@ -89,6 +92,33 @@ public class VentanaRegistro extends AppCompatActivity {
         botonCancelarRegistrar = findViewById(R.id.botonCancelarRegistrar);
         botonSelecImagenRegistro = findViewById(R.id.botonSelecImagenRegistro);
         ivRegistro = findViewById(R.id.ivRegistro);
+
+        // Lógica para mostrar/ocultar contraseña
+        ivMostrarPasswordRegistro.setOnClickListener(v -> {
+            int cursorPosition = etpContrasenaRegistro.getSelectionStart();
+            // Si está oculta → mostrar
+            if (etpContrasenaRegistro.getInputType() ==
+                    (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+                etpContrasenaRegistro.setInputType(
+                        InputType.TYPE_CLASS_TEXT |
+                                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                );
+                ivMostrarPasswordRegistro.setImageResource(R.drawable.ic_visibility);
+            } else {
+                // Si está visible → ocultar
+                etpContrasenaRegistro.setInputType(
+                        InputType.TYPE_CLASS_TEXT |
+                                InputType.TYPE_TEXT_VARIATION_PASSWORD
+                );
+                ivMostrarPasswordRegistro.setImageResource(R.drawable.ic_visibility_off);
+            }
+            // Mantener la fuente personalizada
+            etpContrasenaRegistro.setTypeface(
+                    ResourcesCompat.getFont(this, R.font.alexandria)
+            );
+            // Mantener el cursor al final
+            etpContrasenaRegistro.setSelection(cursorPosition);
+        });
 
         //Filtro para los EditText de Nombre y Apellidos: Acepta solo letras, espacios y guion simple
         FiltroSoloLetras filtroSoloLetras = new FiltroSoloLetras();

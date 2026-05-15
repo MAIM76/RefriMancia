@@ -1,13 +1,16 @@
 package com.example.refrimancia.ui;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.example.refrimancia.R;
 import com.example.refrimancia.api.ClienteRetrofit;
@@ -30,6 +33,8 @@ public class VentanaRecuperarPassword extends AppCompatActivity {
     EditText etpNuevaPasswordRecuperar;
     EditText etpRepetirPasswordRecuperar;
     Button botonActualizarPassword;
+    ImageView ivMostrarNuevaPassword;
+    ImageView ivMostrarRepetirPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +50,67 @@ public class VentanaRecuperarPassword extends AppCompatActivity {
         etpNuevaPasswordRecuperar = findViewById(R.id.etpNuevaPasswordRecuperar);
         etpRepetirPasswordRecuperar = findViewById(R.id.etpRepetirPasswordRecuperar);
         botonActualizarPassword = findViewById(R.id.botonActualizarPassword);
+        ivMostrarNuevaPassword = findViewById(R.id.ivMostrarNuevaPassword);
+        ivMostrarRepetirPassword = findViewById(R.id.ivMostrarRepetirPassword);
 
         // Recuperar correo
         correo = getIntent().getStringExtra("correo");
 
         usuarioService = ClienteRetrofit.obtenerInstancia(this).create(UsuarioService.class);
+
+        // Mostrar/Ocultar nueva contraseña
+        ivMostrarNuevaPassword.setOnClickListener(v -> {
+            int cursorPosition = etpNuevaPasswordRecuperar.getSelectionStart();
+            // Si está oculta -> mostrar
+            if (etpNuevaPasswordRecuperar.getInputType() ==
+                    (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+                etpNuevaPasswordRecuperar.setInputType(
+                        InputType.TYPE_CLASS_TEXT |
+                                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                );
+                ivMostrarNuevaPassword.setImageResource(R.drawable.ic_visibility);
+            } else {
+                // Si está visible -> ocultar
+                etpNuevaPasswordRecuperar.setInputType(
+                        InputType.TYPE_CLASS_TEXT |
+                                InputType.TYPE_TEXT_VARIATION_PASSWORD
+                );
+                ivMostrarNuevaPassword.setImageResource(R.drawable.ic_visibility_off);
+            }
+            // Restaurar fuente personalizada
+            etpNuevaPasswordRecuperar.setTypeface(
+                    ResourcesCompat.getFont(this, R.font.alexandria)
+            );
+            // Mantener cursor
+            etpNuevaPasswordRecuperar.setSelection(cursorPosition);
+        });
+
+        // Mostrar/Ocultar repetir contraseña
+        ivMostrarRepetirPassword.setOnClickListener(v -> {
+            int cursorPosition = etpRepetirPasswordRecuperar.getSelectionStart();
+            // Si está oculta -> mostrar
+            if (etpRepetirPasswordRecuperar.getInputType() ==
+                    (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+                etpRepetirPasswordRecuperar.setInputType(
+                        InputType.TYPE_CLASS_TEXT |
+                                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                );
+                ivMostrarRepetirPassword.setImageResource(R.drawable.ic_visibility);
+            } else {
+                // Si está visible -> ocultar
+                etpRepetirPasswordRecuperar.setInputType(
+                        InputType.TYPE_CLASS_TEXT |
+                                InputType.TYPE_TEXT_VARIATION_PASSWORD
+                );
+                ivMostrarRepetirPassword.setImageResource(R.drawable.ic_visibility_off);
+            }
+            // Restaurar fuente personalizada
+            etpRepetirPasswordRecuperar.setTypeface(
+                    ResourcesCompat.getFont(this, R.font.alexandria)
+            );
+            // Mantener cursor
+            etpRepetirPasswordRecuperar.setSelection(cursorPosition);
+        });
 
         botonActualizarPassword.setOnClickListener(v -> cambiarPassword());
     }

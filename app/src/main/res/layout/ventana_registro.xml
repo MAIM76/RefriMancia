@@ -41,13 +41,9 @@
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/RoundedShape"
                 tools:srcCompat="@tools:sample/avatars" />
-
         </FrameLayout>
 
         <!-- BOTÓN IMAGEN -->
-
-        <!-- NOMBRE USUARIO -->
-
         <Button
             android:id="@+id/botonSelecImagenRegistro"
             style="@style/estiloBotones"
@@ -63,6 +59,7 @@
             app:layout_constraintStart_toEndOf="@id/imageContainer"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- NOMBRE USUARIO -->
         <TextView
             android:id="@+id/tvNombreUserRegistro"
             style="@style/etiquetas"
@@ -130,20 +127,48 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/etCorreoRegistro" />
 
-        <EditText
-            android:id="@+id/etpContrasenaRegistro"
-            style="@style/editTexts"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/passwordContainerRegistro"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
             android:background="@drawable/bg_input"
-            android:hint="Introduzca su contraseña"
-            android:inputType="textPassword"
-            android:padding="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvContrasenaRegistro" />
+            app:layout_constraintTop_toBottomOf="@id/tvContrasenaRegistro">
+
+            <EditText
+                android:id="@+id/etpContrasenaRegistro"
+                style="@style/editTexts"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:hint="Introduzca su contraseña"
+                android:inputType="textPassword"
+                android:paddingStart="12dp"
+                android:paddingEnd="48dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/ivMostrarPasswordRegistro"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:alpha="0.5"
+                android:background="@android:color/transparent"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                android:src="@drawable/ic_visibility_off"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- NOMBRE -->
         <TextView
@@ -156,7 +181,7 @@
             android:text="Nombre:"
             android:textColor="#000000"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etpContrasenaRegistro" />
+            app:layout_constraintTop_toBottomOf="@id/passwordContainerRegistro" />
 
         <EditText
             android:id="@+id/etNombreRegistro"

@@ -254,11 +254,6 @@ public class CreateRecipeActivity extends AppCompatActivity {
             return;
         }
 
-        if (!isEditing && croppedImageFile == null) {
-            Toast.makeText(this, "Por favor, selecciona una imagen", Toast.LENGTH_LONG).show();
-            return;
-        }
-
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < listaIngredientes.size(); i++) {
             sb.append(listaIngredientes.get(i));

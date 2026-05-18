@@ -147,7 +147,10 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
                 Receta b = listaNueva.get(newPos);
                 return java.util.Objects.equals(a.getTitulo(), b.getTitulo())
                         && java.util.Objects.equals(a.getMediaPuntuacion(), b.getMediaPuntuacion())
-                        && java.util.Objects.equals(a.getImagenUrl(), b.getImagenUrl());
+                        && java.util.Objects.equals(a.getImagenUrl(), b.getImagenUrl())
+                        && java.util.Objects.equals(a.getCategoria(), b.getCategoria())
+                        && java.util.Objects.equals(a.getSemaforo(), b.getSemaforo())
+                        && java.util.Objects.equals(a.getConsumoHabitual(), b.getConsumoHabitual());
             }
         }).dispatchUpdatesTo(this);
     }
@@ -295,21 +298,35 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
     private void configurarInformacionBasica(RecetaViewHolder holder, Receta receta) {
         try {
             // Configurar título
-            if (holder.tituloReceta != null) {
-                holder.tituloReceta.setText(receta.getTitulo() != null ? receta.getTitulo() : contexto.getString(R.string.recipe_no_title));
+            if (holder.textoTitulo != null) {
+                holder.textoTitulo.setText(receta.getTitulo() != null ? receta.getTitulo() : contexto.getString(R.string.recipe_no_title));
             }
 
-            // Configurar tiempo de preparación
-            if (holder.tiempoPrep != null) {
-                holder.tiempoPrep.setText(formatTiempo(receta.getTiempoPreparacion()));
+            // Configurar fecha de creación
+            if (holder.textoFechaPublicacion != null) {
+                holder.textoFechaPublicacion.setText(formatFecha(receta.getFechaCreacion()));
             }
 
-            // Configurar categoría y consumo habitual
-            if (holder.dificultadCategoria != null) {
-                String categoria = receta.getCategoria() != null ? receta.getCategoria() : contexto.getString(R.string.recipe_no_category);
-                String consumo = receta.getConsumoHabitual() != null ? receta.getConsumoHabitual() : "";
-                String texto = consumo.isEmpty() ? categoria : categoria + " • " + consumo;
-                holder.dificultadCategoria.setText(texto);
+            // Configurar tipo de comida | tiempo (fila 2)
+            if (holder.textoTipoTiempo != null) {
+                String rawCategoria = receta.getCategoria();
+                boolean categoriaVacia = rawCategoria == null || rawCategoria.trim().isEmpty()
+                        || rawCategoria.equalsIgnoreCase("No disponible");
+                String categoria = categoriaVacia
+                        ? contexto.getString(R.string.recipe_calculating)
+                        : rawCategoria;
+                String tiempo = formatTiempo(receta.getTiempoPreparacion());
+                holder.textoTipoTiempo.setText(categoria + "  •  " + tiempo);
+            }
+
+            // Configurar consumo habitual (fila 3) – siempre visible con estado
+            if (holder.textoConsumoHabitual != null) {
+                String consumo = receta.getConsumoHabitual();
+                boolean consumoVacio = consumo == null || consumo.trim().isEmpty()
+                        || consumo.equalsIgnoreCase("No disponible");
+                holder.textoConsumoHabitual.setText(consumoVacio
+                        ? contexto.getString(R.string.recipe_calculating)
+                        : consumo);
             }
         } catch (Exception e) {
             Log.e("RecetaAdapter", "Error en configurarInformacionBasica", e);
@@ -364,37 +381,37 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
     private void configurarInformacionAdicional(RecetaViewHolder holder, Receta receta) {
         // Configurar nombre de usuario
         if (receta.getNombreUsuario() != null && !receta.getNombreUsuario().isEmpty()) {
-            holder.nombreUsuario.setText(contexto.getString(R.string.recipe_username_format,
+            holder.textoNombreUsuario.setText(contexto.getString(R.string.recipe_username_format,
                     receta.getNombreUsuario()));
         } else {
-            holder.nombreUsuario.setText(contexto.getString(R.string.recipe_user_id_format,
+            holder.textoNombreUsuario.setText(contexto.getString(R.string.recipe_user_id_format,
                     receta.getIdUsuario()));
         }
 
         // Configurar semáforo nutricional
         int colorSemaforo = obtenerColorSemaforo(receta.getSemaforo());
         if (colorSemaforo != 0) {
-            holder.semaforoDot.setVisibility(View.VISIBLE);
-            GradientDrawable fondo = (GradientDrawable) holder.semaforoDot.getBackground().mutate();
+            holder.indicadorSemaforo.setVisibility(View.VISIBLE);
+            GradientDrawable fondo = (GradientDrawable) holder.indicadorSemaforo.getBackground().mutate();
             fondo.setColor(colorSemaforo);
         } else {
-            holder.semaforoDot.setVisibility(View.GONE);
+            holder.indicadorSemaforo.setVisibility(View.GONE);
         }
 
         // Configurar valoración media
         Float media = receta.getMediaPuntuacionFloat();
-        if (holder.rbMediaPuntuacion != null && holder.tvMediaPuntuacion != null) {
+        if (holder.barraValoracion != null && holder.textoValoracion != null) {
             if (media != null && media > 0) {
-                holder.rbMediaPuntuacion.setRating(media);
-                holder.tvMediaPuntuacion.setText(
+                holder.barraValoracion.setRating(media);
+                holder.textoValoracion.setText(
                         String.format(java.util.Locale.getDefault(), "%.1f", media));
-                holder.rbMediaPuntuacion.setVisibility(View.VISIBLE);
-                holder.tvMediaPuntuacion.setVisibility(View.VISIBLE);
+                holder.barraValoracion.setVisibility(View.VISIBLE);
+                holder.textoValoracion.setVisibility(View.VISIBLE);
             } else {
-                holder.rbMediaPuntuacion.setRating(0);
-                holder.tvMediaPuntuacion.setText("");
-                holder.rbMediaPuntuacion.setVisibility(View.INVISIBLE);
-                holder.tvMediaPuntuacion.setVisibility(View.INVISIBLE);
+                holder.barraValoracion.setRating(0);
+                holder.textoValoracion.setText("");
+                holder.barraValoracion.setVisibility(View.INVISIBLE);
+                holder.textoValoracion.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -413,8 +430,8 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         });
 
         // Listener para botón de comentarios
-        if (holder.btnComentarios != null) {
-            holder.btnComentarios.setOnClickListener(v -> {
+        if (holder.botonComentarios != null) {
+            holder.botonComentarios.setOnClickListener(v -> {
                 if (comentarioListener != null) {
                     comentarioListener.onComentarioClick(receta);
                 }
@@ -422,8 +439,8 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         }
 
         // Listener para botón de valoración
-        if (holder.btnResena != null) {
-            holder.btnResena.setOnClickListener(v -> {
+        if (holder.botonValorar != null) {
+            holder.botonValorar.setOnClickListener(v -> {
                 if (valoracionListener != null) {
                     valoracionListener.onValoracionClick(receta);
                 }
@@ -447,11 +464,25 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         return -1;
     }
 
-    /**
-     * Formatea el tiempo de preparación en minutos a un formato legible.
-     * @param minutos Tiempo en minutos
-     * @return Cadena formateada (ej: "1 h 30 min", "45 min")
-     */
+    private String formatFecha(String fechaCreacion) {
+        if (fechaCreacion == null || fechaCreacion.isEmpty()) return "";
+        String[] formatos = {
+                "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                "yyyy-MM-dd'T'HH:mm:ss"
+        };
+        java.text.SimpleDateFormat salida = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault());
+        for (String fmt : formatos) {
+            try {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(fmt, java.util.Locale.getDefault());
+                sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+                java.util.Date fecha = sdf.parse(fechaCreacion);
+                if (fecha != null) return salida.format(fecha);
+            } catch (java.text.ParseException ignored) {}
+        }
+        return fechaCreacion.length() >= 10 ? fechaCreacion.substring(0, 10) : fechaCreacion;
+    }
+
     private String formatTiempo(int minutos) {
         if (minutos <= 0) return contexto.getString(R.string.recipe_time_not_available);
         int horas = minutos / 60;
@@ -462,9 +493,8 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
             } else {
                 return contexto.getString(R.string.time_hours_format, horas);
             }
-        } else {
-            return contexto.getString(R.string.time_minutes_format, minutos);
         }
+        return contexto.getString(R.string.time_minutes_format, minutos);
     }
 
     /**
@@ -510,18 +540,19 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
      */
     public static class RecetaViewHolder extends RecyclerView.ViewHolder {
         // Vistas de información básica
-        TextView tituloReceta;
-        TextView tiempoPrep;
-        TextView dificultadCategoria;
+        TextView textoTitulo;
+        TextView textoFechaPublicacion;
+        TextView textoTipoTiempo;
+        TextView textoConsumoHabitual;
         ImageView imagenReceta;
 
         // Vistas de información adicional
-        TextView nombreUsuario;
-        View semaforoDot;
-        ImageView btnResena;
-        ImageView btnComentarios;
-        RatingBar rbMediaPuntuacion;
-        TextView tvMediaPuntuacion;
+        TextView textoNombreUsuario;
+        View indicadorSemaforo;
+        ImageView botonValorar;
+        ImageView botonComentarios;
+        RatingBar barraValoracion;
+        TextView textoValoracion;
 
         /**
          * Constructor del ViewHolder.
@@ -530,43 +561,41 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         public RecetaViewHolder(@NonNull View itemView) {
             super(itemView);
             // Inicializar vistas de información básica
-            tituloReceta = itemView.findViewById(R.id.recipe_title);
-            tiempoPrep = itemView.findViewById(R.id.recipe_time);
-            dificultadCategoria = itemView.findViewById(R.id.recipe_dificultad_categoria);
-            imagenReceta = itemView.findViewById(R.id.iv_imagen_receta);
+            textoTitulo = itemView.findViewById(R.id.texto_titulo);
+            textoFechaPublicacion = itemView.findViewById(R.id.texto_fecha_publicacion);
+            textoTipoTiempo = itemView.findViewById(R.id.texto_tipo_tiempo);
+            textoConsumoHabitual = itemView.findViewById(R.id.texto_consumo_habitual);
+            imagenReceta = itemView.findViewById(R.id.imagen_receta);
 
             // Inicializar vistas de información adicional
-            nombreUsuario = itemView.findViewById(R.id.tv_nombre_usuario);
-            semaforoDot = itemView.findViewById(R.id.recipe_semaforo_dot);
-            btnResena = itemView.findViewById(R.id.btn_megusta);
-            btnComentarios = itemView.findViewById(R.id.btn_comentarios);
-            rbMediaPuntuacion = itemView.findViewById(R.id.rb_media_puntuacion);
-            tvMediaPuntuacion = itemView.findViewById(R.id.tv_media_puntuacion);
+            textoNombreUsuario = itemView.findViewById(R.id.texto_nombre_usuario);
+            indicadorSemaforo = itemView.findViewById(R.id.indicador_semaforo);
+            botonValorar = itemView.findViewById(R.id.boton_valorar);
+            botonComentarios = itemView.findViewById(R.id.boton_comentarios);
+            barraValoracion = itemView.findViewById(R.id.barra_valoracion);
+            textoValoracion = itemView.findViewById(R.id.texto_valoracion);
 
             // Validar que todas las vistas se encontraron correctamente
-            if (tituloReceta == null) {
-                Log.e("RecetaViewHolder", "No se encontró la vista recipe_title");
+            if (textoTitulo == null) {
+                Log.e("RecetaViewHolder", "No se encontró la vista texto_titulo");
             }
-            if (tiempoPrep == null) {
-                Log.e("RecetaViewHolder", "No se encontró la vista recipe_time");
-            }
-            if (dificultadCategoria == null) {
-                Log.e("RecetaViewHolder", "No se encontró la vista recipe_dificultad_categoria");
+            if (textoTipoTiempo == null) {
+                Log.e("RecetaViewHolder", "No se encontró la vista texto_tipo_tiempo");
             }
             if (imagenReceta == null) {
-                Log.e("RecetaViewHolder", "No se encontró la vista iv_imagen_receta");
+                Log.e("RecetaViewHolder", "No se encontró la vista imagen_receta");
             }
-            if (nombreUsuario == null) {
-                Log.e("RecetaViewHolder", "No se encontró la vista tv_nombre_usuario");
+            if (textoNombreUsuario == null) {
+                Log.e("RecetaViewHolder", "No se encontró la vista texto_nombre_usuario");
             }
-            if (semaforoDot == null) {
-                Log.e("RecetaViewHolder", "No se encontró la vista recipe_semaforo_dot");
+            if (indicadorSemaforo == null) {
+                Log.e("RecetaViewHolder", "No se encontró la vista indicador_semaforo");
             }
-            if (btnResena == null) {
-                Log.e("RecetaViewHolder", "No se encontró la vista btn_megusta");
+            if (botonValorar == null) {
+                Log.e("RecetaViewHolder", "No se encontró la vista boton_valorar");
             }
-            if (btnComentarios == null) {
-                Log.e("RecetaViewHolder", "No se encontró la vista btn_comentarios");
+            if (botonComentarios == null) {
+                Log.e("RecetaViewHolder", "No se encontró la vista boton_comentarios");
             }
         }
     }

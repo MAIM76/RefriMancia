@@ -27,7 +27,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
  * Incluye navegación inferior con acceso a Inicio, Crear Receta y Perfil de Usuario.
  */
 public class ContenedorPrincipalActivity extends AppCompatActivity
-        implements UsuarioFragment.OnFotoPerfilCargadaListener {
+        implements UsuarioFragment.OnFotoPerfilCargadaListener,
+                   UsuarioFragment.OnRecetaCambiadaListener,
+                   InicioFragment.OnRecetaCambiadaListener {
 
     // ======================== CONSTANTES ========================
     
@@ -147,6 +149,12 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
     @Override
     public void onFotoPerfilCargada(String url) {
         actualizarIconoUsuario(url);
+    }
+
+    @Override
+    public void onRecetaCambiada() {
+        if (inicioFragment != null) inicioFragment.recargarRecetas();
+        if (usuarioFragment != null) usuarioFragment.recargarRecetas();
     }
 
     /**

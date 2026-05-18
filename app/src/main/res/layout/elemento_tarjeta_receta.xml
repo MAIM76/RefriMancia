@@ -24,7 +24,7 @@
                 android:layout_height="200dp">
 
             <ImageView
-                    android:id="@+id/iv_imagen_receta"
+                    android:id="@+id/imagen_receta"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
@@ -33,7 +33,7 @@
 
             <!-- Superposición con nombre del usuario -->
             <TextView
-                    android:id="@+id/tv_nombre_usuario"
+                    android:id="@+id/texto_nombre_usuario"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|start"
@@ -45,6 +45,20 @@
                     android:textColor="@android:color/white"
                     android:textSize="13sp"
                     android:textStyle="bold" />
+
+            <!-- Fecha de publicación (esquina superior derecha) -->
+            <TextView
+                    android:id="@+id/texto_fecha_publicacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    android:background="#8021180D"
+                    android:padding="4dp"
+                    android:paddingHorizontal="8dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp" />
+
         </FrameLayout>
 
         <!-- Sección de información principal de la receta -->
@@ -56,11 +70,10 @@
                 android:paddingTop="12dp"
                 android:paddingRight="12dp">
 
-            <!-- Título de la receta -->
-
+            <!-- Título -->
             <TextView
-                    android:id="@+id/recipe_title"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/texto_titulo"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/recipe_no_title"
                     android:textSize="18sp"
@@ -69,45 +82,40 @@
                     android:maxLines="1"
                     android:ellipsize="end" />
 
-            <!-- Dificultad y categoría -->
-
-            <!-- Línea con semáforo y tiempo -->
+            <!-- Fila 2: semáforo + tipo de comida | tiempo -->
             <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:gravity="top"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                <!-- Indicador de semáforo nutricional -->
                 <View
-                        android:id="@+id/recipe_semaforo_dot"
+                        android:id="@+id/indicador_semaforo"
                         android:layout_width="8dp"
                         android:layout_height="8dp"
                         android:layout_marginEnd="6dp"
-                        android:background="@drawable/semaforo_dot"
-                        android:layout_marginTop="6dp" />
+                        android:layout_marginTop="1dp"
+                        android:background="@drawable/semaforo_dot" />
 
-                <!-- Tiempo de preparación -->
                 <TextView
-                        android:id="@+id/recipe_dificultad_categoria"
+                        android:id="@+id/texto_tipo_tiempo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="13sp"
-                        android:textColor="@color/marron_oscuro"
-                        android:text="@string/recipe_no_category"
-                        android:layout_marginRight="4dp" />
+                        android:textColor="@color/marron_oscuro" />
 
             </LinearLayout>
 
+            <!-- Fila 3: consumo habitual (IA) -->
             <TextView
-                    android:id="@+id/recipe_time"
+                    android:id="@+id/texto_consumo_habitual"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="14sp"
+                    android:layout_marginTop="2dp"
+                    android:textSize="12sp"
                     android:textColor="@color/gris_marron"
-                    android:text="@string/recipe_time_not_available"
-                    android:layout_marginTop="4dp" />
+                    android:textStyle="italic" />
 
         </LinearLayout>
 
@@ -122,7 +130,7 @@
 
             <!-- Estrellas de valoración -->
             <RatingBar
-                    android:id="@+id/rb_media_puntuacion"
+                    android:id="@+id/barra_valoracion"
                     style="?android:attr/ratingBarStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -136,7 +144,7 @@
                     android:secondaryProgressTint="@color/amarillo" />
 
             <TextView
-                    android:id="@+id/tv_media_puntuacion"
+                    android:id="@+id/texto_valoracion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
@@ -153,7 +161,7 @@
 
             <!-- Botón de valoración/me gusta -->
             <ImageView
-                    android:id="@+id/btn_megusta"
+                    android:id="@+id/boton_valorar"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_marginEnd="8dp"
@@ -164,7 +172,7 @@
 
             <!-- Botón de comentarios -->
             <ImageView
-                    android:id="@+id/btn_comentarios"
+                    android:id="@+id/boton_comentarios"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:padding="4dp"

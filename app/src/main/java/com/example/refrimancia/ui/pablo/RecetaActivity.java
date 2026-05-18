@@ -375,6 +375,7 @@ public class RecetaActivity extends AppCompatActivity {
                     @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(RecetaActivity.this, R.string.recipe_delete_success, Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                     finish();
                 } else {
                     Toast.makeText(RecetaActivity.this, R.string.recipe_delete_error, Toast.LENGTH_SHORT).show();

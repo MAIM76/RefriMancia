@@ -67,6 +67,19 @@ public class UsuarioFragment extends Fragment {
             result -> {
                 if (result.getResultCode() == android.app.Activity.RESULT_OK) {
                     recargarRecetas();
+                    if (getActivity() instanceof OnRecetaCambiadaListener) {
+                        ((OnRecetaCambiadaListener) getActivity()).onRecetaCambiada();
+                    }
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<Intent> editarPerfilLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == android.app.Activity.RESULT_OK) {
+                    perfilCargado = false;
+                    obtenerPerfilUsuario();
                 }
             }
     );
@@ -345,9 +358,10 @@ public class UsuarioFragment extends Fragment {
      */
     private void mostrarRecetasUsuario(List<Receta> misRecetas) {
         if (misRecetas == null || misRecetas.isEmpty()) {
-            if (adaptadorMisRecetas == null || adaptadorMisRecetas.getItemCount() == 0) {
-                mostrarEstadoVacio();
+            if (adaptadorMisRecetas != null) {
+                adaptadorMisRecetas.actualizarDatos(new ArrayList<>());
             }
+            mostrarEstadoVacio();
             return;
         }
 
@@ -368,6 +382,14 @@ public class UsuarioFragment extends Fragment {
      */
     public interface OnFotoPerfilCargadaListener {
         void onFotoPerfilCargada(String url);
+    }
+
+    /**
+     * Interfaz implementada por la actividad contenedora para propagar
+     * cambios de receta (crear/editar/eliminar) al fragmento de inicio.
+     */
+    public interface OnRecetaCambiadaListener {
+        void onRecetaCambiada();
     }
 
     // ======================== MÉTODOS DE UI ========================
@@ -426,7 +448,7 @@ public class UsuarioFragment extends Fragment {
 
         lastRefreshAt = 0L;
         Intent intent = new Intent(requireContext(), VentanaEditarPerfil.class);
-        startActivity(intent);
+        editarPerfilLauncher.launch(intent);
     }
 
     /**
@@ -531,10 +553,13 @@ public class UsuarioFragment extends Fragment {
         }
 
         private String construirMetaReceta(Receta receta) {
-            String categoria = receta.getCategoria();
+            String rawCategoria = receta.getCategoria();
+            boolean categoriaVacia = rawCategoria == null || rawCategoria.trim().isEmpty()
+                    || rawCategoria.equalsIgnoreCase("No disponible");
+            String categoria = categoriaVacia ? null : rawCategoria;
             String tiempo = receta.getTiempoPreparacion() > 0 ? formatTiempo(receta.getTiempoPreparacion()) : null;
-            if (categoria != null && !categoria.isEmpty() && tiempo != null) return categoria + " | " + tiempo;
-            if (categoria != null && !categoria.isEmpty()) return categoria;
+            if (categoria != null && tiempo != null) return categoria + " | " + tiempo;
+            if (categoria != null) return categoria;
             if (tiempo != null) return tiempo;
             return "";
         }

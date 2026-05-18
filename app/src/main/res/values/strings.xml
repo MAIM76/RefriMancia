@@ -72,6 +72,8 @@
     <!-- Textos para recetas sin datos -->
     <string name="recipe_no_title">Receta sin título</string>
     <string name="recipe_no_category">Sin categoría</string>
+    <string name="recipe_calculating">Calculando...</string>
+    <string name="recipe_not_available">No disponible</string>
     <string name="recipe_difficulty_not_specified">No especificada</string>
     <string name="recipe_time_not_available">N/A</string>
     <string name="recipe_unknown_user">\@usuario_desconocido</string>

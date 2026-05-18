@@ -60,7 +60,7 @@
                         android:id="@+id/tv_meta_receta_usuario"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/recipe_no_category"
+                        android:text=""
                         android:textSize="13sp"
                         android:textColor="@color/marron_oscuro" />
 

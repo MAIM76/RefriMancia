@@ -261,6 +261,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
                     Toast.makeText(VentanaEditarPerfil.this,
                             "Perfil actualizado",
                             Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
                     finish();
                 } else {
                     Log.e("API_ERROR", "Código: " + response.code());

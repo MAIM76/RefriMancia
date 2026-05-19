@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
@@ -305,16 +307,46 @@ public class CreateRecipeActivity extends AppCompatActivity {
     }
 
     private void manejarRespuesta(boolean success, int code) {
-        btnPublish.setEnabled(true);
-        btnPublish.setText(isEditing ? "Actualizar" : "Publicar");
         if (success) {
-            Toast.makeText(this, isEditing ? "¡Receta actualizada!" : "¡Receta publicada!", Toast.LENGTH_LONG).show();
-            if (croppedImageFile != null && croppedImageFile.exists()) croppedImageFile.delete();
-            setResult(RESULT_OK);
-            finish();
+            mostrarDialogoProgreso();
         } else {
+            btnPublish.setEnabled(true);
+            btnPublish.setText(isEditing ? "Actualizar" : "Publicar");
             Toast.makeText(this, "Error del servidor: " + code, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void mostrarDialogoProgreso() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_loading, null);
+        TextView tvMessage = dialogView.findViewById(R.id.tvLoadingMessage);
+        
+        if (isEditing) {
+            tvMessage.setText("Actualizando receta...");
+        } else {
+            tvMessage.setText("Publicando receta...");
+        }
+        
+        builder.setView(dialogView);
+        builder.setCancelable(false);
+        AlertDialog dialog = builder.create();
+
+        // Aplicamos transparencia al fondo del diálogo para que se vea el diseño redondeado
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        dialog.show();
+
+        // Esperar 5 segundos antes de cerrar y volver
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            if (!isFinishing()) {
+                dialog.dismiss();
+                if (croppedImageFile != null && croppedImageFile.exists()) croppedImageFile.delete();
+                setResult(RESULT_OK);
+                finish();
+            }
+        }, 5000);
     }
 
     private void manejarFallo(Throwable t) {

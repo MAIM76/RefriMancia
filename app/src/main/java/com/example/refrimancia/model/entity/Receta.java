@@ -107,6 +107,54 @@ public class Receta implements Serializable {
     @SerializedName("grasas")
     private float grasas;
 
+    /** Peso total de la receta en gramos */
+    @SerializedName("peso_total_g")
+    private float pesoTotalG;
+
+    /** Azúcares en gramos */
+    @SerializedName("azucares")
+    private float azucares;
+
+    /** Grasas saturadas en gramos */
+    @SerializedName("grasas_saturadas")
+    private float grasasSaturadas;
+
+    /** Sal en gramos */
+    @SerializedName("sal")
+    private float sal;
+
+    /** Calorías por 100g */
+    @SerializedName("kcal_100g")
+    private float kcal100g;
+
+    /** Proteínas por 100g */
+    @SerializedName("proteinas_100g")
+    private float proteinas100g;
+
+    /** Carbohidratos por 100g */
+    @SerializedName("carbohidratos_100g")
+    private float carbohidratos100g;
+
+    /** Azúcares por 100g */
+    @SerializedName("azucares_100g")
+    private float azucares100g;
+
+    /** Grasas por 100g */
+    @SerializedName("grasas_100g")
+    private float grasas100g;
+
+    /** Grasas saturadas por 100g */
+    @SerializedName("grasas_saturadas_100g")
+    private float grasasSaturadas100g;
+
+    /** Fibra por 100g */
+    @SerializedName("fibra_100g")
+    private float fibra100g;
+
+    /** Sal por 100g */
+    @SerializedName("sal_100g")
+    private float sal100g;
+
     /** Lista de comentarios asociados a la receta */
     @SerializedName("comentarios")
     private java.util.List<Comentario> comentarios;
@@ -247,6 +295,42 @@ public class Receta implements Serializable {
     /** @return Grasas en gramos */
     public float getGrasas() { return grasas; }
 
+    /** @return Peso total en gramos */
+    public float getPesoTotalG() { return pesoTotalG; }
+
+    /** @return Azúcares en gramos */
+    public float getAzucares() { return azucares; }
+
+    /** @return Grasas saturadas en gramos */
+    public float getGrasasSaturadas() { return grasasSaturadas; }
+
+    /** @return Sal en gramos */
+    public float getSal() { return sal; }
+
+    /** @return Calorías por 100g */
+    public float getKcal100g() { return kcal100g; }
+
+    /** @return Proteínas por 100g */
+    public float getProteinas100g() { return proteinas100g; }
+
+    /** @return Carbohidratos por 100g */
+    public float getCarbohidratos100g() { return carbohidratos100g; }
+
+    /** @return Azúcares por 100g */
+    public float getAzucares100g() { return azucares100g; }
+
+    /** @return Grasas por 100g */
+    public float getGrasas100g() { return grasas100g; }
+
+    /** @return Grasas saturadas por 100g */
+    public float getGrasasSaturadas100g() { return grasasSaturadas100g; }
+
+    /** @return Fibra por 100g */
+    public float getFibra100g() { return fibra100g; }
+
+    /** @return Sal por 100g */
+    public float getSal100g() { return sal100g; }
+
     /** @return Lista de comentarios */
     public java.util.List<Comentario> getComentarios() { return comentarios; }
     
@@ -333,6 +417,42 @@ public class Receta implements Serializable {
 
     /** @param grasas Nuevas grasas en gramos */
     public void setGrasas(float grasas) { this.grasas = grasas; }
+
+    /** @param pesoTotalG Nuevo peso total en gramos */
+    public void setPesoTotalG(float pesoTotalG) { this.pesoTotalG = pesoTotalG; }
+
+    /** @param azucares Nuevos azúcares en gramos */
+    public void setAzucares(float azucares) { this.azucares = azucares; }
+
+    /** @param grasasSaturadas Nuevas grasas saturadas en gramos */
+    public void setGrasasSaturadas(float grasasSaturadas) { this.grasasSaturadas = grasasSaturadas; }
+
+    /** @param sal Nueva sal en gramos */
+    public void setSal(float sal) { this.sal = sal; }
+
+    /** @param kcal100g Nuevas calorías por 100g */
+    public void setKcal100g(float kcal100g) { this.kcal100g = kcal100g; }
+
+    /** @param proteinas100g Nuevas proteínas por 100g */
+    public void setProteinas100g(float proteinas100g) { this.proteinas100g = proteinas100g; }
+
+    /** @param carbohidratos100g Nuevos carbohidratos por 100g */
+    public void setCarbohidratos100g(float carbohidratos100g) { this.carbohidratos100g = carbohidratos100g; }
+
+    /** @param azucares100g Nuevos azúcares por 100g */
+    public void setAzucares100g(float azucares100g) { this.azucares100g = azucares100g; }
+
+    /** @param grasas100g Nuevas grasas por 100g */
+    public void setGrasas100g(float grasas100g) { this.grasas100g = grasas100g; }
+
+    /** @param grasasSaturadas100g Nuevas grasas saturadas por 100g */
+    public void setGrasasSaturadas100g(float grasasSaturadas100g) { this.grasasSaturadas100g = grasasSaturadas100g; }
+
+    /** @param fibra100g Nueva fibra por 100g */
+    public void setFibra100g(float fibra100g) { this.fibra100g = fibra100g; }
+
+    /** @param sal100g Nueva sal por 100g */
+    public void setSal100g(float sal100g) { this.sal100g = sal100g; }
 
     /** @param comentarios Nueva lista de comentarios */
     public void setComentarios(java.util.List<Comentario> comentarios) { this.comentarios = comentarios; }

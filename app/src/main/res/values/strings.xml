@@ -169,6 +169,19 @@
     <string name="recipe_fat_label">Grasas</string>
     <string name="recipe_fiber_label">Fibra</string>
     <string name="recipe_nutrient_format">%1$.1f g</string>
+    <string name="recipe_nutrient_subvalue_format">(%1$.1f g)</string>
+    <string name="recipe_nutrient_subvalue_label">De los cuales %2$.1f g son %1$s</string>
+    <string name="recipe_nutrient_subvalue_label_f">De las cuales %2$.1f g son %1$s</string>
+    <string name="recipe_sugars_label">Azúcares</string>
+    <string name="recipe_sat_fat_label">Grasas saturadas</string>
+    <string name="recipe_salt_label">Sal</string>
+    <string name="recipe_weight_label">Peso total</string>
+    <string name="recipe_weight_format">%1$.0f g</string>
+    <string name="recipe_tab_total">Total</string>
+    <string name="recipe_tab_total_peso">Total (%1$sg)</string>
+    <string name="recipe_tab_per100g">Por 100g</string>
+    <string name="recipe_legend_total">Valor total</string>
+    <string name="recipe_legend_subvalue">del que (subvalor)</string>
 
     <!-- Popup comentarios -->
     <string name="popup_comments_title">Comentarios</string>

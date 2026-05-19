@@ -115,9 +115,9 @@ public class InicioFragment extends Fragment {
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == android.app.Activity.RESULT_OK) {
-                    recargarRecetas();
-                    if (getActivity() instanceof OnRecetaCambiadaListener) {
-                        ((OnRecetaCambiadaListener) getActivity()).onRecetaCambiada();
+                    recargar();
+                    if (getActivity() instanceof OnRecetaListener) {
+                        ((OnRecetaListener) getActivity()).onRecetaCambiada();
                     }
                 }
             }
@@ -853,15 +853,11 @@ public class InicioFragment extends Fragment {
         dialog.show();
     }
 
-    /**
-     * Interfaz implementada por la actividad contenedora para propagar
-     * cambios de receta al fragmento de usuario.
-     */
-    public interface OnRecetaCambiadaListener {
+    public interface OnRecetaListener {
         void onRecetaCambiada();
     }
 
-    public void recargarRecetas() {
+    public void recargar() {
         contadorReintentos = 0;
         ocultarError();
         refrescarListadoRecetas();

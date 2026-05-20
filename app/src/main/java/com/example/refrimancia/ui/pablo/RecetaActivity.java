@@ -32,7 +32,9 @@ import com.example.refrimancia.R;
 import com.example.refrimancia.api.ClienteRetrofit;
 import com.example.refrimancia.api.RecetaService;
 import com.example.refrimancia.ui.CreateRecipeActivity;
+import com.example.refrimancia.util.ColorUtils;
 import com.example.refrimancia.util.ComentariosPopupHelper;
+import com.example.refrimancia.util.DateUtils;
 import com.example.refrimancia.util.SessionManager;
 import com.example.refrimancia.model.entity.Receta;
 import com.example.refrimancia.model.response.RespuestaUnica;
@@ -42,12 +44,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Actividad de detalle de una receta.
- * Muestra toda la información de la receta (imagen, descripción, ingredientes, pasos,
- * semáforo nutricional) y permite ver y publicar comentarios mediante un popup.
- * Recibe el objeto {@link Receta} parcial vía Intent y carga el detalle completo desde la API.
- */
 public class RecetaActivity extends AppCompatActivity {
 
     // ======================== CONSTANTES ========================
@@ -64,7 +60,7 @@ public class RecetaActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
                     setResult(RESULT_OK);
-                    cargarDetalleReceta(receta.getIdReceta());
+                    cargarReceta(receta.getIdReceta());
                 }
             }
     );
@@ -79,28 +75,33 @@ public class RecetaActivity extends AppCompatActivity {
     private View semaforoDot;
     private TextView tvSemaforoTexto;
     private Button btnVerComentarios;
-    private View llBotonesPropietario;
+    private View llBotones;
     private Button btnModificarReceta;
     private Button btnEliminarReceta;
 
-    private TextView tvNutricionKcal;
-    private TextView tvNutricionProteinas;
-    private TextView tvNutricionCarbohidratos;
-    private TextView tvNutricionGrasas;
-    private TextView tvNutricionFibra;
+    private Button btnTabTotal;
+    private Button btnTabPer100g;
+    private boolean tabTotalSeleccionado = true;
+
+    private TextView tvKcal;
+    private TextView tvProteinas;
+    private TextView tvCarbos;
+    private TextView tvGrasas;
+    private TextView tvGrasasSat;
+    private TextView tvAzucares;
+    private TextView tvFibra;
+    private TextView tvSal;
     private View barProteinas;
     private View barCarbohidratos;
     private View barGrasas;
+    private View barGrasasSaturadas;
+    private View barAzucares;
     private View barFibra;
+    private View barSal;
+
 
     // ======================== MÉTHODO FÁBRICA ========================
 
-    /**
-     * Crea el Intent necesario para abrir esta actividad con la receta indicada.
-     * @param context Contexto desde el que se lanza
-     * @param receta  Receta a mostrar
-     * @return Intent listo para usar en {@code startActivity}
-     */
     public static Intent crearIntent(Context context, Receta receta) {
         Intent intent = new Intent(context, RecetaActivity.class);
         intent.putExtra(EXTRA_RECETA, receta);
@@ -129,65 +130,50 @@ public class RecetaActivity extends AppCompatActivity {
         semaforoDot = findViewById(R.id.tv_detalle_semaforo_dot);
         tvSemaforoTexto = findViewById(R.id.tv_detalle_semaforo_texto);
         btnVerComentarios = findViewById(R.id.btn_ver_comentarios);
-        llBotonesPropietario = findViewById(R.id.ll_botones_propietario);
+        llBotones = findViewById(R.id.ll_botones_propietario);
         btnModificarReceta = findViewById(R.id.btn_modificar_receta);
         btnEliminarReceta = findViewById(R.id.btn_eliminar_receta);
-        tvNutricionKcal = findViewById(R.id.tv_nutricion_kcal);
-        tvNutricionProteinas = findViewById(R.id.tv_nutricion_proteinas);
-        tvNutricionCarbohidratos = findViewById(R.id.tv_nutricion_carbohidratos);
-        tvNutricionGrasas = findViewById(R.id.tv_nutricion_grasas);
-        tvNutricionFibra = findViewById(R.id.tv_nutricion_fibra);
+        btnTabTotal = findViewById(R.id.btn_tab_total);
+        btnTabPer100g = findViewById(R.id.btn_tab_per100g);
+
+        tvKcal = findViewById(R.id.tv_nutricion_kcal);
+        tvProteinas = findViewById(R.id.tv_nutricion_proteinas);
+        tvCarbos = findViewById(R.id.tv_nutricion_carbohidratos);
+        tvGrasas = findViewById(R.id.tv_nutricion_grasas);
+        tvGrasasSat = findViewById(R.id.tv_nutricion_grasas_saturadas);
+        tvAzucares = findViewById(R.id.tv_nutricion_azucares);
+        tvFibra = findViewById(R.id.tv_nutricion_fibra);
+        tvSal = findViewById(R.id.tv_nutricion_sal);
         barProteinas = findViewById(R.id.bar_proteinas);
         barCarbohidratos = findViewById(R.id.bar_carbohidratos);
         barGrasas = findViewById(R.id.bar_grasas);
+        barGrasasSaturadas = findViewById(R.id.bar_grasas_saturadas);
+        barAzucares = findViewById(R.id.bar_azucares);
         barFibra = findViewById(R.id.bar_fibra);
+        barSal = findViewById(R.id.bar_sal);
+
 
         ImageButton btnVolver = findViewById(R.id.btn_volver_detalle);
         btnVolver.setOnClickListener(v -> finish());
 
+        setupNutricionTabs();
+
         if (receta != null) {
             bindReceta(receta);
             btnVerComentarios.setOnClickListener(v -> mostrarPopupComentarios(this.receta));
-            configurarBotonesPropietario();
-            cargarDetalleReceta(receta.getIdReceta());
+            configBotones();
+            cargarReceta(receta.getIdReceta());
         }
     }
 
     // ======================== MÉTODOS DE UI ========================
 
-    /**
-     * Formatea minutos en texto legible (ej. "1 h 30 min").
-     * @param minutos Tiempo total en minutos
-     * @return Cadena formateada
-     */
-    private String formatTiempo(int minutos) {
-        if (minutos <= 0) return getString(R.string.recipe_time_not_available);
-        int horas = minutos / 60;
-        int minRestantes = minutos % 60;
-        if (horas > 0) {
-            if (minRestantes > 0) {
-                return getString(R.string.time_hours_minutes_format, horas, minRestantes);
-            } else {
-                return getString(R.string.time_hours_format, horas);
-            }
-        }
-        return getString(R.string.time_minutes_format, minutos);
-    }
-    /**
-     * Muestra el popup inferior de comentarios de la receta.
-     * Carga los comentarios existentes y permite publicar nuevos.
-     * @param receta Receta cuyos comentarios se van a mostrar
-     */
     private void mostrarPopupComentarios(Receta receta) {
         ComentariosPopupHelper.mostrar(this, receta);
     }
 
     // ======================== MÉTODOS DE DATOS ========================
 
-    /**
-     * Vincula los datos de la receta a las vistas.
-     * @param receta Receta con los datos a mostrar
-     */
     private void bindReceta(Receta receta) {
         tvTitulo.setText(receta.getTitulo() != null ? receta.getTitulo() : getString(R.string.recipe_no_title));
 
@@ -202,11 +188,11 @@ public class RecetaActivity extends AppCompatActivity {
                 ? getString(R.string.recipe_user_format, receta.getNombreUsuario())
                 : getString(R.string.recipe_unknown_user));
         tvTiempo.setText(receta.getTiempoPreparacion() > 0
-                ? formatTiempo(receta.getTiempoPreparacion())
+                ? DateUtils.formatTiempo(this, receta.getTiempoPreparacion())
                 : getString(R.string.recipe_time_not_available));
 
         String valorSemaforo = receta.getSemaforo();
-        int colorSemaforo = obtenerColorSemaforo(valorSemaforo);
+        int colorSemaforo = ColorUtils.colorSemaforo(this, valorSemaforo);
         if (semaforoDot != null) {
             if (colorSemaforo != 0) {
                 semaforoDot.setVisibility(View.VISIBLE);
@@ -216,7 +202,7 @@ public class RecetaActivity extends AppCompatActivity {
             }
         }
         if (tvSemaforoTexto != null) {
-            tvSemaforoTexto.setText(obtenerTextoSemaforo(valorSemaforo));
+            tvSemaforoTexto.setText(ColorUtils.textoSemaforo(this, valorSemaforo));
         }
 
         bindNutricion(receta);
@@ -233,48 +219,119 @@ public class RecetaActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Rellena la sección nutricional con los valores de la receta.
-     * Las barras se dibujan proporcionales al máximo de los cuatro macronutrientes.
-     */
-    private void bindNutricion(Receta receta) {
-        if (tvNutricionKcal == null) return;
+    private void setupNutricionTabs() {
+        if (btnTabTotal == null || btnTabPer100g == null) return;
+        btnTabTotal.setOnClickListener(v -> seleccionarTab(true));
+        btnTabPer100g.setOnClickListener(v -> seleccionarTab(false));
+        seleccionarTab(true);
+    }
 
-        tvNutricionKcal.setText(getString(R.string.recipe_kcal_format, receta.getKcal()));
-        tvNutricionProteinas.setText(getString(R.string.recipe_nutrient_format, receta.getProteinas()));
-        tvNutricionCarbohidratos.setText(getString(R.string.recipe_nutrient_format, receta.getCarbohidratos()));
-        tvNutricionGrasas.setText(getString(R.string.recipe_nutrient_format, receta.getGrasas()));
-        tvNutricionFibra.setText(getString(R.string.recipe_nutrient_format, receta.getFibra()));
+    private void seleccionarTab(boolean totalSeleccionado) {
+        tabTotalSeleccionado = totalSeleccionado;
+        if (receta != null) bindNutricion(totalSeleccionado);
+
+        int colorActivo = android.graphics.Color.parseColor("#D9CDB8");
+        int colorInactivo = android.graphics.Color.TRANSPARENT;
+        int textoActivo = androidx.core.content.ContextCompat.getColor(this, R.color.azul_oscuro);
+        int textoInactivo = android.graphics.Color.parseColor("#9E9E9E");
+
+        btnTabTotal.setBackgroundTintList(android.content.res.ColorStateList
+                .valueOf(totalSeleccionado ? colorActivo : colorInactivo));
+        btnTabTotal.setTextColor(totalSeleccionado ? textoActivo : textoInactivo);
+        btnTabTotal.setTypeface(null, totalSeleccionado
+                ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
+
+        btnTabPer100g.setBackgroundTintList(android.content.res.ColorStateList
+                .valueOf(totalSeleccionado ? colorInactivo : colorActivo));
+        btnTabPer100g.setTextColor(totalSeleccionado ? textoInactivo : textoActivo);
+        btnTabPer100g.setTypeface(null, totalSeleccionado
+                ? android.graphics.Typeface.NORMAL : android.graphics.Typeface.BOLD);
+    }
+
+    private void bindNutricion(Receta receta) {
+        if (tvKcal == null) return;
+        if (btnTabTotal != null && receta.getPesoTotalG() > 0) {
+            btnTabTotal.setText(getString(R.string.recipe_tab_total_peso,
+                    String.valueOf((int) receta.getPesoTotalG())));
+        }
+        bindNutricion(tabTotalSeleccionado);
+    }
+
+    private void bindNutricion(boolean total) {
+        if (tvKcal == null || receta == null) return;
+
+        float kcal       = total ? receta.getKcal()          : receta.getKcal100g();
+        float proteinas  = total ? receta.getProteinas()     : receta.getProteinas100g();
+        float carbos     = total ? receta.getCarbohidratos()  : receta.getCarbohidratos100g();
+        float azucares   = total ? receta.getAzucares()       : receta.getAzucares100g();
+        float grasas     = total ? receta.getGrasas()         : receta.getGrasas100g();
+        float grasSat    = total ? receta.getGrasasSaturadas(): receta.getGrasasSaturadas100g();
+        float fibra      = total ? receta.getFibra()          : receta.getFibra100g();
+        float sal        = total ? receta.getSal()            : receta.getSal100g();
+
+        tvKcal.setText(getString(R.string.recipe_kcal_format, kcal));
+        tvProteinas.setText(getString(R.string.recipe_nutrient_format, proteinas));
+        tvCarbos.setText(getString(R.string.recipe_nutrient_format, carbos));
+        tvGrasas.setText(getString(R.string.recipe_nutrient_format, grasas));
+        tvFibra.setText(getString(R.string.recipe_nutrient_format, fibra));
+        tvSal.setText(getString(R.string.recipe_nutrient_format, sal));
+
+        if (tvAzucares != null) {
+            if (azucares > 0) {
+                tvAzucares.setText(getString(R.string.recipe_nutrient_subvalue_label,
+                        getString(R.string.recipe_sugars_label), azucares));
+                tvAzucares.setVisibility(View.VISIBLE);
+            } else {
+                tvAzucares.setVisibility(View.GONE);
+            }
+        }
+        if (tvGrasasSat != null) {
+            if (grasSat > 0) {
+                tvGrasasSat.setText(getString(R.string.recipe_nutrient_subvalue_label_f,
+                        getString(R.string.recipe_sat_fat_label), grasSat));
+                tvGrasasSat.setVisibility(View.VISIBLE);
+            } else {
+                tvGrasasSat.setVisibility(View.GONE);
+            }
+        }
 
         float max = Math.max(1f, Math.max(
-                Math.max(receta.getProteinas(), receta.getCarbohidratos()),
-                Math.max(receta.getGrasas(), receta.getFibra())));
+                Math.max(proteinas, carbos),
+                Math.max(grasas, fibra)));
 
-        ajustarBarra(barProteinas, receta.getProteinas(), max);
-        ajustarBarra(barCarbohidratos, receta.getCarbohidratos(), max);
-        ajustarBarra(barGrasas, receta.getGrasas(), max);
-        ajustarBarra(barFibra, receta.getFibra(), max);
+        ajustarBarra(barProteinas, proteinas, max);
+        ajustarBarra(barCarbohidratos, carbos, max);
+        ajustarBarra(barAzucares, azucares, max);
+        ajustarBarra(barGrasas, grasas, max);
+        ajustarBarra(barGrasasSaturadas, grasSat, max);
+        ajustarBarra(barFibra, fibra, max);
+        ajustarBarra(barSal, sal, max);
     }
 
     private void ajustarBarra(View bar, float valor, float max) {
         if (bar == null) return;
-        bar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                bar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int totalAncho = ((android.view.View) bar.getParent()).getWidth();
+        Runnable aplicar = () -> {
+            int totalAncho = ((android.view.View) bar.getParent()).getWidth();
+            if (totalAncho > 0) {
                 int ancho = (int) (totalAncho * (valor / max));
                 android.view.ViewGroup.LayoutParams lp = bar.getLayoutParams();
                 lp.width = ancho;
                 bar.setLayoutParams(lp);
             }
-        });
+        };
+        if (((android.view.View) bar.getParent()).getWidth() > 0) {
+            bar.post(aplicar);
+        } else {
+            bar.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    bar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    aplicar.run();
+                }
+            });
+        }
     }
 
-    /**
-     * Muestra {@code texto} en {@code tv} si no es nulo/vacío, o {@code fallback} si se provee;
-     * si fallback es null y el texto está vacío, oculta la vista.
-     */
     private void setTextOrHide(TextView tv, String texto, String fallback) {
         if (texto != null && !texto.trim().isEmpty()) {
             tv.setText(texto);
@@ -287,64 +344,10 @@ public class RecetaActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Convierte el valor del semáforo nutricional a un color de recurso.
-     * @param semaforo Valor del semáforo (rojo, naranja, amarillo, verde_claro, verde_oscuro)
-     * @return Color resuelto o 0 si es desconocido
-     */
-    private int obtenerColorSemaforo(String semaforo) {
-        if (semaforo == null) {
-            return 0;
-        }
-        switch (semaforo.toLowerCase()) {
-            case "rojo":
-                return ContextCompat.getColor(this, android.R.color.holo_red_dark);
-            case "naranja":
-                return ContextCompat.getColor(this, android.R.color.holo_orange_dark);
-            case "amarillo":
-                return ContextCompat.getColor(this, android.R.color.holo_orange_light);
-            case "verde_claro":
-                return ContextCompat.getColor(this, android.R.color.holo_green_light);
-            case "verde_oscuro":
-                return ContextCompat.getColor(this, android.R.color.holo_green_dark);
-            default:
-                return 0;
-        }
-    }
-
-    /**
-     * Convierte el valor del semáforo nutricional a texto descriptivo.
-     * @param semaforo Valor del semáforo (rojo, naranja, amarillo, verde_claro, verde_oscuro, gris)
-     * @return Texto descriptivo del nivel de salud
-     */
-    private String obtenerTextoSemaforo(String semaforo) {
-        if (semaforo == null) {
-            return getString(R.string.semaforo_unknown);
-        }
-        switch (semaforo.toLowerCase()) {
-            case "rojo":
-                return getString(R.string.semaforo_red);
-            case "naranja":
-                return getString(R.string.semaforo_orange);
-            case "amarillo":
-                return getString(R.string.semaforo_yellow);
-            case "verde_claro":
-                return getString(R.string.semaforo_light_green);
-            case "verde_oscuro":
-                return getString(R.string.semaforo_dark_green);
-            case "gris":
-            default:
-                return getString(R.string.semaforo_unknown);
-        }
-    }
-
-    /**
-     * Muestra u oculta los botones de modificar/eliminar según si el usuario logueado es el autor.
-     */
-    private void configurarBotonesPropietario() {
+    private void configBotones() {
         int idUsuarioSesion = new SessionManager(this).fetchUserId();
         if (receta != null && receta.getIdUsuario() == idUsuarioSesion) {
-            llBotonesPropietario.setVisibility(View.VISIBLE);
+            llBotones.setVisibility(View.VISIBLE);
             btnModificarReceta.setOnClickListener(v -> {
                 Intent intent = new Intent(this, CreateRecipeActivity.class);
                 intent.putExtra("receta_editar", receta);
@@ -360,13 +363,10 @@ public class RecetaActivity extends AppCompatActivity {
                         .show();
             });
         } else {
-            llBotonesPropietario.setVisibility(View.GONE);
+            llBotones.setVisibility(View.GONE);
         }
     }
 
-    /**
-     * Llama a la API para eliminar la receta actual y cierra la actividad en caso de éxito.
-     */
     private void eliminarReceta() {
         RecetaService recetaService = ClienteRetrofit.obtenerInstancia(this).create(RecetaService.class);
         recetaService.eliminarReceta(receta.getIdReceta()).enqueue(new Callback<ResponseBody>() {
@@ -389,12 +389,7 @@ public class RecetaActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Carga el detalle completo de la receta desde la API y actualiza las vistas.
-     * Si falla, mantiene los datos parciales ya mostrados.
-     * @param idReceta ID de la receta a cargar
-     */
-    private void cargarDetalleReceta(int idReceta) {
+    private void cargarReceta(int idReceta) {
         RecetaService recetaService = ClienteRetrofit.obtenerInstancia(this).create(RecetaService.class);
         recetaService.obtenerReceta(idReceta).enqueue(new Callback<>() {
             @Override
@@ -405,9 +400,9 @@ public class RecetaActivity extends AppCompatActivity {
                     return;
                 }
 
-                receta = combinarRecetas(receta, response.body().getData());
+                receta = combinar(receta, response.body().getData());
                 bindReceta(receta);
-                configurarBotonesPropietario();
+                configBotones();
             }
 
             @Override
@@ -417,14 +412,7 @@ public class RecetaActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Combina los datos de la receta base (parcial) con los del detalle (completo).
-     * Los campos del detalle sobreescriben los de la base si no son nulos.
-     * @param base    Receta con datos parciales ya mostrados
-     * @param detalle Receta con datos completos de la API
-     * @return Receta combinada
-     */
-    private Receta combinarRecetas(Receta base, Receta detalle) {
+    private Receta combinar(Receta base, Receta detalle) {
         if (base == null) {
             return detalle;
         }
@@ -443,6 +431,18 @@ public class RecetaActivity extends AppCompatActivity {
         if (detalle.getCarbohidratos() != 0) base.setCarbohidratos(detalle.getCarbohidratos());
         if (detalle.getGrasas() != 0) base.setGrasas(detalle.getGrasas());
         if (detalle.getFibra() != 0) base.setFibra(detalle.getFibra());
+        if (detalle.getPesoTotalG() != 0) base.setPesoTotalG(detalle.getPesoTotalG());
+        if (detalle.getAzucares() != 0) base.setAzucares(detalle.getAzucares());
+        if (detalle.getGrasasSaturadas() != 0) base.setGrasasSaturadas(detalle.getGrasasSaturadas());
+        if (detalle.getSal() != 0) base.setSal(detalle.getSal());
+        if (detalle.getKcal100g() != 0) base.setKcal100g(detalle.getKcal100g());
+        if (detalle.getProteinas100g() != 0) base.setProteinas100g(detalle.getProteinas100g());
+        if (detalle.getCarbohidratos100g() != 0) base.setCarbohidratos100g(detalle.getCarbohidratos100g());
+        if (detalle.getAzucares100g() != 0) base.setAzucares100g(detalle.getAzucares100g());
+        if (detalle.getGrasas100g() != 0) base.setGrasas100g(detalle.getGrasas100g());
+        if (detalle.getGrasasSaturadas100g() != 0) base.setGrasasSaturadas100g(detalle.getGrasasSaturadas100g());
+        if (detalle.getFibra100g() != 0) base.setFibra100g(detalle.getFibra100g());
+        if (detalle.getSal100g() != 0) base.setSal100g(detalle.getSal100g());
 
         return base;
     }

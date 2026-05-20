@@ -21,15 +21,10 @@ import com.example.refrimancia.util.SessionManager;
 import com.example.refrimancia.ui.LoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-/**
- * Actividad principal que contiene el contenedor de la aplicación.
- * Gestiona la navegación entre fragmentos principales y maneja la sesión del usuario.
- * Incluye navegación inferior con acceso a Inicio, Crear Receta y Perfil de Usuario.
- */
 public class ContenedorPrincipalActivity extends AppCompatActivity
-        implements UsuarioFragment.OnFotoPerfilCargadaListener,
-                   UsuarioFragment.OnRecetaCambiadaListener,
-                   InicioFragment.OnRecetaCambiadaListener {
+        implements UsuarioFragment.OnFotoListener,
+                   UsuarioFragment.OnRecetaListener,
+                   InicioFragment.OnRecetaListener {
 
     // ======================== CONSTANTES ========================
     
@@ -55,8 +50,8 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
-                    if (inicioFragment != null) inicioFragment.recargarRecetas();
-                    if (usuarioFragment != null) usuarioFragment.recargarRecetas();
+                    if (inicioFragment != null) inicioFragment.recargar();
+                    if (usuarioFragment != null) usuarioFragment.recargar();
                 }
             }
     );
@@ -153,8 +148,8 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
 
     @Override
     public void onRecetaCambiada() {
-        if (inicioFragment != null) inicioFragment.recargarRecetas();
-        if (usuarioFragment != null) usuarioFragment.recargarRecetas();
+        if (inicioFragment != null) inicioFragment.recargar();
+        if (usuarioFragment != null) usuarioFragment.recargar();
     }
 
     /**

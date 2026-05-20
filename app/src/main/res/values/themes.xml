@@ -3,7 +3,7 @@
     <style name="Base.Theme.RefriMancia" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/marron_oscuro</item>
         <item name="colorSecondary">@color/amarillo</item>
-        <!-- Barra de notificaciones con color primario -->
+        <!-- Barra de notificaciones con color primario. -->
         <item name="android:statusBarColor">@color/marron_oscuro</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>

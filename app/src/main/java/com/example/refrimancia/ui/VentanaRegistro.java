@@ -190,7 +190,7 @@ public class VentanaRegistro extends AppCompatActivity {
                 return;
             }
 
-            // 6. Validación de Nombre Completo (Límite 100)
+            // 6. Validación de Nombre Completo (Límite 100).
             if (nombreCompleto.length() > 100) {
                 Toast.makeText(this, "El nombre y apellidos combinados no pueden superar los 100 caracteres", Toast.LENGTH_SHORT).show();
                 etNombreRegistro.requestFocus();

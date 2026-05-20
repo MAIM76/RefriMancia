@@ -229,7 +229,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
             return;
         }
 
-        //Validar formato de la fecha
+        //Validar formato de la fecha.
         try {
             SimpleDateFormat parser = new SimpleDateFormat("yyyy-M-d");
             parser.setLenient(false);

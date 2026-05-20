@@ -252,7 +252,7 @@ public class CreateRecipeActivity extends AppCompatActivity {
             return;
         }
 
-        // 2. Validar Nombre de la receta
+        // 2. Validar Nombre de la receta.
         if (titulo.isEmpty()) {
             Toast.makeText(this, "Por favor, escribe el nombre de la receta", Toast.LENGTH_LONG).show();
             etRecipeName.requestFocus();

@@ -87,7 +87,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvNombreUserEditar" />
 
-        <!-- NOMBRE -->
+        <!-- NOMBRE, -->
         <TextView
             android:id="@+id/tvNombreCompEditar"
             style="@style/etiquetas"

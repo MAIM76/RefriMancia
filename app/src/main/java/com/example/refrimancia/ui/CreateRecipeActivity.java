@@ -246,13 +246,40 @@ public class CreateRecipeActivity extends AppCompatActivity {
         String desc = etRecipeDescription.getText().toString().trim();
         String tipo = spinnerCategory.getSelectedItem().toString();
 
-        if (titulo.isEmpty() || desc.isEmpty() || listaIngredientes.isEmpty() || totalMinutes == 0) {
-            Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_LONG).show();
+        // 1. Validar Tiempo de preparación
+        if (totalMinutes == 0) {
+            Toast.makeText(this, "Por favor, selecciona el tiempo de preparación", Toast.LENGTH_LONG).show();
             return;
         }
 
+        // 2. Validar Nombre de la receta
+        if (titulo.isEmpty()) {
+            Toast.makeText(this, "Por favor, escribe el nombre de la receta", Toast.LENGTH_LONG).show();
+            etRecipeName.requestFocus();
+            return;
+        }
         if (titulo.length() < 5) {
-            Toast.makeText(this, "El título debe tener minimo 5 caracteres", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "El nombre debe tener al menos 5 caracteres", Toast.LENGTH_LONG).show();
+            etRecipeName.requestFocus();
+            return;
+        }
+        if (titulo.length() > 150) {
+            Toast.makeText(this, "El nombre es demasiado largo (150 caracteres max)", Toast.LENGTH_LONG).show();
+            etRecipeName.requestFocus();
+            return;
+        }
+
+        // 3. Validar Ingredientes
+        if (listaIngredientes.isEmpty()) {
+            Toast.makeText(this, "Por favor, añade al menos un ingrediente", Toast.LENGTH_LONG).show();
+            etNewIngredient.requestFocus();
+            return;
+        }
+
+        // 4. Validar Descripción
+        if (desc.isEmpty()) {
+            Toast.makeText(this, "Por favor, escribe la descripción de la receta", Toast.LENGTH_LONG).show();
+            etRecipeDescription.requestFocus();
             return;
         }
 

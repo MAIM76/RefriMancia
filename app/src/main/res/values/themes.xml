@@ -8,7 +8,9 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <style name="Theme.RefriMancia" parent="Base.Theme.RefriMancia" />
+    <style name="Theme.RefriMancia" parent="Base.Theme.RefriMancia">
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
 
     <!-- Tema para ContenedorPrincipalActivity: status bar azul_oscuro -->
     <style name="Theme.RefriMancia.Contenedor" parent="Theme.RefriMancia">
@@ -68,4 +70,9 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+
+    <!-- <style name="Base.Theme.RefriMancia" parent="...">
+
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style> -->
 </resources>

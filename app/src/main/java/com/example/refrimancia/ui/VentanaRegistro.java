@@ -139,9 +139,69 @@ public class VentanaRegistro extends AppCompatActivity {
 
             String regexPassword = "^(?=.*[A-Z])(?=.*\\d).{8,}$"; //Formato de la password (al menos 1 mayúscula, 1 número y mínimo 8 caracteres)
 
-            if (nombreUser.isEmpty() || password.isEmpty() || correo.isEmpty() || nombre.isEmpty() || apellidos.isEmpty() || fecha.isEmpty()) {
-                Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
+            // 1. Nombre de usuario
+            if (nombreUser.isEmpty()) {
+                Toast.makeText(this, "Por favor, escribe un nombre de usuario", Toast.LENGTH_SHORT).show();
+                etNombreUserRegistro.requestFocus();
+                return;
+            }
+            if (nombreUser.length() > 50) {
+                Toast.makeText(this, "El nombre de usuario es demasiado largo (máximo 50)", Toast.LENGTH_SHORT).show();
+                etNombreUserRegistro.requestFocus();
+                return;
+            }
 
+            // 2. Correo electrónico
+            if (correo.isEmpty()) {
+                Toast.makeText(this, "Por favor, escribe tu correo", Toast.LENGTH_SHORT).show();
+                etCorreoRegistro.requestFocus();
+                return;
+            }
+            if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+                etCorreoRegistro.setError("Correo no válido");
+                Toast.makeText(this, "Introduce un correo electrónico válido", Toast.LENGTH_SHORT).show();
+                etCorreoRegistro.requestFocus();
+                return;
+            }
+
+            // 3. Contraseña
+            if (password.isEmpty()) {
+                Toast.makeText(this, "Por favor, escribe una contraseña", Toast.LENGTH_SHORT).show();
+                etpContrasenaRegistro.requestFocus();
+                return;
+            }
+            if (!password.matches(regexPassword)) {
+                Toast.makeText(this, "La contraseña debe tener al menos 8 caracteres, una mayúscula y un número", Toast.LENGTH_LONG).show();
+                etpContrasenaRegistro.requestFocus();
+                return;
+            }
+
+            // 4. Nombre
+            if (nombre.isEmpty()) {
+                Toast.makeText(this, "Por favor, escribe tu nombre", Toast.LENGTH_SHORT).show();
+                etNombreRegistro.requestFocus();
+                return;
+            }
+
+            // 5. Apellidos
+            if (apellidos.isEmpty()) {
+                Toast.makeText(this, "Por favor, escribe tus apellidos", Toast.LENGTH_SHORT).show();
+                etApellidosRegistro.requestFocus();
+                return;
+            }
+
+            // 6. Validación de Nombre Completo (Límite 100)
+            if (nombreCompleto.length() > 100) {
+                Toast.makeText(this, "El nombre y apellidos combinados no pueden superar los 100 caracteres", Toast.LENGTH_SHORT).show();
+                etNombreRegistro.requestFocus();
+                return;
+            }
+
+            // 7. Fecha de nacimiento
+            if (fecha.isEmpty()) {
+                Toast.makeText(this, "Por favor, introduce tu fecha de nacimiento", Toast.LENGTH_SHORT).show();
+                etFechaRegistro.requestFocus();
+                return;
             } else if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
                 etCorreoRegistro.setError("Correo no válido");
                 Toast.makeText(this, "Introduce un correo electrónico válido", Toast.LENGTH_SHORT).show();

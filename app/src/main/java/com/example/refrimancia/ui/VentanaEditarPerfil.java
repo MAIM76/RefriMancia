@@ -196,7 +196,40 @@ public class VentanaEditarPerfil extends AppCompatActivity {
         String nombreCompleto = etNombreCompEditar.getText().toString().trim();
         String fecha = etFechaEditar.getText().toString().trim();
 
-        //Validar la fecha
+        // VALIDACIÓN TOP TO BOTTOM
+        // 1. Nombre de usuario
+        if (nombreUser.isEmpty()) {
+            Toast.makeText(this, "Por favor, escribe el nombre de usuario", Toast.LENGTH_SHORT).show();
+            etNombreUserEditar.requestFocus();
+            return;
+        }
+        if (nombreUser.length() > 50) {
+            Toast.makeText(this, "El nombre de usuario es demasiado largo (máximo 50 caracteres)", Toast.LENGTH_SHORT).show();
+            etNombreUserEditar.requestFocus();
+            return;
+        }
+
+        // 2. Nombre completo
+        if (nombreCompleto.isEmpty()) {
+            Toast.makeText(this, "Por favor, escribe tu nombre completo", Toast.LENGTH_SHORT).show();
+            etNombreCompEditar.requestFocus();
+            return;
+        }
+
+        if (nombreCompleto.length() > 100) {
+            Toast.makeText(this, "El nombre de usuario es demasiado largo (máximo 50 caracteres)", Toast.LENGTH_SHORT).show();
+            etNombreUserEditar.requestFocus();
+            return;
+        }
+
+        // 3. Fecha de nacimiento
+        if (fecha.isEmpty()) {
+            Toast.makeText(this, "Por favor, introduce tu fecha de nacimiento", Toast.LENGTH_SHORT).show();
+            etFechaEditar.requestFocus();
+            return;
+        }
+
+        //Validar formato de la fecha
         try {
             SimpleDateFormat parser = new SimpleDateFormat("yyyy-M-d");
             parser.setLenient(false);
@@ -211,6 +244,7 @@ public class VentanaEditarPerfil extends AppCompatActivity {
             Toast.makeText(this,
                     "Introduce una fecha válida",
                     Toast.LENGTH_SHORT).show();
+            etFechaEditar.requestFocus();
             return;
         }
 

@@ -20,38 +20,21 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Cliente Retrofit para la comunicación con la API del backend.
- * Proporciona una instancia singleton de Retrofit configurada con:
- * - Autenticación mediante tokens Bearer
- * - Logging de peticiones HTTP
- * - Manejo automático de sesiones inválidas (401)
- * - Configuración Gson para parsing JSON
- */
 public class ClienteRetrofit {
-    
+
     // ======================== CONSTANTES ========================
-    
-    /** URL base del servidor backend */
+
     private static final String URL_BASE = "https://refrimacia-backend.onrender.com/";
-    
+
     // ======================== VARIABLES DE INSTANCIA ========================
 
-    /** Instancia singleton de Retrofit */
     private static Retrofit instancia;
 
-    /** Evita múltiples redirects simultáneos al login cuando el token es invalidado */
+    // Evita múltiples redirects simultáneos al login cuando el token es invalidado
     private static final AtomicBoolean sesionInvalidadaHandled = new AtomicBoolean(false);
 
     // ======================== MÉTODOS PÚBLICOS ========================
-    
-    /**
-     * Obtiene la instancia singleton de Retrofit configurada.
-     * Si no existe, crea una nueva instancia con toda la configuración necesaria.
-     * 
-     * @param context Contexto de la aplicación para acceder a SessionManager
-     * @return Instancia de Retrofit configurada y lista para usar
-     */
+
     public static Retrofit obtenerInstancia(Context context) {
         if (instancia == null) {
             instancia = crearInstanciaRetrofit(context);
@@ -63,15 +46,9 @@ public class ClienteRetrofit {
         instancia = null;
         sesionInvalidadaHandled.set(false);
     }
-    
+
     // ======================== MÉTODOS PRIVADOS ========================
-    
-    /**
-     * Crea una nueva instancia de Retrofit con toda la configuración necesaria.
-     * 
-     * @param context Contexto de la aplicación
-     * @return Nueva instancia de Retrofit configurada
-     */
+
     private static Retrofit crearInstanciaRetrofit(Context context) {
         SessionManager sessionManager = new SessionManager(context.getApplicationContext());
 
@@ -97,24 +74,12 @@ public class ClienteRetrofit {
                 .build();
     }
     
-    /**
-     * Crea el interceptor para logging de peticiones HTTP.
-     * 
-     * @return Interceptor de logging configurado
-     */
     private static HttpLoggingInterceptor crearInterceptorLogging() {
         HttpLoggingInterceptor interceptorLog = new HttpLoggingInterceptor();
         interceptorLog.setLevel(HttpLoggingInterceptor.Level.BODY);
         return interceptorLog;
     }
     
-    /**
-     * Crea el interceptor de autenticación que añade el token Bearer a cada petición.
-     *
-     * @param context Contexto de la aplicación
-     * @param sessionManager Gestor de sesiones
-     * @return Interceptor de autenticación configurado
-     */
     private static Interceptor crearInterceptorAuth(Context context, SessionManager sessionManager) {
         return new Interceptor() {
             @Override
@@ -139,11 +104,7 @@ public class ClienteRetrofit {
         };
     }
 
-    /**
-     * Limpia la sesión y redirige al login cuando el servidor rechaza el token (401).
-     * Ocurre cuando el token es invalidado por un login desde otro dispositivo.
-     * Usa AtomicBoolean para ejecutarse una sola vez ante peticiones simultáneas.
-     */
+    // Token invalidado por login desde otro dispositivo; se ejecuta una sola vez gracias al AtomicBoolean
     private static void manejarTokenInvalidado(Context context, SessionManager sessionManager) {
         if (!sesionInvalidadaHandled.compareAndSet(false, true)) {
             return;

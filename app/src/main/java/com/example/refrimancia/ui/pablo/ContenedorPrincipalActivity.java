@@ -27,25 +27,16 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
                    InicioFragment.OnRecetaListener {
 
     // ======================== CONSTANTES ========================
-    
-    /** Tag para identificar el fragmento de inicio */
+
     private static final String TAG_INICIO = "frag_inicio";
-    
-    /** Tag para identificar el fragmento de usuario */
     private static final String TAG_USUARIO = "frag_usuario";
-    
+
     // ======================== VARIABLES DE INSTANCIA ========================
-    
-    /** Fragmento principal de inicio */
+
     private InicioFragment inicioFragment;
-    
-    /** Fragmento del perfil de usuario */
     private UsuarioFragment usuarioFragment;
-    
-    /** Referencia a la barra de navegación inferior */
     private BottomNavigationView navInferior;
 
-    /** Launcher para crear/editar receta y recargar listas al volver con éxito */
     private final ActivityResultLauncher<Intent> crearRecetaLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -56,12 +47,8 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
             }
     );
 
-    // ======================== MÉTODOS DEL CICLO DE VIDA ========================
-    
-    /**
-     * Inicializa la actividad y verifica la sesión del usuario.
-     * Si no hay sesión válida, redirige al login.
-     */
+    // ======================== CICLO DE VIDA ========================
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -88,13 +75,9 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
         // Configurar navegación inferior
         configurarNavegacionInferior();
     }
-    
+
     // ======================== MÉTODOS DE CONFIGURACIÓN ========================
-    
-    /**
-     * Verifica si existe una sesión válida del usuario.
-     * @return true si la sesión es válida, false si redirige al login
-     */
+
     private boolean verificarSesion() {
         SessionManager sessionManager = new SessionManager(this);
         if (!sessionManager.isSessionValid()) {
@@ -107,9 +90,6 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
         return true;
     }
     
-    /**
-     * Configura la vista principal y los fragmentos.
-     */
     private void configurarVistaPrincipal() {
         setContentView(R.layout.activity_contenedor_principal);
 
@@ -134,13 +114,9 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
                     .commit();
         }
     }
-    
+
     // ======================== MÉTODOS DE FOTO DE PERFIL ========================
 
-    /**
-     * Callback del fragmento de usuario cuando se carga o actualiza la foto de perfil.
-     * Actualiza el icono del nav inferior con la nueva URL.
-     */
     @Override
     public void onFotoPerfilCargada(String url) {
         actualizarIconoUsuario(url);
@@ -152,11 +128,6 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
         if (usuarioFragment != null) usuarioFragment.recargar();
     }
 
-    /**
-     * Carga la foto de perfil del usuario en el ítem de navegación inferior.
-     * Si la URL es nula o vacía, usa el icono genérico del sistema.
-     * @param url URL de la imagen de perfil
-     */
     private void actualizarIconoUsuario(String url) {
         if (navInferior == null) return;
         int size = (int) (40 * getResources().getDisplayMetrics().density);
@@ -183,9 +154,8 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * Configura la barra de navegación inferior: selección inicial, foto de perfil e item listeners.
-     */
+    // ======================== MÉTODOS DE NAVEGACIÓN ========================
+
     private void configurarNavegacionInferior() {
         navInferior = findViewById(R.id.bottom_navigation);
         navInferior.setSelectedItemId(R.id.nav_home);
@@ -212,11 +182,6 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
         });
     }
     
-    // ======================== MÉTODOS DE NAVEGACIÓN ========================
-    
-    /**
-     * Muestra el fragmento de inicio y oculta el de usuario.
-     */
     private void mostrarFragmentoInicio() {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -225,9 +190,6 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
                 .commit();
     }
     
-    /**
-     * Muestra el fragmento de usuario y oculta el de inicio.
-     */
     private void mostrarFragmentoUsuario() {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -236,10 +198,6 @@ public class ContenedorPrincipalActivity extends AppCompatActivity
                 .commit();
     }
     
-    /**
-     * Abre la actividad de crear receta verificando que la sesión sea válida.
-     * El token y el ID se obtienen desde {@link SessionManager} en la propia actividad destino.
-     */
     private void abrirCrearRecetaConSesion() {
         SessionManager sessionManager = new SessionManager(this);
         if (!sessionManager.isSessionValid()) {

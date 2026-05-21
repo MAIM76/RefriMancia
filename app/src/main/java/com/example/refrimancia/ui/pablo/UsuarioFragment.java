@@ -52,6 +52,8 @@ public class UsuarioFragment extends Fragment {
     private static final int MAX_PAGES = 50;
     private static final long REFRESH_INTERVAL_MS = 60_000L;
 
+    // ======================== VARIABLES DE INSTANCIA ========================
+
     private final ActivityResultLauncher<Intent> recetaResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -73,8 +75,6 @@ public class UsuarioFragment extends Fragment {
                 }
             }
     );
-
-    // ======================== VARIABLES DE INSTANCIA ========================
 
     private ImageView imagenPerfil;
     private TextView nombreUsuario;
@@ -223,11 +223,6 @@ public class UsuarioFragment extends Fragment {
         cargarRecetas(idUsuario, nombre);
     }
 
-    /**
-     * Inicia la carga paginada de todas las recetas del usuario.
-     * @param idUsuario     ID del usuario logueado
-     * @param nombreUsuario Nombre del usuario (para filtrar por nombre cuando el ID no coincide)
-     */
     private void cargarRecetas(int idUsuario, String nombreUsuario) {
         RecetaService recetaService = 
                 ClienteRetrofit.obtenerInstancia(requireContext()).create(RecetaService.class);
@@ -235,14 +230,7 @@ public class UsuarioFragment extends Fragment {
         cargarPaginaRecetas(recetaService, idUsuario, nombreUsuario, 1, new ArrayList<>());
     }
 
-    /**
-     * Carga recursivamente página a página y filtra las recetas que pertenecen al usuario.
-     * @param recetaService  Servicio Retrofit de recetas
-     * @param idUsuario      ID del usuario
-     * @param nombreUsuario  Nombre del usuario (normalizdo)
-     * @param pagina         Página actual a cargar
-     * @param acumuladas     Lista donde se acumulan las recetas del usuario
-     */
+    // Carga página a página acumulando las recetas del usuario (filtra por ID o nombre)
     private void cargarPaginaRecetas(RecetaService recetaService, int idUsuario, String nombreUsuario,
             int pagina, List<Receta> acumuladas) {
         recetaService.obtenerRecetas(pagina).enqueue(new Callback<RespuestaPaginada<Receta>>() {
@@ -300,11 +288,6 @@ public class UsuarioFragment extends Fragment {
         });
     }
 
-    /**
-     * Normaliza el nombre de usuario para comparaciones (quita {@code @}, trim, minúsculas).
-     * @param nombre Nombre de usuario original
-     * @return Nombre normalizado
-     */
     private String normalizarUsuario(String nombre) {
         if (nombre == null) {
             return "";
@@ -426,9 +409,6 @@ public class UsuarioFragment extends Fragment {
 
     // ======================== ADAPTADOR INTERNO ========================
 
-    /**
-     * Adaptador interno para el RecyclerView de recetas del usuario.
-     */
     private class AdaptadorMisRecetas extends RecyclerView.Adapter<AdaptadorMisRecetas.MiRecetaViewHolder> {
         final List<Receta> recetas;
 

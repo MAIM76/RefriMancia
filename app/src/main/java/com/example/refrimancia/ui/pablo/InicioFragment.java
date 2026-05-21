@@ -55,19 +55,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Fragmento principal de la pantalla de inicio.
- * Muestra un listado paginado de recetas con búsqueda por texto, ingredientes y tipo.
- * Soporta refresco por swipe, reintentos automáticos ante fallos de red y un panel de error
- * con botón de reintento manual. Permite ver el detalle de cada receta, sus comentarios
- * y publicar valoraciones desde un popup.
- */
 public class InicioFragment extends Fragment {
 
     // ======================== CONSTANTES ========================
 
     private static final String TAG = "InicioFragment";
-    /** Número máximo de reintentos automáticos ante fallo de red en la carga principal. */
     private static final int MAX_REINTENTOS = 3;
 
     // ======================== VISTAS ========================
@@ -82,7 +74,6 @@ public class InicioFragment extends Fragment {
     private ProgressBar loadingInicial;
     private SwipeRefreshLayout swipeRecetas;
 
-    /** Panel de error de conexión (contiene el mensaje y el botón de reintentar). */
     private View errorContainer;
     private TextView tvErrorMensaje;
     private Button btnReintentar;
@@ -101,7 +92,7 @@ public class InicioFragment extends Fragment {
     private int paginaBusquedaActual = 1;
     private boolean esUltimaPaginaBusqueda = false;
     private List<String> ultimaConsultaTipos = new ArrayList<>();
-    /** Caché de todas las recetas para permitir búsqueda local sin nueva paginación. */
+    // Caché de recetas completo para búsqueda local sin repaginar
     private List<Receta> todasLasRecetas = new ArrayList<>();
     private boolean recetasPrecargadas = false;
     private boolean reintentandoBusqueda = false;
@@ -363,10 +354,6 @@ public class InicioFragment extends Fragment {
         suggestionsAdapter.notifyDataSetChanged();
     }
 
-    /**
-     * Carga TODAS las recetas recorriendo todas las páginas para permitir búsqueda completa.
-     * La API siempre pagina, por lo que hay que acumular página a página.
-     */
     private void cargarTodasLasRecetasParaBusqueda() {
         todasLasRecetas.clear();
         recetasPrecargadas = false;
@@ -449,12 +436,6 @@ public class InicioFragment extends Fragment {
         }
     }
 
-    /**
-     * Aplica filtros combinados: texto (título/descripción), ingredientes y tipo de comida.
-     * - Sin filtros: vuelve a la lista paginada normal.
-     * - Solo texto/tipo: filtra localmente sobre todasLasRecetas.
-     * - Con ingredientes: usa API /buscar/ingredientes y refina localmente.
-     */
     private void aplicarFiltrosCombinados() {
         boolean tieneFiltroTexto = !ultimaConsultaTexto.isEmpty();
         boolean tieneFiltroIngredientes = !ultimaConsultaIngredientes.isEmpty();
@@ -501,12 +482,6 @@ public class InicioFragment extends Fragment {
         }
     }
 
-    /**
-     * Filtra recetas aplicando ambos criterios: texto e ingredientes.
-     * El filtro de texto busca en título y descripción.
-     * El filtro de ingredientes busca que la receta contenga CUALQUIERA de los ingredientes (OR).
-     * Según la API de Postman: ingredientes=salmon,aguacate busca recetas con salmon O aguacate.
-     */
     private void filtrarRecetasLocalmenteCombinado(String consultaTexto, String consultaIngredientes) {
         String textoLower = consultaTexto.toLowerCase().trim();
         List<String> tiposLower = new ArrayList<>();
@@ -583,11 +558,6 @@ public class InicioFragment extends Fragment {
         }
     }
 
-    /**
-     * Busca recetas usando la API /api/recetas/buscar/ingredientes con soporte de paginación.
-     * La API filtra por ingredientes (OR) y/o tipo_receta. Si filtroTexto no está vacío,
-     * refina los resultados localmente por título/descripción.
-     */
     private void buscarPorIngredientesAPI(String ingredientes, List<String> tipos, String filtroTexto, int page) {
         cargando = true;
         if (page == 1) {

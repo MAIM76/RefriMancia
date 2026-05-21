@@ -114,6 +114,8 @@ public class InicioFragment extends Fragment {
             }
     );
 
+    // ======================== CICLO DE VIDA ========================
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -245,6 +247,8 @@ public class InicioFragment extends Fragment {
         }
     }
 
+    // ======================== CARGA DE DATOS ========================
+
     private void cargarRecetasDesdeAPI() {
         if (cargando || esUltimaPagina || modoBusqueda) return;
         cargando = true;
@@ -322,6 +326,8 @@ public class InicioFragment extends Fragment {
         });
     }
 
+    // ======================== BÚSQUEDA Y FILTROS ========================
+
     private void mostrarMensajeError(String mensaje) {
         if (getContext() != null) {
             Toast.makeText(getContext(), mensaje, Toast.LENGTH_LONG).show();
@@ -395,6 +401,8 @@ public class InicioFragment extends Fragment {
             }
         });
     }
+
+    // ======================== CONFIGURACIÓN DE VISTAS ========================
 
     private void configurarRecyclerView() {
         try {
@@ -637,6 +645,8 @@ public class InicioFragment extends Fragment {
         });
     }
 
+    // ======================== POPUPS ========================
+
     private void mostrarPopupFiltros() {
         Dialog dialog = new Dialog(requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -823,9 +833,13 @@ public class InicioFragment extends Fragment {
         dialog.show();
     }
 
+    // ======================== INTERFAZ DE COMUNICACIÓN ========================
+
     public interface OnRecetaListener {
         void onRecetaCambiada();
     }
+
+    // ======================== ACCIONES PÚBLICAS ========================
 
     public void recargar() {
         contadorReintentos = 0;
@@ -858,6 +872,8 @@ public class InicioFragment extends Fragment {
         }
     }
 
+    // ======================== GESTIÓN DE ERRORES ========================
+
     private void mostrarError(String mensaje, boolean conBoton) {
         if (errorContainer != null && rvRecetas != null) {
             rvRecetas.setVisibility(View.GONE);
@@ -877,6 +893,8 @@ public class InicioFragment extends Fragment {
             rvRecetas.setVisibility(View.VISIBLE);
         }
     }
+
+    // ======================== CICLO DE VIDA (DESTRUCCIÓN) ========================
 
     @Override
     public void onDestroyView() {

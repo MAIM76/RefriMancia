@@ -65,6 +65,8 @@ public class RecetaActivity extends AppCompatActivity {
             }
     );
 
+    // ======================== VISTAS ========================
+
     private ImageView ivImagen;
     private TextView tvTitulo;
     private TextView tvDescripcion;
@@ -332,6 +334,8 @@ public class RecetaActivity extends AppCompatActivity {
         }
     }
 
+    // ======================== UTILIDADES ========================
+
     private void setTextOrHide(TextView tv, String texto, String fallback) {
         if (texto != null && !texto.trim().isEmpty()) {
             tv.setText(texto);
@@ -343,6 +347,8 @@ public class RecetaActivity extends AppCompatActivity {
             tv.setVisibility(View.GONE);
         }
     }
+
+    // ======================== BOTONES DE PROPIETARIO ========================
 
     private void configBotones() {
         int idUsuarioSesion = new SessionManager(this).fetchUserId();
@@ -366,6 +372,8 @@ public class RecetaActivity extends AppCompatActivity {
             llBotones.setVisibility(View.GONE);
         }
     }
+
+    // ======================== OPERACIONES DE API ========================
 
     private void eliminarReceta() {
         RecetaService recetaService = ClienteRetrofit.obtenerInstancia(this).create(RecetaService.class);

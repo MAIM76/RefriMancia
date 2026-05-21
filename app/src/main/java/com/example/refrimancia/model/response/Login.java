@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class Login {
 
+    // ======================== ATRIBUTOS ========================
+
     @SerializedName("status")
     private String status;
 
@@ -17,6 +19,8 @@ public class Login {
     @SerializedName("data")
     private Usuario data;
 
+    // ======================== GETTERS Y SETTERS ========================
+
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
@@ -28,6 +32,8 @@ public class Login {
 
     public Usuario getData() { return data; }
     public void setData(Usuario data) { this.data = data; }
+
+    // ======================== HELPERS (delegan en Usuario) ========================
 
     public int getIdUsuario() {
         return data != null ? data.getIdUsuario() : -1;

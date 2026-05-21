@@ -858,11 +858,6 @@ public class InicioFragment extends Fragment {
         }
     }
 
-    /**
-     * Muestra el panel de error con el mensaje.
-     * @param mensaje Texto a mostrar en el panel de error
-     * @param conBoton Si es {@code true}, muestra el botón de reintentar; si no, lo oculta
-     */
     private void mostrarError(String mensaje, boolean conBoton) {
         if (errorContainer != null && rvRecetas != null) {
             rvRecetas.setVisibility(View.GONE);
@@ -876,9 +871,6 @@ public class InicioFragment extends Fragment {
         }
     }
 
-    /**
-     * Oculta el layout de error de conexión y muestra el RecyclerView.
-     */
     private void ocultarError() {
         if (errorContainer != null && rvRecetas != null) {
             errorContainer.setVisibility(View.GONE);

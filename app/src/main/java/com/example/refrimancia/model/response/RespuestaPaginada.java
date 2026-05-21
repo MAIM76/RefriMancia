@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class RespuestaPaginada<T> {
+
+    // ======================== ATRIBUTOS ========================
+
     @SerializedName("status")
     private String status;
 
@@ -21,6 +24,8 @@ public class RespuestaPaginada<T> {
 
     @SerializedName("paginacion")
     private Paginacion paginacion;
+
+    // ======================== GETTERS ========================
 
     public String getStatus() {
         return status;
@@ -55,7 +60,12 @@ public class RespuestaPaginada<T> {
         return paginacion != null ? paginacion.getItemsPorPagina() : null;
     }
 
+    // ======================== CLASE INTERNA ========================
+
     public static class Paginacion {
+
+        // ======================== ATRIBUTOS ========================
+
         @SerializedName(value = "total_recetas", alternate = {"total_usuarios", "total_comentarios"})
         private Integer totalItems;
 
@@ -68,6 +78,8 @@ public class RespuestaPaginada<T> {
         @SerializedName(value = "recetas_por_pagina", alternate = {"usuarios_por_pagina", 
                 "comentarios_por_pagina"})
         private Integer itemsPorPagina;
+
+        // ======================== GETTERS ========================
 
         public Integer getTotalItems() {
             return totalItems;

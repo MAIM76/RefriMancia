@@ -35,6 +35,7 @@ public class ClienteRetrofit {
 
     // ======================== MÉTODOS PÚBLICOS ========================
 
+    // Singleton: crea la instancia solo la primera vez
     public static Retrofit obtenerInstancia(Context context) {
         if (instancia == null) {
             instancia = crearInstanciaRetrofit(context);
@@ -42,6 +43,7 @@ public class ClienteRetrofit {
         return instancia;
     }
 
+    // Llamar al hacer logout para forzar la recreación con nuevo token
     public static void resetInstancia() {
         instancia = null;
         sesionInvalidadaHandled.set(false);

@@ -4,6 +4,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class RecetaCreada {
 
+    // ======================== ATRIBUTOS ========================
+
     @SerializedName("status")
     private String status;
 
@@ -12,6 +14,8 @@ public class RecetaCreada {
 
     @SerializedName("foto")
     private String foto;
+
+    // ======================== GETTERS Y SETTERS ========================
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

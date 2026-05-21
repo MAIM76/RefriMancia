@@ -30,10 +30,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Adaptador para mostrar una lista de recetas en un RecyclerView.
- * Soporta filtrado, carga de valoraciones asíncrona y múltiples acciones por receta.
- */
 public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaViewHolder> {
 
     // ======================== VARIABLES DE INSTANCIA ========================
@@ -51,35 +47,20 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
 
     // ======================== INTERFACES PARA EVENTOS ========================
     
-    /**
-     * Interfaz para manejar clics en una receta.
-     */
     public interface OnRecetaClickListener {
         void onRecetaClick(Receta receta);
     }
 
-    /**
-     * Interfaz para manejar clics en el botón de comentarios.
-     */
     public interface OnComentarioClickListener {
         void onComentarioClick(Receta receta);
     }
 
-    /**
-     * Interfaz para manejar clics en el botón de valoración.
-     */
     public interface OnValoracionClickListener {
         void onValoracionClick(Receta receta);
     }
 
     // ======================== CONSTRUCTOR Y CONFIGURACIÓN ========================
     
-    /**
-     * Constructor del adaptador.
-     * @param listaRecetas Lista inicial de recetas
-     * @param contexto Contexto de la aplicación
-     * @param listener Listener para clics en recetas
-     */
     public RecetaAdapter(List<Receta> listaRecetas, Context contexto, OnRecetaClickListener listener) {
         // Validaciones nulas para prevenir crashes
         if (listaRecetas == null) {
@@ -97,36 +78,20 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         this.listaRecetasCompleta = new ArrayList<>(this.listaRecetas);
     }
 
-    /**
-     * Establece el listener para clics en comentarios.
-     * @param comentarioListener Listener de comentarios
-     */
     public void setOnComentarioClickListener(OnComentarioClickListener comentarioListener) {
         this.comentarioListener = comentarioListener;
     }
 
-    /**
-     * Establece el listener para clics en valoraciones.
-     * @param valoracionListener Listener de valoraciones
-     */
     public void setOnValoracionClickListener(OnValoracionClickListener valoracionListener) {
         this.valoracionListener = valoracionListener;
     }
 
-    /**
-     * Devuelve una copia de la lista completa de recetas.
-     * @return Lista completa de recetas
-     */
     public List<Receta> getListaRecetasCompleta() {
         return this.listaRecetasCompleta;
     }
 
     // ======================== MÉTODOS DE MANIPULACIÓN DE DATOS ========================
     
-    /**
-     * Actualiza todos los datos del adaptador.
-     * @param nuevasRecetas Nueva lista de recetas
-     */
     public void actualizarDatos(List<Receta> nuevasRecetas) {
         final List<Receta> listaAnterior = new ArrayList<>(this.listaRecetas);
         final List<Receta> listaNueva = nuevasRecetas != null ? nuevasRecetas : new ArrayList<>();
@@ -155,10 +120,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         }).dispatchUpdatesTo(this);
     }
 
-    /**
-     * Agrega nuevas recetas a la lista existente.
-     * @param nuevasRecetas Lista de recetas a agregar
-     */
     public void agregarDatos(List<Receta> nuevasRecetas) {
         int posicionInicial = this.listaRecetas.size();
         this.listaRecetas.addAll(nuevasRecetas);
@@ -166,11 +127,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         notifyItemRangeInserted(posicionInicial, nuevasRecetas.size());
     }
 
-    /**
-     * Filtra las recetas según una consulta de búsqueda.
-     * Busca en título, descripción e ingredientes.
-     * @param consulta Texto a buscar
-     */
     public void filtrar(String consulta) {
         listaRecetas.clear();
         if (consulta == null || consulta.trim().isEmpty()) {
@@ -195,12 +151,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
 
     // ======================== MÉTODOS DEL RECYCLERVIEW ========================
     
-    /**
-     * Crea una nueva vista para una receta.
-     * @param padre ViewGroup padre
-     * @param tipoDVista Tipo de vista
-     * @return Nuevo RecetaViewHolder
-     */
     @NonNull
     @Override
     public RecetaViewHolder onCreateViewHolder(@NonNull ViewGroup padre, int tipoDVista) {
@@ -209,11 +159,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         return new RecetaViewHolder(vista);
     }
 
-    /**
-     * Vincula los datos de una receta a la vista.
-     * @param holder ViewHolder que contiene las vistas
-     * @param posicion Posición de la receta en la lista
-     */
     @Override
     public void onBindViewHolder(@NonNull RecetaViewHolder holder, int posicion) {
         // Validar posición para prevenir IndexOutOfBoundsException
@@ -247,10 +192,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
 
     // ======================== MÉTODOS AUXILIARES ========================
     
-    /**
-     * Refresca la valoración de una receta específica.
-     * @param idReceta ID de la receta a refrescar
-     */
     public void refrescarValoracionReceta(int idReceta) {
         ValoracionService valoracionService =
                 ClienteRetrofit.obtenerInstancia(contexto).create(ValoracionService.class);
@@ -290,11 +231,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         });
     }
 
-    /**
-     * Configura la información básica de la receta (título, tiempo, dificultad, categoría).
-     * @param holder ViewHolder de la receta
-     * @param receta Receta a configurar
-     */
     private void configurarInformacionBasica(RecetaViewHolder holder, Receta receta) {
         try {
             // Configurar título
@@ -333,11 +269,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         }
     }
 
-    /**
-     * Configura la imagen de la receta usando Glide.
-     * @param holder ViewHolder de la receta
-     * @param receta Receta a configurar
-     */
     private void configurarImagen(RecetaViewHolder holder, Receta receta) {
         if (receta.getImagenUrl() == null || receta.getImagenUrl().isEmpty() || 
                 receta.getImagenUrl().equals("url_imagen_aqui")) {
@@ -373,11 +304,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         }
     }
 
-    /**
-     * Configura la información adicional de la receta (usuario, categoría, semáforo, consumo).
-     * @param holder ViewHolder de la receta
-     * @param receta Receta a configurar
-     */
     private void configurarInformacionAdicional(RecetaViewHolder holder, Receta receta) {
         // Configurar nombre de usuario
         if (receta.getNombreUsuario() != null && !receta.getNombreUsuario().isEmpty()) {
@@ -416,11 +342,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         }
     }
 
-    /**
-     * Configura los listeners de clic para la receta y sus botones.
-     * @param holder ViewHolder de la receta
-     * @param receta Receta a configurar
-     */
     private void configurarListeners(RecetaViewHolder holder, Receta receta) {
         // Listener para clic en toda la tarjeta
         holder.itemView.setOnClickListener(v -> {
@@ -450,11 +371,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
 
     // ======================== MÉTODOS UTILITARIOS ========================
     
-    /**
-     * Obtiene la posición de una receta en la lista actual.
-     * @param idReceta ID de la receta a buscar
-     * @return Posición en la lista o -1 si no se encuentra
-     */
     private int obtenerPosicionReceta(int idReceta) {
         for (int i = 0; i < listaRecetas.size(); i++) {
             if (listaRecetas.get(i).getIdReceta() == idReceta) {
@@ -497,11 +413,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         return contexto.getString(R.string.time_minutes_format, minutos);
     }
 
-    /**
-     * Obtiene el color correspondiente al semáforo nutricional.
-     * @param semaforo Valor del semáforo (rojo, naranja, amarillo, verde_claro, verde_oscuro)
-     * @return Color del recurso o 0 si no es válido
-     */
     private int obtenerColorSemaforo(String semaforo) {
         if (semaforo == null) {
             return 0;
@@ -524,10 +435,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
 
     // ======================== MÉTODOS OBLIGATORIOS DEL ADAPTADOR ========================
     
-    /**
-     * Devuelve el número total de recetas en la lista.
-     * @return Número de recetas
-     */
     @Override
     public int getItemCount() {
         return listaRecetas.size();
@@ -535,9 +442,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
 
     // ======================== VIEWHOLDER ========================
     
-    /**
-     * ViewHolder que contiene las vistas para una receta individual.
-     */
     public static class RecetaViewHolder extends RecyclerView.ViewHolder {
         // Vistas de información básica
         TextView textoTitulo;
@@ -554,10 +458,6 @@ public class RecetaAdapter extends RecyclerView.Adapter<RecetaAdapter.RecetaView
         RatingBar barraValoracion;
         TextView textoValoracion;
 
-        /**
-         * Constructor del ViewHolder.
-         * @param itemView Vista del item de la receta
-         */
         public RecetaViewHolder(@NonNull View itemView) {
             super(itemView);
             // Inicializar vistas de información básica

@@ -24,37 +24,19 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-/**
- * Interfaz de servicio Retrofit para la gestión de usuarios.
- * Proporciona endpoints para autenticación, registro, gestión de perfiles
- * y recuperación de contraseñas en la aplicación RefriMancia.
- */
 public interface UsuarioService {
     
     // ======================== ENDPOINTS DE AUTENTICACIÓN ========================
 
-    /**
-     * Inicia sesión con credenciales de usuario.
-     * @param request Objeto con correo y contraseña
-     * @return Respuesta tipada con token y datos del usuario
-     */
     @POST("api/usuarios/login")
     Call<Login> login(@Body LoginRequest request);
 
-    /**
-     * Cierra la sesión del usuario autenticado.
-     * Invalida el token actual en el servidor.
-     * @return ResponseBody con el resultado de la operación
-     */
+    // Invalida el token actual en el servidor
     @POST("api/usuarios/logout")
     Call<ResponseBody> logout();
     
     // ======================== ENDPOINTS DE GESTIÓN DE USUARIOS ========================
     
-    /**
-     * Crea un nuevo usuario con imagen de perfil.
-     * Utiliza multipart/form-data para enviar tanto los datos como la imagen.
-     */
     @Multipart
     @POST("api/usuarios/crear")
     Call<Registro> registrarUsuario(
@@ -66,34 +48,13 @@ public interface UsuarioService {
             @Part MultipartBody.Part imagenPerfil
     );
 
-    /**
-     * Elimina la cuenta del usuario.
-     * Requiere estar autenticado con un token válido.
-     */
+    // Requiere token válido; elimina la cuenta del usuario autenticado
     @DELETE("api/usuarios/eliminar")
     Call<ResponseBody> eliminarCuenta();
 
-    /**
-     * Obtiene los datos del perfil del usuario autenticado.
-     * Requiere estar autenticado con un token válido.
-     * @return Respuesta única con los datos del perfil
-     */
     @GET("api/usuarios/perfil")
     Call<RespuestaUnica<Usuario>> obtenerPerfil();
 
-    /**
-     * Modifica los datos de un usuario existente.
-     * Utiliza multipart/form-data para enviar tanto los datos como la imagen.
-     * 
-     * @param id ID del usuario a modificar
-     * @param nombreUsuario Nuevo nombre de usuario
-     * @param contrasena Nueva contraseña (opcional)
-     * @param nombreCompleto Nuevo nombre completo
-     * @param correoElectronico Nuevo correo electrónico
-     * @param fechaNacimiento Nueva fecha de nacimiento
-     * @param imagenPerfil Nueva imagen de perfil (opcional)
-     * @return ResponseBody con el resultado de la operación
-     */
     @Multipart
     @PUT("api/usuarios/modificar/{id}")
     Call<ResponseBody> modificarUsuario(
@@ -106,28 +67,15 @@ public interface UsuarioService {
             @Part MultipartBody.Part imagenPerfil
     );
 
-    /**
-     * Lista todos los usuarios con soporte de paginación.
-     * Requiere privilegios de administrador.
-     * @param page Número de página (opcional)
-     * @return Respuesta paginada con la lista de usuarios
-     */
+    // Solo accesible con rol administrador
     @GET("api/usuarios/listar")
     Call<RespuestaPaginada<Usuario>> listarUsuarios(@Query("page") Integer page);
     
     // ======================== ENDPOINTS DE RECUPERACIÓN DE CONTRASEÑA ========================
     
-    /**
-     * Solicita un código de recuperación de contraseña.
-     * Envía un código al correo electrónico del usuario.
-     */
     @POST("api/usuarios/solicitar-codigo")
     Call<Estado> solicitarCodigo(@Body CorreoRequest request);
 
-    /**
-     * Cambia la contraseña usando un código de recuperación.
-     * Valida el código y actualiza la contraseña del usuario.
-     */
     @POST("api/usuarios/cambiar-contrasena")
     Call<Estado> cambiarContrasena(@Body CambiarPassRequest request);
 }

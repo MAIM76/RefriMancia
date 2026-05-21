@@ -3,11 +3,16 @@ package com.example.refrimancia.model.request;
 import com.google.gson.annotations.SerializedName;
 
 public class ValoracionRequest {
+
+    // ======================== ATRIBUTOS ========================
+
     @SerializedName("id_receta")
     private int idReceta;
 
     @SerializedName("puntuacion")
     private int puntuacion;
+
+    // ======================== CONSTRUCTORES ========================
 
     public ValoracionRequest() {
     }
@@ -16,6 +21,8 @@ public class ValoracionRequest {
         this.idReceta = idReceta;
         this.puntuacion = puntuacion;
     }
+
+    // ======================== GETTERS Y SETTERS ========================
 
     public int getIdReceta() { return idReceta; }
     public void setIdReceta(int idReceta) { this.idReceta = idReceta; }

@@ -3,6 +3,9 @@ package com.example.refrimancia.model.entity;
 import com.google.gson.annotations.SerializedName;
 
 public class Valoracion {
+
+    // ======================== ATRIBUTOS ========================
+
     @SerializedName("id_valoracion")
     private int idValoracion;
 
@@ -18,7 +21,11 @@ public class Valoracion {
     @SerializedName("id_receta")
     private int idReceta;
 
+    // ======================== CONSTRUCTORES ========================
+
     public Valoracion() {}
+
+    // ======================== GETTERS Y SETTERS ========================
 
     public int getIdValoracion() { return idValoracion; }
     public void setIdValoracion(int idValoracion) { this.idValoracion = idValoracion; }

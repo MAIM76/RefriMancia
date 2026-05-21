@@ -3,25 +3,26 @@ package com.example.refrimancia.model.request;
 import com.google.gson.annotations.SerializedName;
 
 public class LoginRequest {
-    // Email del usuario para autenticación
+
+    // ======================== ATRIBUTOS ========================
+
     @SerializedName("correo_electronico")
     private String correoElectronico;
 
-    // Contraseña del usuario
     @SerializedName("contrasena")
     private String contrasena;
 
-    // Constructor vacío
+    // ======================== CONSTRUCTORES ========================
+
     public LoginRequest() {
     }
 
-    // Constructor con parámetros
     public LoginRequest(String correoElectronico, String contrasena) {
         this.correoElectronico = correoElectronico;
         this.contrasena = contrasena;
     }
 
-    // ============ GETTERS Y SETTERS ============
+    // ======================== GETTERS Y SETTERS ========================
     public String getCorreoElectronico() { return correoElectronico; }
     public void setCorreoElectronico(String correoElectronico) {
         this.correoElectronico = correoElectronico;

@@ -20,10 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Adaptador para mostrar una lista de comentarios en un RecyclerView.
- * Cada comentario muestra el nombre de usuario, el contenido, la fecha y la foto de perfil.
- */
 public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.ComentarioViewHolder> {
 
     public interface OnEditarListener {
@@ -40,10 +36,6 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Co
     private OnEditarListener editarListener;
     private OnEliminarListener eliminarListener;
 
-    /**
-     * Constructor del adaptador.
-     * @param comentarios Lista inicial de comentarios a mostrar
-     */
     public ComentarioAdapter(List<Comentario> comentarios) {
         this.comentarios = comentarios;
     }
@@ -60,21 +52,11 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Co
         this.eliminarListener = listener;
     }
 
-    /**
-     * Actualiza la lista de comentarios y notifica los cambios.
-     * @param comentarios Nueva lista de comentarios
-     */
     public void setComentarios(List<Comentario> comentarios) {
         this.comentarios = comentarios;
         notifyDataSetChanged();
     }
 
-    /**
-     * Crea una nueva vista para un comentario.
-     * @param parent ViewGroup padre
-     * @param viewType Tipo de vista (no se usa en este caso)
-     * @return Nuevo ComentarioViewHolder
-     */
     @NonNull
     @Override
     public ComentarioViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -83,11 +65,6 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Co
         return new ComentarioViewHolder(view);
     }
 
-    /**
-     * Vincula los datos de un comentario a la vista.
-     * @param holder ViewHolder que contiene las vistas
-     * @param position Posición del comentario en la lista
-     */
     @Override
     public void onBindViewHolder(@NonNull ComentarioViewHolder holder, int position) {
         Comentario comentario = comentarios.get(position);
@@ -135,12 +112,6 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Co
         }
     }
 
-    /**
-     * Formatea la fecha del comentario a un formato legible.
-     * Intenta múltiples formatos de entrada y proporciona fallback.
-     * @param fechaOriginal Fecha en formato ISO o similar
-     * @return Fecha formateada como "dd/MM/yyyy HH:mm" o la fecha original si falla
-     */
     private String formatFecha(String fechaOriginal) {
         if (fechaOriginal == null || fechaOriginal.isEmpty()) return "";
         
@@ -171,18 +142,11 @@ public class ComentarioAdapter extends RecyclerView.Adapter<ComentarioAdapter.Co
         return fechaOriginal;
     }
 
-    /**
-     * Devuelve el número total de comentarios.
-     * @return Número de comentarios o 0 si la lista es nula
-     */
     @Override
     public int getItemCount() {
         return comentarios == null ? 0 : comentarios.size();
     }
 
-    /**
-     * ViewHolder que contiene las vistas para un comentario individual.
-     */
     public static class ComentarioViewHolder extends RecyclerView.ViewHolder {
         public TextView tvUsuario, tvFecha, tvContenido;
         public ImageView ivUsuario;
